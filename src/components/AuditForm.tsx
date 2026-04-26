@@ -179,6 +179,7 @@ export function AuditForm() {
           <div className="mt-6 space-y-5">
             <div className="rounded-md bg-swiss-mint p-4 text-navy-950">
               <p className="font-semibold">{result.message}</p>
+              <p className="mt-1 text-sm font-semibold">Die Anfrage wurde gespeichert. Wir melden uns zeitnah.</p>
               <p className="mt-2 text-sm leading-6">{result.summary}</p>
             </div>
             <div className="rounded-md border border-white/10 bg-white/5 p-4">

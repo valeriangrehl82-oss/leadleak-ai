@@ -4,6 +4,7 @@ import {
   getEstimatedOrderValue,
   isAuditIndustry,
 } from "@/lib/audit";
+import { sendAuditNotificationEmail } from "@/lib/resend";
 import { createServiceRoleClient, isSupabaseConfigError } from "@/lib/supabase/server";
 
 type AuditRequestBody = {
@@ -58,6 +59,7 @@ export async function POST(request: Request) {
     missedCallsPerWeek,
     estimatedOrderValueChf,
   );
+  const createdAt = new Date();
 
   try {
     const supabase = createServiceRoleClient();
@@ -91,6 +93,23 @@ export async function POST(request: Request) {
       { error: "Supabase ist noch nicht konfiguriert. Bitte Umgebungsvariablen prüfen." },
       { status: 500 },
     );
+  }
+
+  try {
+    await sendAuditNotificationEmail({
+      companyName,
+      industry,
+      contactPerson,
+      phone,
+      email,
+      missedCallsPerWeek: Math.round(missedCallsPerWeek),
+      currentProblem,
+      estimatedOrderValueChf,
+      estimatedMonthlyPotentialChf,
+      createdAt,
+    });
+  } catch (error) {
+    console.error("Audit notification email failed:", error);
   }
 
   return NextResponse.json({

@@ -8,5 +8,7 @@ export function GET() {
     ),
     hasSupabaseServiceRoleKey: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
     hasAdminPassword: Boolean(process.env.ADMIN_PASSWORD),
+    hasResendApiKey: Boolean(process.env.RESEND_API_KEY),
+    hasAdminNotificationEmail: Boolean(process.env.ADMIN_NOTIFICATION_EMAIL),
   });
 }

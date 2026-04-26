@@ -15,7 +15,7 @@ Falls das Repository bereits besteht:
 
 ```powershell
 git add .
-git commit -m "Integrate Supabase SSR clients"
+git commit -m "Add audit email notifications"
 git push
 ```
 
@@ -27,9 +27,6 @@ git push
 4. Query ausführen.
 5. Prüfen, ob die Tabelle `audit_requests` erstellt wurde.
 
-Die SQL-Datei erlaubt öffentliche Inserts für Audit-Anfragen. Reads sind nur für Supabase-authentifizierte Nutzer
-gedacht. Die bestehende interne Admin-Seite bleibt zusätzlich durch das lokale Admin-Passwort geschützt.
-
 ## 3. Environment Variables
 
 Lokal eine `.env.local` Datei erstellen:
@@ -39,14 +36,16 @@ NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ADMIN_PASSWORD=your-admin-password
+RESEND_API_KEY=your-resend-api-key
+ADMIN_NOTIFICATION_EMAIL=admin@example.ch
 ```
 
 Hinweise:
 
-- Supabase verwendet hier die URL, den anon public Key und serverseitig den service role Key.
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` darf im Browser verwendet werden.
 - `SUPABASE_SERVICE_ROLE_KEY` darf nur serverseitig verwendet werden.
-- `ADMIN_PASSWORD` gehört zur bestehenden internen Admin-Seite und ist nicht Teil der Supabase-Client-Konfiguration.
+- `ADMIN_PASSWORD` schützt die interne Admin-Seite.
+- `RESEND_API_KEY` und `ADMIN_NOTIFICATION_EMAIL` werden serverseitig für Audit-Benachrichtigungen verwendet.
 
 ## 4. Lokal testen
 
@@ -59,9 +58,10 @@ npm run start
 
 Tests:
 
-- `/supabase-health` öffnen und prüfen, ob `Supabase connected` erscheint.
+- `/api/debug/env` öffnen und prüfen, ob alle benötigten Werte als `true` angezeigt werden.
 - `/audit` öffnen und Formular absenden.
 - In Supabase prüfen, ob ein Datensatz in `audit_requests` erstellt wurde.
+- Im Postfach von `ADMIN_NOTIFICATION_EMAIL` prüfen, ob die Resend-Benachrichtigung angekommen ist.
 - Ausgeloggt `/admin/audits` öffnen und Redirect zu `/admin/login` bestätigen.
 - `/admin/login` mit `ADMIN_PASSWORD` einloggen.
 
@@ -78,20 +78,22 @@ NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ADMIN_PASSWORD=your-admin-password
+RESEND_API_KEY=your-resend-api-key
+ADMIN_NOTIFICATION_EMAIL=admin@example.ch
 ```
 
 6. Deploy starten.
 
 ## 6. Nach dem Vercel Deployment testen
 
-- `https://deine-domain.vercel.app/supabase-health` öffnen.
+- `https://deine-domain.vercel.app/api/debug/env` öffnen.
 - `https://deine-domain.vercel.app/audit` öffnen und Test-Anfrage absenden.
 - In Supabase prüfen, ob der Datensatz gespeichert wurde.
+- Im Postfach von `ADMIN_NOTIFICATION_EMAIL` prüfen, ob die Resend-Benachrichtigung angekommen ist.
 - `https://deine-domain.vercel.app/admin/audits` ausgeloggt öffnen und Redirect bestätigen.
 - `https://deine-domain.vercel.app/admin/login` öffnen und einloggen.
 
 ## 7. Wichtiger Hinweis
 
-Die Supabase-Helfer nutzen das aktuelle `@supabase/ssr` Muster mit `proxy.ts`, weil Next.js 16 die frühere
-Middleware-Konvention in Proxy umbenannt hat. Für späteren Mehrpersonen-Adminzugriff sollte Supabase Auth oder eine
-andere echte Authentifizierung ergänzt werden.
+Der Resend-Absender ist aktuell `LeadLeak AI <onboarding@resend.dev>`. Für echte Produktion sollte später eine
+eigene verifizierte Domain in Resend eingerichtet werden.
