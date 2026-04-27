@@ -5,7 +5,7 @@ export default function PricingPage() {
   return (
     <main className="min-h-screen bg-slate-50">
       <section className="border-b border-swiss-line bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+        <div className="animate-fade-slide mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
           <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Preise</p>
           <h1 className="mt-3 text-3xl font-bold tracking-tight text-navy-950 sm:text-4xl">
             Pilotfähige Pakete ohne technische Hürden.
@@ -16,7 +16,7 @@ export default function PricingPage() {
           </p>
         </div>
       </section>
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <section className="animate-fade-slide animate-delay-1 mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <PricingCards />
         <div className="mt-10 rounded-lg border border-white/10 bg-navy-950 p-6 text-white shadow-[0_18px_55px_rgba(7,17,31,0.16)]">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
@@ -28,7 +28,7 @@ export default function PricingPage() {
             </div>
             <Link
               href="/audit"
-              className="rounded-md bg-swiss-green px-5 py-3 text-center text-sm font-semibold text-white transition hover:bg-emerald-600"
+              className="ui-lift rounded-md bg-swiss-green px-5 py-3 text-center text-sm font-semibold text-white transition hover:bg-emerald-600"
             >
               Lead-Audit buchen
             </Link>

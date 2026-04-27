@@ -10,8 +10,6 @@ const missedCallItems = [
   ["10:21", "Lead priorisiert", "Bremsen quietschen, hohe Dringlichkeit"],
 ];
 
-const flowSteps = ["Verpasste Anfrage", "Strukturierter Lead", "Rückmeldung", "Auswertung"];
-
 export default function HomePage() {
   return (
     <main>
@@ -30,7 +28,7 @@ export default function HomePage() {
               bestehenden Telefonnummer.
             </p>
             <p className="mt-4 max-w-2xl text-sm font-semibold leading-6 text-emerald-200">
-              Für 14-Tage-Piloten, Lead-Auswertung und strukturierte Rückmeldeprozesse.
+              Für eine fokussierte Pilotphase mit klarer Lead-Auswertung und strukturierten Rückmeldeprozessen.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Link
@@ -56,7 +54,7 @@ export default function HomePage() {
                   <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white">Verpasste Anfragen</h2>
                 </div>
                 <span className="metric-glow rounded-full border border-emerald-300/30 bg-emerald-400/10 px-3 py-1 text-sm font-semibold text-emerald-200">
-                  14-Tage Pilot
+                  Pilotphase
                 </span>
               </div>
 
@@ -84,18 +82,6 @@ export default function HomePage() {
                     </div>
                   </div>
                 ))}
-              </div>
-
-              <div className="mt-5 rounded-md border border-white/10 bg-white/5 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">Ablauf</p>
-                <div className="mt-4 grid gap-2 sm:grid-cols-4">
-                  {flowSteps.map((step, index) => (
-                    <div key={step} className="rounded-md border border-white/10 bg-navy-950/70 p-3">
-                      <p className="text-xs font-semibold text-emerald-300">0{index + 1}</p>
-                      <p className="mt-2 text-sm font-semibold text-white">{step}</p>
-                    </div>
-                  ))}
-                </div>
               </div>
             </div>
           </div>

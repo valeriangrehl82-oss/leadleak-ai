@@ -2,6 +2,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { ADMIN_COOKIE_NAME, hasValidAdminSession } from "@/lib/adminAuth";
+import { hashClientAccessCode, isClientPortalConfigError } from "@/lib/clientSession";
 import { createServiceRoleClient, isSupabaseConfigError } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -21,6 +22,7 @@ type ClientRow = {
   phone: string | null;
   average_order_value_chf: number | null;
   recovery_message: string | null;
+  portal_enabled: boolean | null;
   is_active: boolean | null;
 };
 
@@ -48,9 +50,25 @@ async function updateClientAction(formData: FormData) {
   const averageOrderValueChf = Number(formData.get("average_order_value_chf") || 250);
   const recoveryMessage = String(formData.get("recovery_message") || "").trim();
   const isActive = formData.get("is_active") === "on";
+  const portalEnabled = formData.get("portal_enabled") === "on";
+  const newPortalAccessCode = String(formData.get("new_portal_access_code") || "").trim();
 
   if (!id || !name || !slug || !industry || !notificationEmail) {
     redirect(`/admin/clients/${id}/edit?error=missing`);
+  }
+
+  let newPortalAccessCodeHash: string | undefined;
+
+  if (newPortalAccessCode) {
+    try {
+      newPortalAccessCodeHash = hashClientAccessCode(newPortalAccessCode);
+    } catch (error) {
+      if (isClientPortalConfigError(error)) {
+        redirect(`/admin/clients/${id}/edit?error=portal-secret`);
+      }
+
+      throw error;
+    }
   }
 
   const supabase = createServiceRoleClient();
@@ -65,6 +83,8 @@ async function updateClientAction(formData: FormData) {
       phone: phone || null,
       average_order_value_chf: Number.isFinite(averageOrderValueChf) ? averageOrderValueChf : 250,
       recovery_message: recoveryMessage || null,
+      portal_enabled: portalEnabled,
+      ...(newPortalAccessCodeHash ? { portal_access_code_hash: newPortalAccessCodeHash } : {}),
       is_active: isActive,
     })
     .eq("id", id);
@@ -83,7 +103,7 @@ async function loadClient(id: string) {
     const { data, error } = await supabase
       .from("clients")
       .select(
-        "id, name, slug, industry, contact_person, notification_email, phone, average_order_value_chf, recovery_message, is_active",
+        "id, name, slug, industry, contact_person, notification_email, phone, average_order_value_chf, recovery_message, portal_enabled, is_active",
       )
       .eq("id", id)
       .maybeSingle<ClientRow>();
@@ -138,7 +158,9 @@ export default async function ClientEditPage({ params, searchParams }: ClientEdi
       <section className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
         {urlParams.error ? (
           <div className="mb-6 rounded-md bg-red-50 p-4 text-sm font-semibold text-red-800">
-            Kunde konnte nicht gespeichert werden. Bitte Pflichtfelder und Slug prüfen.
+            {urlParams.error === "portal-secret"
+              ? "CLIENT_PORTAL_SECRET fehlt. Bitte Umgebungsvariable setzen, bevor ein Zugangscode gespeichert wird."
+              : "Kunde konnte nicht gespeichert werden. Bitte Pflichtfelder und Slug prüfen."}
           </div>
         ) : null}
 
@@ -192,6 +214,31 @@ export default async function ClientEditPage({ params, searchParams }: ClientEdi
             />
             Pilot-Link aktiv
           </label>
+
+          <div className="mt-6 rounded-md border border-slate-200 bg-slate-50 p-4">
+            <h2 className="text-base font-semibold text-navy-950">Kundenportal</h2>
+            <label className="mt-4 flex items-center gap-3 text-sm font-semibold text-navy-950">
+              <input
+                name="portal_enabled"
+                type="checkbox"
+                defaultChecked={Boolean(client.portal_enabled)}
+                className="h-4 w-4 rounded border-slate-300 text-swiss-green"
+              />
+              Kundenportal aktiv
+            </label>
+            <label className="mt-4 block space-y-2">
+              <span className="text-sm font-semibold text-navy-950">Neuen Zugangscode setzen</span>
+              <input
+                name="new_portal_access_code"
+                type="password"
+                autoComplete="new-password"
+                className="w-full rounded-md border border-slate-300 px-3 py-3 outline-none ring-swiss-green transition focus:ring-2"
+              />
+            </label>
+            <p className="mt-3 text-sm leading-6 text-slate-600">
+              Zugangscode wird nicht im Klartext gespeichert. Bei Verlust neuen Code setzen.
+            </p>
+          </div>
 
           <button
             type="submit"

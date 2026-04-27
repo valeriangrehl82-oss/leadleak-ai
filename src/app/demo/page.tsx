@@ -4,7 +4,7 @@ export default function DemoPage() {
   return (
     <main className="min-h-screen bg-slate-50">
       <section className="border-b border-swiss-line bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="animate-fade-slide mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Demo Dashboard</p>
           <h1 className="mt-3 text-3xl font-bold tracking-tight text-navy-950 sm:text-4xl">
             Aus verpassten Anrufen wird ein sichtbarer Prozess.
@@ -15,7 +15,7 @@ export default function DemoPage() {
           </p>
         </div>
       </section>
-      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <section className="animate-fade-slide animate-delay-1 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <DemoDashboard />
       </section>
     </main>

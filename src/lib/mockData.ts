@@ -134,7 +134,7 @@ export const pricingPlans: PricingPlan[] = [
       "Kundenspezifische Rückmelde-Texte",
       "Lead-Status: Neu, Kontaktiert, Qualifiziert, Gewonnen, Verloren",
       "Detailansicht pro Lead",
-      "14-Tage Pilot-Auswertung",
+      "Auswertung der Pilotphase",
       "Potenzialschätzung pro Anfrage",
       "Unterstützung bei der Pilot-Auswertung",
     ],

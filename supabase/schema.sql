@@ -60,11 +60,19 @@ create table if not exists public.clients (
   twilio_phone_number text,
   average_order_value_chf integer default 250,
   recovery_message text,
+  portal_enabled boolean default false,
+  portal_access_code_hash text,
   is_active boolean default true
 );
 
 alter table public.clients
   add column if not exists twilio_phone_number text;
+
+alter table public.clients
+  add column if not exists portal_enabled boolean default false;
+
+alter table public.clients
+  add column if not exists portal_access_code_hash text;
 
 create table if not exists public.client_leads (
   id uuid primary key default gen_random_uuid(),

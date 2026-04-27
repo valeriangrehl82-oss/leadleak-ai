@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { auditIndustries, type AuditIndustry, formatChf, getEstimatedOrderValue } from "@/lib/audit";
 
@@ -27,6 +28,18 @@ export function AuditForm() {
   const averageValue = getEstimatedOrderValue(industry);
 
   function resetFeedback() {
+    setResult(null);
+    setError("");
+  }
+
+  function resetForNewRequest() {
+    setCompany("");
+    setIndustry("Garage");
+    setContact("");
+    setPhone("");
+    setEmail("");
+    setMissedCalls(0);
+    setProblem("");
     setResult(null);
     setError("");
   }
@@ -67,10 +80,94 @@ export function AuditForm() {
     }
   }
 
+  if (result) {
+    return (
+      <div className="grid gap-6 lg:grid-cols-[1fr_0.75fr]">
+        <section className="rounded-xl border border-emerald-200 bg-white p-6 shadow-[0_18px_55px_rgba(7,17,31,0.10)]">
+          <div className="flex items-start gap-4">
+            <span className="metric-glow flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-swiss-green text-lg font-bold text-white">
+              ✓
+            </span>
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Gespeichert</p>
+              <h2 className="mt-2 text-3xl font-bold tracking-tight text-navy-950">
+                Audit-Anfrage erfolgreich gesendet
+              </h2>
+              <p className="mt-3 max-w-2xl leading-7 text-slate-600">
+                Die Anfrage wurde gespeichert. Wir melden uns zeitnah mit einer kurzen Einschätzung und dem passenden
+                nächsten Schritt für die Pilotphase.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            {[
+              ["Firma", company],
+              ["Branche", industry],
+              ["Kontakt", contact],
+              ["Telefon", phone],
+              ["E-Mail", email],
+              ["Verpasste Anrufe/Woche", String(missedCalls)],
+            ].map(([label, value]) => (
+              <div key={label} className="rounded-md border border-slate-100 bg-slate-50 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
+                <p className="mt-2 font-semibold text-navy-950">{value || "-"}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-5 rounded-md border border-slate-100 bg-slate-50 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Audit-Zusammenfassung</p>
+            <p className="mt-2 text-sm leading-6 text-slate-700">{result.summary}</p>
+          </div>
+
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <button
+              type="button"
+              onClick={resetForNewRequest}
+              className="ui-lift rounded-md bg-swiss-green px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-600"
+            >
+              Neue Anfrage erfassen
+            </button>
+            <Link
+              href="/"
+              className="ui-lift rounded-md border border-slate-300 px-5 py-3 text-center text-sm font-semibold text-navy-950 transition hover:bg-slate-50"
+            >
+              Zur Startseite
+            </Link>
+          </div>
+        </section>
+
+        <aside className="rounded-xl border border-white/10 bg-navy-950 p-6 text-white shadow-[0_18px_55px_rgba(7,17,31,0.18)]">
+          <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Nächster Schritt</p>
+          <h3 className="mt-3 text-2xl font-semibold">10-Minuten Einschätzung vorbereiten</h3>
+          <div className="mt-6 space-y-4 text-sm leading-6 text-slate-200">
+            <p>Ø Auftragswert: {formatChf(result.estimatedOrderValueChf)}</p>
+            <p>Geschätztes monatliches Potenzial: {formatChf(result.estimatedMonthlyPotentialChf)}</p>
+            <p className="rounded-md border border-white/10 bg-white/5 p-4">
+              Die Berechnung ist eine Potenzial-Einschätzung und keine Umsatzgarantie.
+            </p>
+          </div>
+        </aside>
+      </div>
+    );
+  }
+
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_0.85fr]">
-      <form onSubmit={handleSubmit} className="rounded-lg border border-swiss-line bg-white p-6 shadow-soft">
-        <div className="grid gap-5 sm:grid-cols-2">
+    <div className="grid gap-6 lg:grid-cols-[1fr_0.78fr]">
+      <form
+        onSubmit={handleSubmit}
+        className="rounded-xl border border-slate-200 bg-white p-6 shadow-[0_18px_55px_rgba(7,17,31,0.09)]"
+      >
+        <div className="border-b border-slate-100 pb-5">
+          <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Audit-Daten</p>
+          <h2 className="mt-2 text-2xl font-bold tracking-tight text-navy-950">Betrieb und Anfragepotenzial erfassen</h2>
+          <p className="mt-3 text-sm leading-6 text-slate-600">
+            Die Angaben reichen für eine erste Einschätzung. Es wird noch nichts an bestehende Systeme angebunden.
+          </p>
+        </div>
+
+        <div className="mt-6 grid gap-5 sm:grid-cols-2">
           <label className="space-y-2">
             <span className="text-sm font-semibold text-navy-950">Firmenname</span>
             <input
@@ -79,7 +176,7 @@ export function AuditForm() {
                 setCompany(event.target.value);
                 resetFeedback();
               }}
-              className="w-full rounded-md border border-slate-300 px-3 py-3 outline-none ring-swiss-green transition focus:ring-2"
+              className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
               required
             />
           </label>
@@ -91,7 +188,7 @@ export function AuditForm() {
                 setIndustry(event.target.value as AuditIndustry);
                 resetFeedback();
               }}
-              className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:ring-2"
+              className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
             >
               {auditIndustries.map((item) => (
                 <option key={item} value={item}>
@@ -108,7 +205,7 @@ export function AuditForm() {
                 setContact(event.target.value);
                 resetFeedback();
               }}
-              className="w-full rounded-md border border-slate-300 px-3 py-3 outline-none ring-swiss-green transition focus:ring-2"
+              className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
               required
             />
           </label>
@@ -120,7 +217,7 @@ export function AuditForm() {
                 setPhone(event.target.value);
                 resetFeedback();
               }}
-              className="w-full rounded-md border border-slate-300 px-3 py-3 outline-none ring-swiss-green transition focus:ring-2"
+              className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
               required
             />
           </label>
@@ -133,7 +230,7 @@ export function AuditForm() {
                 setEmail(event.target.value);
                 resetFeedback();
               }}
-              className="w-full rounded-md border border-slate-300 px-3 py-3 outline-none ring-swiss-green transition focus:ring-2"
+              className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
               required
             />
           </label>
@@ -147,7 +244,7 @@ export function AuditForm() {
                 setMissedCalls(Number(event.target.value));
                 resetFeedback();
               }}
-              className="w-full rounded-md border border-slate-300 px-3 py-3 outline-none ring-swiss-green transition focus:ring-2"
+              className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
               required
             />
           </label>
@@ -161,53 +258,45 @@ export function AuditForm() {
               resetFeedback();
             }}
             rows={5}
-            className="w-full rounded-md border border-slate-300 px-3 py-3 outline-none ring-swiss-green transition focus:ring-2"
+            className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
           />
         </label>
         <button
           type="submit"
           disabled={isSubmitting}
-          className="mt-6 rounded-md bg-swiss-green px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:bg-slate-400"
+          className="ui-lift mt-6 rounded-md bg-swiss-green px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:bg-slate-400"
         >
-          {isSubmitting ? "Wird gespeichert..." : "Lead-Audit buchen"}
+          {isSubmitting ? "Wird gespeichert..." : "Lead-Audit anfragen"}
         </button>
-      </form>
-
-      <aside className="rounded-lg border border-swiss-line bg-navy-950 p-6 text-white shadow-soft">
-        <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Audit-Anfrage</p>
-        {result ? (
-          <div className="mt-6 space-y-5">
-            <div className="rounded-md bg-swiss-mint p-4 text-navy-950">
-              <p className="font-semibold">{result.message}</p>
-              <p className="mt-1 text-sm font-semibold">Die Anfrage wurde gespeichert. Wir melden uns zeitnah.</p>
-              <p className="mt-2 text-sm leading-6">{result.summary}</p>
-            </div>
-            <div className="rounded-md border border-white/10 bg-white/5 p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">Gespeicherte Schätzung</p>
-              <p className="mt-2 leading-6">Ø Auftragswert: {formatChf(result.estimatedOrderValueChf)}</p>
-              <p className="mt-1 leading-6">
-                Monatliches Potenzial: {formatChf(result.estimatedMonthlyPotentialChf)}
-              </p>
-              <p className="mt-3 text-sm text-slate-300">
-                Kontakt: {contact}, {company}, {phone}, {email}
-              </p>
-            </div>
-          </div>
-        ) : (
-          <div className="mt-8 border-t border-white/10 pt-6 text-sm leading-6 text-slate-300">
-            <p>
-              Standardwert für {industry}: {formatChf(averageValue)} durchschnittlicher Auftragswert.
-            </p>
-            <p className="mt-3">
-              Nach dem Absenden wird die Anfrage serverseitig validiert und in Supabase gespeichert.
-            </p>
-          </div>
-        )}
         {error ? (
           <div className="mt-5 rounded-md border border-red-300 bg-red-50 p-4 text-sm font-semibold text-red-800">
             {error}
           </div>
         ) : null}
+      </form>
+
+      <aside className="rounded-xl border border-white/10 bg-navy-950 p-6 text-white shadow-[0_18px_55px_rgba(7,17,31,0.18)]">
+        <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Live-Einschätzung</p>
+        <h2 className="mt-3 text-2xl font-semibold">Was der Audit vorbereitet</h2>
+        <div className="mt-6 space-y-4">
+          <div className="rounded-md border border-white/10 bg-white/5 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">Branchenwert</p>
+            <p className="mt-2 text-lg font-semibold">Ø {formatChf(averageValue)} pro Anfrage</p>
+            <p className="mt-2 text-sm leading-6 text-slate-300">Standardwert für {industry}.</p>
+          </div>
+          <div className="rounded-md border border-white/10 bg-white/5 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">Auswertung</p>
+            <p className="mt-2 text-sm leading-6 text-slate-300">
+              Nach dem Absenden wird die Anfrage serverseitig validiert und als Audit-Anfrage gespeichert.
+            </p>
+          </div>
+          <div className="rounded-md border border-white/10 bg-white/5 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">Nächster Schritt</p>
+            <p className="mt-2 text-sm leading-6 text-slate-300">
+              Wir bereiten daraus eine kurze Einschätzung für ein Pilotgespräch vor.
+            </p>
+          </div>
+        </div>
       </aside>
     </div>
   );

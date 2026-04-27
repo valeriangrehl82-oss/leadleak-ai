@@ -25,6 +25,7 @@ type ClientRow = {
   twilio_phone_number: string | null;
   average_order_value_chf: number | null;
   recovery_message: string | null;
+  portal_enabled: boolean | null;
   is_active: boolean | null;
 };
 
@@ -181,7 +182,7 @@ async function loadClientDetail(id: string, range: { start: string; end: string 
       supabase
         .from("clients")
         .select(
-          "id, created_at, name, slug, industry, contact_person, notification_email, phone, twilio_phone_number, average_order_value_chf, recovery_message, is_active",
+          "id, created_at, name, slug, industry, contact_person, notification_email, phone, twilio_phone_number, average_order_value_chf, recovery_message, portal_enabled, is_active",
         )
         .eq("id", id)
         .maybeSingle<ClientRow>(),
@@ -427,6 +428,30 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
                 {client.recovery_message}
               </div>
             ) : null}
+
+            <div className="mt-5 rounded-md border border-slate-200 bg-slate-50 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Kundenportal</p>
+              <dl className="mt-3 space-y-3 text-sm">
+                <div className="flex justify-between gap-4">
+                  <dt className="font-semibold text-slate-500">Status</dt>
+                  <dd className="font-semibold text-navy-950">{client.portal_enabled ? "Aktiv" : "Inaktiv"}</dd>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <dt className="font-semibold text-slate-500">Login URL</dt>
+                  <dd className="text-right text-slate-800">/client/login</dd>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <dt className="font-semibold text-slate-500">Client Slug</dt>
+                  <dd className="text-right text-slate-800">{client.slug}</dd>
+                </div>
+              </dl>
+              <Link
+                href={`/admin/clients/${client.id}/edit`}
+                className="mt-4 inline-flex rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-navy-950 transition hover:bg-slate-50"
+              >
+                Portal-Einstellungen bearbeiten
+              </Link>
+            </div>
           </aside>
 
           <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
