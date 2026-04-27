@@ -1,10 +1,10 @@
 import type { BusinessType, Lead, PricingPlan } from "./types";
 
 export const kpis = [
-  { label: "Verpasste Anrufe", value: "34", detail: "im Pilot sichtbar gemacht" },
-  { label: "Leads erfasst", value: "18", detail: "mit Anliegen und nächster Aktion" },
-  { label: "Gewonnene Anfragen", value: "4", detail: "im Demo-Zeitraum markiert" },
-  { label: "Geschätztes Potenzial", value: "CHF 14’800", detail: "potenzieller Pipeline-Wert" },
+  { label: "Sichtbar gemachte Anfragen", value: "34", detail: "zuvor nicht systematisch erfasst" },
+  { label: "Strukturierte Leads", value: "18", detail: "mit Status und nächster Aktion" },
+  { label: "Gewonnene Chancen", value: "4", detail: "im Demo-Zeitraum markiert" },
+  { label: "Geschätztes Anfragepotenzial", value: "CHF 14’800", detail: "auf Basis typischer Anfragewerte" },
 ];
 
 export const garageLeads: Lead[] = [
