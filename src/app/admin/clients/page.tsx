@@ -142,6 +142,14 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
           <p className="mt-4 max-w-3xl leading-7 text-slate-600">
             Pilotkunden, Portale und öffentliche Erfassungslinks verwalten.
           </p>
+          <div className="mt-6">
+            <Link
+              href="/admin/recovery"
+              className="ui-lift inline-flex rounded-md bg-navy-950 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-navy-800"
+            >
+              Recovery Review Queue öffnen
+            </Link>
+          </div>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
               ["Kunden gesamt", String(stats.total)],
