@@ -247,8 +247,8 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
             <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Business Plus</p>
             <h2 className="mt-2 text-2xl font-bold tracking-tight text-white">Lead DNA Highlights</h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">
-              Schreibgeschützte Übersicht der auffälligsten Anfragen nach Wert, Dringlichkeit, Rückmelde-Druck und
-              Rückmelde-Risiko.
+              Schreibgeschützte Übersicht der auffälligsten Anfragen nach Auftragswert, Dringlichkeit,
+              Konkurrenzdruck und Nachfassbedarf.
             </p>
           </div>
           <div className="mt-5">

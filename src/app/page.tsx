@@ -124,26 +124,26 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="bg-navy-950 py-16 text-white">
+      <section className="border-y border-swiss-line bg-white py-16 text-navy-950">
         <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
           <div className="animate-fade-slide">
-            <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Business Plus</p>
+            <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Business Plus</p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
               Lead DNA erkennt, welche Anfrage wirklich Priorität hat.
             </h2>
-            <p className="mt-5 max-w-2xl leading-7 text-slate-300">
-              Nicht jede Anfrage ist gleich. Lead DNA übersetzt Wert, Dringlichkeit, Rückmelde-Risiko und
-              Rückmelde-Druck in ein visuelles Profil.
+            <p className="mt-5 max-w-2xl leading-7 text-slate-600">
+              Lead DNA macht aus jeder Anfrage ein visuelles Prioritätsprofil – mit Auftragswert, Dringlichkeit,
+              Konkurrenzdruck, Nachfassbedarf und Anfragequalität.
             </p>
-            <div className="mt-6 inline-flex rounded-full border border-emerald-300/30 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-200">
+            <div className="mt-6 inline-flex rounded-full border border-emerald-200 bg-swiss-mint px-4 py-2 text-sm font-semibold text-emerald-800">
               Exklusiv in Business Plus
             </div>
             <div className="mt-5 max-w-2xl">
-              <LeadDnaPrivacyNote publicShort />
+              <LeadDnaPrivacyNote tone="light" />
             </div>
           </div>
 
-          <div className="animate-fade-slide animate-delay-1 rounded-xl border border-white/10 bg-white/[0.03] p-3 shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
+          <div className="animate-fade-slide animate-delay-1 rounded-xl border border-slate-200 bg-navy-950 p-3 shadow-[0_24px_80px_rgba(7,17,31,0.18)]">
             <div className="rounded-lg border border-white/10 bg-navy-900 p-5">
               <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>

@@ -411,8 +411,8 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
               <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Business Plus</p>
               <h2 className="mt-2 text-2xl font-bold tracking-tight text-white">Top Lead DNA Signale</h2>
               <p className="mt-2 text-sm leading-6 text-slate-300">
-                Die auffälligsten Leads im gewählten Zeitraum, sortiert nach Wert, Rückmelde-Druck und
-                Rückmelde-Risiko.
+                Die auffälligsten Leads im gewählten Zeitraum, sortiert nach Auftragswert, Nachfassbedarf und
+                Konkurrenzdruck.
               </p>
             </div>
           </div>

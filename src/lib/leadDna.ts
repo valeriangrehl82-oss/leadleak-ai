@@ -88,7 +88,7 @@ function buildSummary(dimensions: LeadDnaDimension[]) {
   const competition = byKey.competitionRisk;
   const close = byKey.closeProbability;
 
-  return `Wert: ${value.level}. Dringlichkeit: ${urgency.level}. Rückmelde-Druck: ${pressure.level}. Rückmelde-Risiko: ${competition.level}. Bearbeitungspotenzial: ${close.level}. Eine zeitnahe, strukturierte Rückmeldung ist sinnvoll.`;
+  return `Auftragswert: ${value.level}. Dringlichkeit: ${urgency.level}. Konkurrenzdruck: ${competition.level}. Nachfassbedarf: ${pressure.level}. Anfragequalität: ${close.level}. Eine zeitnahe, strukturierte Rückmeldung ist sinnvoll.`;
 }
 
 export function getLeadDnaProfile(lead: LeadDnaInput): LeadDnaProfile {
@@ -171,51 +171,38 @@ export function getLeadDnaProfile(lead: LeadDnaInput): LeadDnaProfile {
   const dimensions: LeadDnaDimension[] = [
     {
       key: "value",
-      label: "Wert",
+      label: "Auftragswert",
       score: clampScore(valueScore),
       level: levelFromScore(clampScore(valueScore)),
-      explanation:
-        value >= 500
-          ? "Hoher geschätzter Auftragswert mit relevantem Potenzial."
-          : value >= 250
-            ? "Solider Auftragswert für eine strukturierte Nachbearbeitung."
-            : "Kleinerer Einzelwert, aber trotzdem sichtbar im Pilot."
+      explanation: "Geschätzter wirtschaftlicher Wert der Anfrage.",
     },
     {
       key: "urgency",
       label: "Dringlichkeit",
       score: clampScore(urgencyScore),
       level: levelFromScore(clampScore(urgencyScore)),
-      explanation: hasUrgencySignal
-        ? "Die Anfrage enthält Hinweise auf ein zeitkritisches Anliegen."
-        : "Keine starken Dringlichkeitssignale im Anliegen erkennbar."
+      explanation: "Zeigt, wie zeitnah die Anfrage bearbeitet werden sollte.",
     },
     {
       key: "responsePressure",
-      label: "Rückmelde-Druck",
+      label: "Nachfassbedarf",
       score: clampScore(responsePressureScore),
       level: levelFromScore(clampScore(responsePressureScore)),
-      explanation: leadIsOpen
-        ? "Der Lead ist offen und sollte aktiv nachgeführt werden."
-        : "Der Lead ist bereits abgeschlossen oder nicht mehr aktiv offen."
+      explanation: "Zeigt, ob eine aktive Nachbearbeitung sinnvoll ist.",
     },
     {
       key: "competitionRisk",
-      label: "Rückmelde-Risiko",
+      label: "Konkurrenzdruck",
       score: clampScore(competitionRiskScore),
       level: levelFromScore(clampScore(competitionRiskScore)),
-      explanation: hasCompetitorSignal
-        ? "Vergleichbare Standardanfrage mit erhöhtem Risiko, dass die Anfrage anderweitig platziert wird."
-        : "Kein starkes Vergleichssignal im Anliegen erkennbar."
+      explanation: "Zeigt, wie leicht die Anfrage bei einem anderen Anbieter landen könnte.",
     },
     {
       key: "closeProbability",
-      label: "Bearbeitungspotenzial",
+      label: "Anfragequalität",
       score: clampScore(closeProbabilityScore),
       level: levelFromScore(clampScore(closeProbabilityScore)),
-      explanation: hasBuyingIntent
-        ? "Das Anliegen wirkt konkret und handlungsnah."
-        : "Das Bearbeitungspotenzial hängt stark von der nächsten Rückmeldung ab."
+      explanation: "Zeigt, wie konkret und verwertbar die Anfrage für den Betrieb ist.",
     },
   ];
 
@@ -248,9 +235,9 @@ export function getLeadDnaProfile(lead: LeadDnaInput): LeadDnaProfile {
   if (valueScore >= 75 && closeProbability >= 65) {
     highlightBadge = "Hohes Potenzial";
   } else if (responsePressure >= 75) {
-    highlightBadge = "Erhöhter Rückmelde-Druck";
+    highlightBadge = "Hoher Nachfassbedarf";
   } else if (competitionRisk >= 75) {
-    highlightBadge = "Hohes Rückmelde-Risiko";
+    highlightBadge = "Hoher Konkurrenzdruck";
   } else if (urgency >= 75) {
     highlightBadge = "Hohe Dringlichkeit";
   }

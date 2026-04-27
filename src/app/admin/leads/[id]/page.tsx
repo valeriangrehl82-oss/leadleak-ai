@@ -163,8 +163,8 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
               <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Business Plus Funktion</p>
               <h2 className="mt-2 text-2xl font-bold tracking-tight text-white">Lead DNA</h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">
-                Regelbasierte Priorisierung nach Wert, Dringlichkeit, Rückmelde-Druck, Rückmelde-Risiko und
-                Bearbeitungspotenzial.
+                Regelbasierte Priorisierung nach Auftragswert, Dringlichkeit, Konkurrenzdruck, Nachfassbedarf und
+                Anfragequalität.
               </p>
             </div>
             <span className="rounded-full border border-emerald-300/30 bg-emerald-400/10 px-3 py-1 text-sm font-semibold text-emerald-200">

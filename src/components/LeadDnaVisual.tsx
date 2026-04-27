@@ -105,7 +105,9 @@ export function LeadDnaCore({ profile, compact = false }: LeadDnaCoreProps) {
         <div className="relative mx-auto mt-6 grid w-full max-w-md gap-3">
           <div className="metric-glow mx-auto flex h-24 w-24 flex-col items-center justify-center rounded-full border border-emerald-300/30 bg-emerald-400/15 text-center shadow-[0_0_50px_rgba(37,165,106,0.28)]">
             <span className="text-2xl font-bold text-white">{profile.priorityScore}</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-emerald-200">Einschätzung</span>
+            <span className="text-[9px] font-semibold uppercase leading-3 tracking-wide text-emerald-200">
+              Lead DNA Index
+            </span>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             {compactNodes.map((dimension) => {
@@ -149,7 +151,9 @@ export function LeadDnaCore({ profile, compact = false }: LeadDnaCoreProps) {
             })}
             <div className="metric-glow order-first mx-auto flex h-28 w-28 flex-col items-center justify-center rounded-full border border-emerald-300/30 bg-emerald-400/15 text-center shadow-[0_0_50px_rgba(37,165,106,0.28)] sm:order-none sm:col-start-2 sm:row-start-2">
               <span className="text-3xl font-bold text-white">{profile.priorityScore}</span>
-              <span className="text-xs font-semibold uppercase tracking-wide text-emerald-200">Einschätzung</span>
+              <span className="text-[10px] font-semibold uppercase leading-3 tracking-wide text-emerald-200">
+                Lead DNA Index
+              </span>
             </div>
           </div>
         </div>
@@ -158,20 +162,19 @@ export function LeadDnaCore({ profile, compact = false }: LeadDnaCoreProps) {
   );
 }
 
-export function LeadDnaPrivacyNote({ publicShort = false }: { publicShort?: boolean }) {
+export function LeadDnaPrivacyNote({ tone = "dark" }: { tone?: "dark" | "light" }) {
+  const className =
+    tone === "light"
+      ? "rounded-lg border border-slate-200 bg-slate-50 p-4 text-xs leading-5 text-slate-600"
+      : "rounded-lg border border-white/10 bg-white/[0.04] p-4 text-xs leading-5 text-slate-300";
+  const strongClassName = tone === "light" ? "font-semibold text-navy-950" : "font-semibold text-slate-200";
+
   return (
-    <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4 text-xs leading-5 text-slate-300">
-      <p className="font-semibold text-slate-200">
-        Lead DNA ist eine interne Priorisierungshilfe für Rückmeldungen und keine automatisierte Entscheidung über
-        Kundinnen oder Kunden.
-      </p>
+    <div className={className}>
+      <p className={strongClassName}>Interne Priorisierungshilfe – keine automatisierte Entscheidung.</p>
       <p className="mt-2">
-        Die Einschätzung basiert auf Anfrageinhalt, Status, Alter der Anfrage und geschätztem Auftragswert. Sie dient
-        ausschliesslich der Organisation des Rückmeldeprozesses.
+        Die Auswertung basiert auf Anfrageinhalt, Status, Alter der Anfrage und geschätztem Auftragswert.
       </p>
-      {publicShort ? (
-        <p className="mt-2 text-emerald-200">Nur als interne Priorisierungshilfe, keine automatisierte Entscheidung.</p>
-      ) : null}
     </div>
   );
 }
@@ -222,7 +225,7 @@ export function LeadDnaCompactCard({ profile, title, subtitle, href }: LeadDnaCo
 
       <div className="mt-5 flex flex-col gap-2 border-t border-white/10 pt-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm font-semibold text-white">Vorschlag: {profile.recommendedAction}</p>
-        <p className="text-xs text-slate-400">Einschätzung {profile.priorityScore}/100</p>
+        <p className="text-xs text-slate-400">Lead DNA Index {profile.priorityScore}/100</p>
       </div>
     </article>
   );
