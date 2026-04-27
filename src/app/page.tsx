@@ -10,14 +10,18 @@ export default function HomePage() {
         <div className="mx-auto grid min-h-[calc(100vh-73px)] max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">
-              Lead-Recovery für Schweizer KMU
+              Pilot-System für Schweizer KMU
             </p>
             <h1 className="mt-5 max-w-4xl text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Verpasste Anrufe kosten Schweizer Betriebe jeden Monat bares Geld.
+              Verpasste Anfragen sichtbar machen, bevor Umsatz verloren geht.
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
-              LeadLeak AI reagiert automatisch auf verpasste Anrufe und verwandelt verlorene Anfragen in qualifizierte
-              Leads, ohne neues Personal.
+              LeadLeak AI hilft lokalen Servicebetrieben, verpasste Kontakte im Pilotbetrieb strukturiert zu erfassen,
+              zurückzumelden und als qualifizierte Leads auszuwerten.
+            </p>
+            <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-400">
+              Für Garagen, Reinigungsfirmen, Umzugsfirmen und Handwerksbetriebe, ohne Wechsel der bestehenden
+              Telefonnummer.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Link
@@ -34,27 +38,32 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
-          <div className="rounded-lg border border-white/10 bg-white p-4 text-navy-950 shadow-soft">
+          <div className="rounded-lg border border-white/10 bg-white p-4 text-navy-950 shadow-[0_24px_70px_rgba(0,0,0,0.28)]">
             <div className="rounded-md bg-slate-50 p-5">
               <div className="flex items-center justify-between border-b border-slate-200 pb-4">
                 <div>
-                  <p className="text-sm font-semibold text-slate-500">Potenziell gerettet</p>
+                  <p className="text-sm font-semibold text-slate-500">Pilot-Auswertung</p>
                   <p className="mt-1 text-3xl font-bold">CHF 2’500</p>
                 </div>
-                <span className="rounded-full bg-swiss-mint px-3 py-1 text-sm font-semibold text-emerald-800">
-                  +10 Leads
+                <span className="rounded-full border border-emerald-200 bg-swiss-mint px-3 py-1 text-sm font-semibold text-emerald-800">
+                  Anfragepotenzial
                 </span>
               </div>
-              <div className="mt-5 space-y-3">
+              <div className="mt-5 grid gap-3">
                 {[
-                  "09:12 Verpasster Anruf erkannt",
-                  "09:13 Strukturierte Rückmeldung gesendet",
-                  "09:16 Anfrage qualifiziert",
-                  "09:28 Werkstatt-Termin gebucht",
-                ].map((item) => (
-                  <div key={item} className="flex items-center gap-3 rounded-md border border-slate-200 bg-white p-3">
-                    <span className="h-2.5 w-2.5 rounded-full bg-swiss-green" />
-                    <span className="text-sm font-medium text-slate-700">{item}</span>
+                  ["01", "Verpasste Anfrage", "Nummer und Zeitpunkt werden sichtbar."],
+                  ["02", "Strukturierter Lead", "Anliegen, Wert und Dringlichkeit werden erfasst."],
+                  ["03", "Rückmeldung", "Der Betrieb erhält eine klare nächste Aktion."],
+                  ["04", "Auswertung", "Pilot-Ergebnis wird für das Abschlussgespräch messbar."],
+                ].map(([number, title, text]) => (
+                  <div key={title} className="flex gap-3 rounded-md border border-slate-200 bg-white p-4">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-navy-950 text-xs font-bold text-white">
+                      {number}
+                    </span>
+                    <div>
+                      <p className="text-sm font-semibold text-navy-950">{title}</p>
+                      <p className="mt-1 text-sm leading-5 text-slate-600">{text}</p>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -78,11 +87,11 @@ export default function HomePage() {
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Lösung</p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy-950">
-              Automatische Rückmeldung per SMS, WhatsApp oder E-Mail.
+              Strukturierte Rückmeldung und klare Lead-Auswertung.
             </h2>
             <p className="mt-5 leading-7 text-slate-600">
-              LeadLeak AI fragt die wichtigsten Details ab, priorisiert verpasste Anfragen und zeigt dem Team den
-              nächsten sinnvollen Schritt.
+              LeadLeak AI sammelt die wichtigsten Details, priorisiert verpasste Anfragen und zeigt dem Team den
+              nächsten sinnvollen Schritt für den Pilotbetrieb.
             </p>
           </div>
         </div>

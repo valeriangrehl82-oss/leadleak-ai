@@ -4,7 +4,7 @@ import { Navbar } from "@/components/Navbar";
 
 export const metadata: Metadata = {
   title: "LeadLeak AI",
-  description: "Lead-Recovery fuer Schweizer KMU.",
+  description: "Pilot-System für verpasste Anfragen bei Schweizer KMU.",
 };
 
 export default function RootLayout({

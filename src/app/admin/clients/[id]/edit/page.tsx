@@ -150,7 +150,7 @@ export default async function ClientEditPage({ params, searchParams }: ClientEdi
               ["slug", "Slug", client.slug, "text", true],
               ["industry", "Branche", client.industry, "text", true],
               ["contact_person", "Kontaktperson", client.contact_person || "", "text", false],
-              ["notification_email", "Notification E-Mail", client.notification_email, "email", true],
+              ["notification_email", "Benachrichtigungs-E-Mail", client.notification_email, "email", true],
               ["phone", "Telefon", client.phone || "", "text", false],
               [
                 "average_order_value_chf",
@@ -174,7 +174,7 @@ export default async function ClientEditPage({ params, searchParams }: ClientEdi
           </div>
 
           <label className="mt-5 block space-y-2">
-            <span className="text-sm font-semibold text-navy-950">Recovery Message</span>
+            <span className="text-sm font-semibold text-navy-950">Rückmeldungsnachricht</span>
             <textarea
               name="recovery_message"
               rows={5}

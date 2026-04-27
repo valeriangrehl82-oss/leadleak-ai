@@ -4,7 +4,7 @@ import { garageLeads } from "@/lib/mockData";
 
 const processSteps = [
   "Verpasster Anruf wird erkannt",
-  "Automatische Rückmeldung fragt das Anliegen ab",
+  "Strukturierte Rückmeldung fragt das Anliegen ab",
   "Kunde bestätigt Bedarf und Dringlichkeit",
   "Werkstatt erhält einen qualifizierten Lead",
 ];
@@ -13,15 +13,15 @@ export default function GaragePage() {
   return (
     <main className="min-h-screen bg-slate-50">
       <section className="bg-navy-950 text-white">
-        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Garage Demo</p>
             <h1 className="mt-5 max-w-4xl text-4xl font-bold tracking-tight sm:text-5xl">
               Wie viele Werkstatt-Aufträge verlieren Sie durch verpasste Anrufe?
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
-              LeadLeak AI reagiert automatisch, wenn niemand ans Telefon geht, qualifiziert den Kunden und macht aus
-              verpassten Anrufen buchbare Werkstatt-Termine.
+              LeadLeak AI macht verpasste Werkstatt-Anfragen im Pilot sichtbar, strukturiert die Rückmeldung und zeigt,
+              welche Kontakte eine klare nächste Aktion brauchen.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Link
@@ -39,7 +39,7 @@ export default function GaragePage() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-white/10 bg-white p-4 text-navy-950 shadow-soft">
+          <div className="rounded-lg border border-white/10 bg-white p-4 text-navy-950 shadow-[0_24px_70px_rgba(0,0,0,0.28)]">
             <div className="rounded-md bg-slate-50 p-5">
               <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Vom Anruf zum Termin</p>
               <div className="mt-5 space-y-3">

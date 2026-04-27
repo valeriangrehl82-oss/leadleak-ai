@@ -132,7 +132,7 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
   return (
     <main className="min-h-screen bg-slate-50">
       <section className="border-b border-swiss-line bg-white">
-        <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
           <Link href={`/admin/clients/${client.id}`} className="text-sm font-semibold text-swiss-green">
             Zurück zu {client.name}
           </Link>
@@ -153,7 +153,7 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
           </div>
         ) : null}
 
-        <div className="rounded-lg border border-swiss-line bg-white p-6 shadow-soft">
+        <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
           <div className="flex flex-col gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">Aktueller Status</p>
@@ -164,7 +164,7 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
               <select
                 name="status"
                 defaultValue={lead.status || "new"}
-                className="rounded-md border border-slate-300 px-3 py-2 text-sm outline-none ring-swiss-green focus:ring-2"
+                className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-swiss-green focus:border-swiss-green focus:ring-2"
               >
                 {leadStatuses.map((status) => (
                   <option key={status.value} value={status.value}>
@@ -190,10 +190,10 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
               ["Anfrageart", lead.request_type || "-"],
               ["Status", getLeadStatusLabel(lead.status)],
               ["Geschätzter Wert", lead.estimated_value_chf ? formatChf(lead.estimated_value_chf) : "-"],
-              ["Source", lead.source || "-"],
+              ["Quelle", lead.source || "-"],
               ["Erstellt", formatDate(lead.created_at)],
             ].map(([label, value]) => (
-              <div key={label} className="rounded-md bg-slate-50 p-4">
+              <div key={label} className="rounded-md border border-slate-100 bg-slate-50 p-4">
                 <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</dt>
                 <dd className="mt-2 font-semibold text-navy-950">{value}</dd>
               </div>
@@ -201,11 +201,11 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
           </dl>
 
           <div className="mt-5 grid gap-5">
-            <div className="rounded-md bg-slate-50 p-4">
+            <div className="rounded-md border border-slate-100 bg-slate-50 p-4">
               <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Nachricht</h2>
               <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-700">{lead.message || "-"}</p>
             </div>
-            <div className="rounded-md bg-slate-50 p-4">
+            <div className="rounded-md border border-slate-100 bg-slate-50 p-4">
               <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Interne Zusammenfassung</h2>
               <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-700">
                 {lead.internal_summary || "-"}

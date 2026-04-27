@@ -31,18 +31,20 @@ export function GarageRoiCalculator() {
   }, [averageOrderValue, missedCalls, recoveryRate, relevantShare]);
 
   return (
-    <div className="rounded-lg border border-swiss-line bg-white p-6 shadow-soft">
-      <div>
+    <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(7,17,31,0.08)]">
+      <div className="flex flex-col gap-4 border-b border-slate-100 pb-6 lg:flex-row lg:items-end lg:justify-between">
+        <div>
         <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Garage ROI Rechner</p>
         <h2 className="mt-3 text-2xl font-bold tracking-tight text-navy-950">
           Was verpasste Werkstatt-Anfragen pro Monat bedeuten können.
         </h2>
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
-          Die Berechnung ist keine Garantie, sondern eine Verkaufshilfe zur Einschätzung des Potenzials.
+        </div>
+        <p className="max-w-xl rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
+          Die Berechnung dient zur Potenzial-Einschätzung und ist keine Umsatzgarantie.
         </p>
       </div>
 
-      <div className="mt-6 grid gap-5 lg:grid-cols-[1fr_0.85fr]">
+      <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_0.85fr]">
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="space-y-2">
             <span className="text-sm font-semibold text-navy-950">Verpasste Anrufe pro Woche</span>
@@ -51,7 +53,7 @@ export function GarageRoiCalculator() {
               min="0"
               value={missedCalls}
               onChange={(event) => setMissedCalls(Number(event.target.value))}
-              className="w-full rounded-md border border-slate-300 px-3 py-3 outline-none ring-swiss-green transition focus:ring-2"
+              className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
             />
           </label>
           <label className="space-y-2">
@@ -62,7 +64,7 @@ export function GarageRoiCalculator() {
               max="100"
               value={relevantShare}
               onChange={(event) => setRelevantShare(Number(event.target.value))}
-              className="w-full rounded-md border border-slate-300 px-3 py-3 outline-none ring-swiss-green transition focus:ring-2"
+              className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
             />
           </label>
           <label className="space-y-2">
@@ -72,7 +74,7 @@ export function GarageRoiCalculator() {
               min="0"
               value={averageOrderValue}
               onChange={(event) => setAverageOrderValue(Number(event.target.value))}
-              className="w-full rounded-md border border-slate-300 px-3 py-3 outline-none ring-swiss-green transition focus:ring-2"
+              className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
             />
           </label>
           <label className="space-y-2">
@@ -83,12 +85,12 @@ export function GarageRoiCalculator() {
               max="100"
               value={recoveryRate}
               onChange={(event) => setRecoveryRate(Number(event.target.value))}
-              className="w-full rounded-md border border-slate-300 px-3 py-3 outline-none ring-swiss-green transition focus:ring-2"
+              className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
             />
           </label>
         </div>
 
-        <div className="rounded-lg bg-navy-950 p-6 text-white">
+        <div className="rounded-lg border border-white/10 bg-navy-950 p-6 text-white shadow-[0_20px_50px_rgba(7,17,31,0.18)]">
           <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Potenzial</p>
           <div className="mt-5 space-y-5">
             <div>

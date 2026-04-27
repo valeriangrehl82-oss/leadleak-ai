@@ -48,7 +48,7 @@ export const garageLeads: Lead[] = [
     anfrage: "Bremsen quietschen",
     status: "New",
     value: "CHF 720",
-    lastAction: "Automatische Rückmeldung gesendet",
+    lastAction: "Strukturierte Rückmeldung gesendet",
     summary: "Nina hört quietschende Bremsen und möchte wissen, ob sie noch weiterfahren kann.",
     urgency: "Sehr hoch, sicherheitsrelevantes Thema und klare Abschlusschance.",
     customerReply: "Es quietscht beim Bremsen, vor allem innerorts. Ich möchte es rasch anschauen lassen.",
@@ -114,7 +114,7 @@ export const pricingPlans: PricingPlan[] = [
     price: "CHF 390/Monat",
     setupFee: "CHF 790 Setup",
     description: "Für kleinere Betriebe, die verpasste Anfragen sichtbar machen wollen.",
-    features: ["Lead-Erfassung", "Automatische Rückmeldung", "Monatlicher Lead-Report"],
+    features: ["Lead-Erfassung", "Strukturierte Rückmeldung", "Monatlicher Lead-Report"],
   },
   {
     name: "Professional",

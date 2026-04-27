@@ -17,9 +17,9 @@ const salesItems = [
 
 export function Navbar() {
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-navy-950/95 text-white backdrop-blur">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <Link href="/" className="text-lg font-semibold tracking-tight">
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-navy-950/95 text-white shadow-[0_12px_35px_rgba(7,17,31,0.20)] backdrop-blur">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
+        <Link href="/" className="text-lg font-semibold tracking-tight text-white">
           LeadLeak AI
         </Link>
         <div className="hidden items-center gap-5 text-sm font-medium text-slate-200 lg:flex">

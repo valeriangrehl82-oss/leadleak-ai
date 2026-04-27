@@ -110,7 +110,7 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
   return (
     <main className="min-h-screen bg-slate-50">
       <section className="border-b border-swiss-line bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Admin</p>
           <h1 className="mt-3 text-3xl font-bold tracking-tight text-navy-950 sm:text-4xl">Kunden</h1>
           <p className="mt-4 max-w-3xl leading-7 text-slate-600">
@@ -119,8 +119,8 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
-        <form action={createClientAction} className="rounded-lg border border-swiss-line bg-white p-6 shadow-soft">
+      <section className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[0.78fr_1.22fr] lg:px-8">
+        <form action={createClientAction} className="rounded-lg border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
           <h2 className="text-xl font-semibold text-navy-950">Neuen Kunden anlegen</h2>
           {params.created ? (
             <div className="mt-4 rounded-md bg-swiss-mint p-3 text-sm font-semibold text-emerald-900">
@@ -138,7 +138,7 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
               ["slug", "Slug"],
               ["industry", "Branche"],
               ["contact_person", "Kontaktperson"],
-              ["notification_email", "Notification E-Mail"],
+              ["notification_email", "Benachrichtigungs-E-Mail"],
               ["phone", "Telefon"],
               ["twilio_phone_number", "Twilio-Nummer im E.164 Format, z.B. +41310000000"],
               ["average_order_value_chf", "Durchschnittlicher Auftragswert CHF"],
@@ -149,17 +149,17 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
                   name={name}
                   type={name === "average_order_value_chf" ? "number" : name === "notification_email" ? "email" : "text"}
                   defaultValue={name === "average_order_value_chf" ? "250" : ""}
-                  className="w-full rounded-md border border-slate-300 px-3 py-3 outline-none ring-swiss-green transition focus:ring-2"
+                  className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
                   required={["name", "slug", "industry", "notification_email"].includes(name)}
                 />
               </label>
             ))}
             <label className="space-y-2">
-              <span className="text-sm font-semibold text-navy-950">Recovery Message</span>
+              <span className="text-sm font-semibold text-navy-950">Rückmeldungsnachricht</span>
               <textarea
                 name="recovery_message"
                 rows={4}
-                className="w-full rounded-md border border-slate-300 px-3 py-3 outline-none ring-swiss-green transition focus:ring-2"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
               />
             </label>
           </div>
@@ -171,7 +171,7 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
           </button>
         </form>
 
-        <div className="overflow-hidden rounded-lg border border-swiss-line bg-white shadow-soft">
+        <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
           <div className="border-b border-swiss-line px-5 py-4">
             <h2 className="text-xl font-semibold text-navy-950">Bestehende Kunden</h2>
           </div>
@@ -182,18 +182,18 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
                 <tr>
                   <th className="px-5 py-3">Name</th>
                   <th className="px-5 py-3">Slug</th>
-                  <th className="px-5 py-3">Industry</th>
-                  <th className="px-5 py-3">Notification Email</th>
+                  <th className="px-5 py-3">Branche</th>
+                  <th className="px-5 py-3">Benachrichtigung</th>
                   <th className="px-5 py-3">Twilio-Nummer</th>
-                  <th className="px-5 py-3">Active</th>
-                  <th className="px-5 py-3">Created</th>
+                  <th className="px-5 py-3">Status</th>
+                  <th className="px-5 py-3">Erstellt</th>
                   <th className="px-5 py-3">Detail</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {clients.length ? (
                   clients.map((client) => (
-                    <tr key={client.id}>
+                    <tr key={client.id} className="transition hover:bg-slate-50">
                       <td className="whitespace-nowrap px-5 py-4 font-semibold text-navy-950">{client.name}</td>
                       <td className="whitespace-nowrap px-5 py-4 text-slate-700">{client.slug}</td>
                       <td className="whitespace-nowrap px-5 py-4 text-slate-700">{client.industry}</td>
@@ -201,7 +201,15 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
                       <td className="whitespace-nowrap px-5 py-4 text-slate-700">
                         {client.twilio_phone_number || "-"}
                       </td>
-                      <td className="whitespace-nowrap px-5 py-4 text-slate-700">{client.is_active ? "Ja" : "Nein"}</td>
+                      <td className="whitespace-nowrap px-5 py-4 text-slate-700">
+                        <span
+                          className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+                            client.is_active ? "bg-swiss-mint text-emerald-800" : "bg-slate-100 text-slate-600"
+                          }`}
+                        >
+                          {client.is_active ? "Aktiv" : "Inaktiv"}
+                        </span>
+                      </td>
                       <td className="whitespace-nowrap px-5 py-4 text-slate-600">{formatDate(client.created_at)}</td>
                       <td className="whitespace-nowrap px-5 py-4">
                         <Link className="font-semibold text-swiss-green" href={`/admin/clients/${client.id}`}>

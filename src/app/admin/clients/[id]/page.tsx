@@ -289,7 +289,7 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
   return (
     <main className="min-h-screen bg-slate-50">
       <section className="border-b border-swiss-line bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <Link href="/admin/clients" className="text-sm font-semibold text-swiss-green">
             Zurück zu Kunden
           </Link>
@@ -301,14 +301,14 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
             <div className="flex flex-wrap gap-3">
               <Link
                 href={`/admin/clients/${client.id}/edit`}
-                className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-950 transition hover:bg-slate-50"
+                className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-950 shadow-sm transition hover:bg-slate-50"
               >
                 Kunde bearbeiten
               </Link>
               <Link
                 href={publicLink}
                 target="_blank"
-                className="rounded-md border border-swiss-green px-4 py-2 text-sm font-semibold text-swiss-green transition hover:bg-swiss-mint"
+                className="rounded-md border border-swiss-green bg-white px-4 py-2 text-sm font-semibold text-swiss-green shadow-sm transition hover:bg-swiss-mint"
               >
                 Öffentlichen Pilot-Link öffnen
               </Link>
@@ -335,7 +335,7 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
           </div>
         ) : null}
 
-        <div className="mb-6 rounded-lg border border-swiss-line bg-white p-5 shadow-soft">
+        <div className="mb-6 rounded-lg border border-slate-200 bg-white p-5 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <form className="grid gap-4 sm:grid-cols-[1fr_1fr_auto]" method="get">
               <label className="space-y-2">
@@ -344,7 +344,7 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
                   name="start"
                   type="date"
                   defaultValue={start}
-                  className="w-full rounded-md border border-slate-300 px-3 py-2 outline-none ring-swiss-green focus:ring-2"
+                  className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none ring-swiss-green focus:border-swiss-green focus:ring-2"
                 />
               </label>
               <label className="space-y-2">
@@ -353,7 +353,7 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
                   name="end"
                   type="date"
                   defaultValue={end}
-                  className="w-full rounded-md border border-slate-300 px-3 py-2 outline-none ring-swiss-green focus:ring-2"
+                  className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none ring-swiss-green focus:border-swiss-green focus:ring-2"
                 />
               </label>
               <button
@@ -394,7 +394,7 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
             ["Verlorene Leads", String(stats.lost)],
             ["Geschätztes Gesamtpotenzial", formatChf(stats.totalValue)],
           ].map(([label, value]) => (
-            <div key={label} className="rounded-lg border border-swiss-line bg-white p-5 shadow-soft">
+            <div key={label} className="rounded-lg border border-slate-200 bg-white p-5 shadow-[0_12px_32px_rgba(7,17,31,0.06)]">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
               <p className="mt-2 text-2xl font-bold text-navy-950">{value}</p>
             </div>
@@ -402,14 +402,14 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[0.7fr_1.3fr]">
-          <aside className="rounded-lg border border-swiss-line bg-white p-6 shadow-soft">
+          <aside className="rounded-lg border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
             <h2 className="text-xl font-semibold text-navy-950">Kundendetails</h2>
             <dl className="mt-5 space-y-3 text-sm">
               {[
                 ["Slug", client.slug],
                 ["Branche", client.industry],
                 ["Kontaktperson", client.contact_person || "-"],
-                ["Notification E-Mail", client.notification_email],
+                ["Benachrichtigung", client.notification_email],
                 ["Telefon", client.phone || "-"],
                 ["Twilio-Nummer", client.twilio_phone_number || "-"],
                 ["Auftragswert", formatChf(client.average_order_value_chf || 250)],
@@ -429,7 +429,7 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
             ) : null}
           </aside>
 
-          <div className="overflow-hidden rounded-lg border border-swiss-line bg-white shadow-soft">
+          <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
             <div className="border-b border-swiss-line px-5 py-4">
               <h2 className="text-xl font-semibold text-navy-950">Leads</h2>
             </div>
@@ -442,7 +442,7 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
                     <th className="px-5 py-3">Telefon</th>
                     <th className="px-5 py-3">Anfrageart</th>
                     <th className="px-5 py-3">Status</th>
-                    <th className="px-5 py-3">Source</th>
+                    <th className="px-5 py-3">Quelle</th>
                     <th className="px-5 py-3">Wert</th>
                     <th className="px-5 py-3">Erstellt</th>
                     <th className="px-5 py-3">Nachricht</th>
@@ -452,7 +452,7 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
                 <tbody className="divide-y divide-slate-100">
                   {leads.length ? (
                     leads.map((lead) => (
-                      <tr key={lead.id}>
+                      <tr key={lead.id} className="transition hover:bg-slate-50">
                         <td className="whitespace-nowrap px-5 py-4 font-semibold text-navy-950">
                           {lead.customer_name || "-"}
                         </td>
@@ -467,7 +467,7 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
                             <select
                               name="status"
                               defaultValue={lead.status || "new"}
-                              className="rounded-md border border-slate-300 px-2 py-2 text-sm outline-none ring-swiss-green focus:ring-2"
+                              className="rounded-md border border-slate-300 bg-white px-2 py-2 text-sm outline-none ring-swiss-green focus:border-swiss-green focus:ring-2"
                             >
                               {leadStatuses.map((status) => (
                                 <option key={status.value} value={status.value}>
@@ -477,7 +477,7 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
                             </select>
                             <button
                               type="submit"
-                              className="rounded-md bg-slate-100 px-3 py-2 text-sm font-semibold text-navy-950 hover:bg-slate-200"
+                              className="rounded-md bg-navy-950 px-3 py-2 text-sm font-semibold text-white hover:bg-navy-800"
                             >
                               OK
                             </button>
@@ -509,12 +509,12 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
           </div>
         </div>
 
-        <div className="mt-6 rounded-lg border border-swiss-line bg-white p-6 shadow-soft">
+        <div className="mt-6 rounded-lg border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
           <h2 className="text-xl font-semibold text-navy-950">Pilot-Auswertung</h2>
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[
-              ["Total Leads", String(stats.total)],
-              ["Estimated total value", formatChf(stats.totalValue)],
+              ["Leads im Zeitraum", String(stats.total)],
+              ["Geschätztes Gesamtpotenzial", formatChf(stats.totalValue)],
               ["Häufigste Anfragearten", stats.commonRequestTypes],
               ["Gewonnene Leads", String(stats.won)],
               ["Verlorene Leads", String(stats.lost)],
@@ -531,7 +531,7 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
           </p>
         </div>
 
-        <div className="mt-6 overflow-hidden rounded-lg border border-swiss-line bg-white shadow-soft">
+        <div className="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
           <div className="border-b border-swiss-line px-5 py-4">
             <h2 className="text-xl font-semibold text-navy-950">Nachrichten</h2>
           </div>
@@ -550,7 +550,7 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
               <tbody className="divide-y divide-slate-100">
                 {messages.length ? (
                   messages.map((message) => (
-                    <tr key={message.id}>
+                    <tr key={message.id} className="transition hover:bg-slate-50">
                       <td className="whitespace-nowrap px-5 py-4 text-slate-600">{formatDate(message.created_at)}</td>
                       <td className="whitespace-nowrap px-5 py-4 text-slate-700">{message.direction}</td>
                       <td className="whitespace-nowrap px-5 py-4 text-slate-700">{message.channel}</td>
