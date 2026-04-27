@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { LeadDnaCompactCard } from "@/components/LeadDnaVisual";
 import { formatChf } from "@/lib/audit";
 import { CLIENT_COOKIE_NAME, isClientPortalConfigError, readClientSessionValue } from "@/lib/clientSession";
+import { getTopLeadDnaHighlights } from "@/lib/leadDna";
 import { getLeadStatusLabel } from "@/lib/leadStatus";
 import { createServiceRoleClient, isSupabaseConfigError } from "@/lib/supabase/server";
 
@@ -25,6 +27,7 @@ type ClientLeadRow = {
   customer_name: string | null;
   customer_phone: string | null;
   request_type: string | null;
+  message: string | null;
   status: string | null;
   estimated_value_chf: number | null;
 };
@@ -127,7 +130,7 @@ async function loadClientDashboard(start: string, end: string) {
 
   let leadsQuery = supabase
     .from("client_leads")
-    .select("id, created_at, customer_name, customer_phone, request_type, status, estimated_value_chf")
+    .select("id, created_at, customer_name, customer_phone, request_type, message, status, estimated_value_chf")
     .eq("client_id", client.id);
 
   if (start) {
@@ -174,6 +177,7 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
 
   const { client, leads, error } = data;
   const stats = getStats(leads);
+  const leadDnaHighlights = getTopLeadDnaHighlights(leads, 3);
   const quick7 = getQuickRange(7);
   const quick14 = getQuickRange(14);
   const quick30 = getQuickRange(30);
@@ -236,6 +240,32 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
               <p className="mt-2 text-2xl font-bold text-navy-950">{value}</p>
             </div>
           ))}
+        </div>
+
+        <div className="mt-6 rounded-xl border border-navy-900 bg-navy-950 p-5 text-white shadow-[0_24px_80px_rgba(7,17,31,0.14)]">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Business Plus</p>
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-white">Lead DNA Highlights</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">
+              Schreibgeschützte Übersicht der auffälligsten Anfragen nach Wert, Dringlichkeit und Rückmelde-Druck.
+            </p>
+          </div>
+          {leadDnaHighlights.length ? (
+            <div className="mt-5 grid gap-4 lg:grid-cols-3">
+              {leadDnaHighlights.map(({ lead, profile }) => (
+                <LeadDnaCompactCard
+                  key={lead.id}
+                  profile={profile}
+                  title={lead.customer_name || "Unbekannter Lead"}
+                  subtitle={lead.request_type || "Anfrage ohne Kategorie"}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="mt-5 rounded-lg border border-white/10 bg-white/[0.04] p-5 text-sm text-slate-300">
+              Noch keine Lead-DNA-Highlights im gewählten Zeitraum vorhanden.
+            </div>
+          )}
         </div>
 
         <div className="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_14px_40px_rgba(7,17,31,0.07)]">

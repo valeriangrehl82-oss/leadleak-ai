@@ -149,6 +149,7 @@ export const pricingPlans: PricingPlan[] = [
     features: [
       "Alles aus Professional",
       "Begleitete Einrichtung des Pilot-Systems",
+      "Lead DNA: visuelle Priorisierung von Anfragen nach Wert, Dringlichkeit und Risiko",
       "Unterstützung bei Recovery-Nummer und Anrufweiterleitung, sofern technisch verfügbar",
       "Erweiterte Auswertung des Anfragepotenzials",
       "Optimierungsempfehlungen nach dem Pilot",

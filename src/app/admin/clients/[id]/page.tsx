@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { LeadDnaCompactCard } from "@/components/LeadDnaVisual";
 import { formatChf } from "@/lib/audit";
 import { ADMIN_COOKIE_NAME, hasValidAdminSession } from "@/lib/adminAuth";
+import { getTopLeadDnaHighlights } from "@/lib/leadDna";
 import { getLeadStatusLabel, isLeadStatus, leadStatuses } from "@/lib/leadStatus";
 import { createServiceRoleClient, isSupabaseConfigError } from "@/lib/supabase/server";
 
@@ -283,6 +285,7 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
   const publicLink = `/p/${client.slug}`;
   const csvHref = buildCsvHref(client.id, start, end);
   const stats = getLeadStats(leads);
+  const leadDnaHighlights = getTopLeadDnaHighlights(leads, 3);
   const quick7 = getQuickRange(7);
   const quick14 = getQuickRange(14);
   const quick30 = getQuickRange(30);
@@ -400,6 +403,35 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
               <p className="mt-2 text-2xl font-bold text-navy-950">{value}</p>
             </div>
           ))}
+        </div>
+
+        <div className="mb-6 rounded-xl border border-navy-900 bg-navy-950 p-5 text-white shadow-[0_24px_80px_rgba(7,17,31,0.14)]">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Business Plus</p>
+              <h2 className="mt-2 text-2xl font-bold tracking-tight text-white">Top Lead DNA Signale</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-300">
+                Die auffälligsten Leads im gewählten Zeitraum, sortiert nach Wert, Druck und Risiko.
+              </p>
+            </div>
+          </div>
+          {leadDnaHighlights.length ? (
+            <div className="mt-5 grid gap-4 lg:grid-cols-3">
+              {leadDnaHighlights.map(({ lead, profile }) => (
+                <LeadDnaCompactCard
+                  key={lead.id}
+                  profile={profile}
+                  title={lead.customer_name || "Unbekannter Lead"}
+                  subtitle={lead.request_type || "Anfrage ohne Kategorie"}
+                  href={`/admin/leads/${lead.id}`}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="mt-5 rounded-lg border border-white/10 bg-white/[0.04] p-5 text-sm text-slate-300">
+              Noch keine Lead-DNA-Signale im gewählten Zeitraum vorhanden.
+            </div>
+          )}
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[0.7fr_1.3fr]">

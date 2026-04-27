@@ -15,6 +15,11 @@ export function PricingCards() {
               Empfohlen
             </div>
           ) : null}
+          {plan.name === "Business Plus" ? (
+            <div className="absolute right-5 top-5 rounded-full border border-navy-900/10 bg-navy-950 px-3 py-1 text-xs font-semibold text-white">
+              Exklusiv
+            </div>
+          ) : null}
           <h3 className="text-xl font-semibold tracking-tight text-navy-950">{plan.name}</h3>
           <p className="mt-4 text-3xl font-bold tracking-tight text-navy-950">{plan.price}</p>
           <p className="mt-2 text-sm font-semibold text-swiss-green">{plan.setupFee}</p>

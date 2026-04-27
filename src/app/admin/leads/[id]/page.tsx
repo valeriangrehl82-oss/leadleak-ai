@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { LeadDnaBars, LeadDnaCore } from "@/components/LeadDnaVisual";
 import { formatChf } from "@/lib/audit";
 import { ADMIN_COOKIE_NAME, hasValidAdminSession } from "@/lib/adminAuth";
+import { getLeadDnaProfile } from "@/lib/leadDna";
 import { getLeadStatusLabel, isLeadStatus, leadStatuses } from "@/lib/leadStatus";
 import { createServiceRoleClient, isSupabaseConfigError } from "@/lib/supabase/server";
 
@@ -129,10 +131,12 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
     );
   }
 
+  const leadDnaProfile = getLeadDnaProfile(lead);
+
   return (
     <main className="min-h-screen bg-slate-50">
       <section className="border-b border-swiss-line bg-white">
-        <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
           <Link href={`/admin/clients/${client.id}`} className="text-sm font-semibold text-swiss-green">
             Zurück zu {client.name}
           </Link>
@@ -141,7 +145,7 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
         </div>
       </section>
 
-      <section className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         {urlParams.updated ? (
           <div className="mb-6 rounded-md bg-swiss-mint p-4 text-sm font-semibold text-emerald-900">
             Status wurde gespeichert.
@@ -152,6 +156,42 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
             Status konnte nicht gespeichert werden.
           </div>
         ) : null}
+
+        <div className="mb-6 animate-fade-slide rounded-xl border border-navy-900 bg-navy-950 p-5 text-white shadow-[0_24px_80px_rgba(7,17,31,0.18)]">
+          <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Business Plus Funktion</p>
+              <h2 className="mt-2 text-2xl font-bold tracking-tight text-white">Lead DNA</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">
+                Regelbasierte Priorisierung nach Wert, Dringlichkeit, Rückmelde-Druck, Konkurrenzrisiko und
+                Abschlusschance.
+              </p>
+            </div>
+            <span className="rounded-full border border-emerald-300/30 bg-emerald-400/10 px-3 py-1 text-sm font-semibold text-emerald-200">
+              {leadDnaProfile.highlightBadge}
+            </span>
+          </div>
+
+          <div className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
+            <LeadDnaCore profile={leadDnaProfile} />
+            <div className="grid gap-4">
+              <LeadDnaBars profile={leadDnaProfile} />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">Lead DNA Summary</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-300">{leadDnaProfile.summary}</p>
+                </div>
+                <div className="rounded-lg border border-emerald-300/25 bg-emerald-400/10 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-emerald-200">Empfohlene Aktion</p>
+                  <p className="mt-2 text-xl font-bold text-white">{leadDnaProfile.recommendedAction}</p>
+                  <p className="mt-2 text-sm leading-6 text-emerald-100">
+                    Empfehlung aus bestehenden Lead-Daten, ohne externe KI.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
           <div className="flex flex-col gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-center sm:justify-between">

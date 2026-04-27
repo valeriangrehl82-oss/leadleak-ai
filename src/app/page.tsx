@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { LeadDnaBars, LeadDnaCore } from "@/components/LeadDnaVisual";
 import { PricingCards } from "@/components/PricingCards";
+import { getLeadDnaProfile } from "@/lib/leadDna";
 
 const audiences = ["Garagen", "Reinigungsfirmen", "Umzugsfirmen", "Handwerker"];
 
@@ -9,6 +11,15 @@ const missedCallItems = [
   ["10:03", "Anfrage erfasst", "MFK-Vorbereitung, CHF 680"],
   ["10:21", "Lead priorisiert", "Bremsen quietschen, hohe Dringlichkeit"],
 ];
+
+const leadDnaDemoProfile = getLeadDnaProfile({
+  customer_name: "Nina Baumann",
+  request_type: "Bremsen quietschen",
+  message: "Es quietscht beim Bremsen, vor allem innerorts. Ich möchte es rasch anschauen lassen.",
+  status: "qualified",
+  estimated_value_chf: 720,
+  created_at: new Date().toISOString(),
+});
 
 export default function HomePage() {
   return (
@@ -109,6 +120,43 @@ export default function HomePage() {
               LeadLeak AI sammelt die wichtigsten Details, macht verpasste Anfragen nachvollziehbar und zeigt dem Team
               den nächsten sinnvollen Schritt für den Pilotbetrieb.
             </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-navy-950 py-16 text-white">
+        <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
+          <div className="animate-fade-slide">
+            <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Business Plus</p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+              Lead DNA erkennt, welche Anfrage wirklich Priorität hat.
+            </h2>
+            <p className="mt-5 max-w-2xl leading-7 text-slate-300">
+              Nicht jede Anfrage ist gleich. Lead DNA übersetzt Wert, Dringlichkeit, Konkurrenzrisiko und
+              Rückmelde-Druck in ein visuelles Profil.
+            </p>
+            <div className="mt-6 inline-flex rounded-full border border-emerald-300/30 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-200">
+              Exklusiv in Business Plus
+            </div>
+          </div>
+
+          <div className="animate-fade-slide animate-delay-1 rounded-xl border border-white/10 bg-white/[0.03] p-3 shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
+            <div className="rounded-lg border border-white/10 bg-navy-900 p-5">
+              <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">Beispielprofil</p>
+                  <h3 className="mt-2 text-2xl font-semibold text-white">Nina Baumann</h3>
+                  <p className="mt-1 text-sm text-slate-400">Bremsen quietschen, geschätzter Wert CHF 720</p>
+                </div>
+                <span className="metric-glow rounded-full border border-emerald-300/30 bg-emerald-400/10 px-3 py-1 text-sm font-semibold text-emerald-200">
+                  {leadDnaDemoProfile.highlightBadge}
+                </span>
+              </div>
+              <div className="grid gap-5 lg:grid-cols-[0.85fr_1.15fr]">
+                <LeadDnaCore profile={leadDnaDemoProfile} compact />
+                <LeadDnaBars profile={leadDnaDemoProfile} />
+              </div>
+            </div>
           </div>
         </div>
       </section>
