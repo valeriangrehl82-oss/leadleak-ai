@@ -172,7 +172,7 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
 
         <details
           open={!clients.length || Boolean(params.error)}
-          className="rounded-xl border border-slate-200 bg-white shadow-[0_14px_40px_rgba(7,17,31,0.07)]"
+          className="group rounded-xl border border-slate-200 bg-white shadow-[0_14px_40px_rgba(7,17,31,0.07)]"
         >
           <summary className="cursor-pointer list-none px-6 py-5">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -181,7 +181,8 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
                 <h2 className="text-xl font-semibold text-navy-950">Neuen Kunden anlegen</h2>
               </div>
               <span className="rounded-md bg-navy-950 px-4 py-2 text-sm font-semibold text-white">
-                Formular öffnen
+                <span className="group-open:hidden">Formular öffnen</span>
+                <span className="hidden group-open:inline">Formular schliessen</span>
               </span>
             </div>
           </summary>
@@ -285,33 +286,44 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
             <div className="grid gap-4">
               {clients.map((client) => {
                 const publicUrl = getPublicPilotUrl(host, protocol, client.slug);
+                const publicPath = `/p/${client.slug}`;
+                const domainHint = host || "localhost:3000";
                 return (
                   <article
                     key={client.id}
                     className="card-hover rounded-xl border border-slate-200 bg-white p-5 shadow-[0_14px_40px_rgba(7,17,31,0.07)]"
                   >
-                    <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr_0.9fr_auto] lg:items-center">
-                      <div>
-                        <p className="text-lg font-semibold text-navy-950">{client.name}</p>
+                    <div className="grid gap-5 lg:grid-cols-[1.05fr_1fr_1fr_auto] lg:items-start">
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Kunde</p>
+                        <p className="mt-2 truncate text-lg font-semibold text-navy-950">{client.name}</p>
                         <p className="mt-1 text-sm text-slate-600">{client.industry}</p>
-                        <p className="mt-2 text-xs text-slate-500">{client.contact_person || client.notification_email}</p>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${statusBadge(client.is_active)}`}>
-                          {client.is_active ? "Aktiv" : "Inaktiv"}
-                        </span>
-                        <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${statusBadge(client.portal_enabled)}`}>
-                          Portal {client.portal_enabled ? "aktiv" : "inaktiv"}
-                        </span>
-                        <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${statusBadge(Boolean(client.twilio_phone_number))}`}>
-                          {client.twilio_phone_number ? "Twilio vorbereitet" : "Nicht verbunden"}
-                        </span>
+                        <p className="mt-2 truncate text-xs text-slate-500">
+                          {client.contact_person || client.notification_email}
+                        </p>
                       </div>
                       <div>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Setup / Status</p>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${statusBadge(client.is_active)}`}>
+                            {client.is_active ? "Aktiv" : "Inaktiv"}
+                          </span>
+                          <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${statusBadge(client.portal_enabled)}`}>
+                            Portal {client.portal_enabled ? "aktiv" : "inaktiv"}
+                          </span>
+                          <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${statusBadge(Boolean(client.twilio_phone_number))}`}>
+                            {client.twilio_phone_number ? "Twilio vorbereitet" : "Nicht verbunden"}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="min-w-0">
                         <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                           Öffentlicher Link
                         </p>
-                        <p className="mt-1 truncate text-sm text-slate-700">{publicUrl}</p>
+                        <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+                          <p className="truncate text-sm font-semibold text-navy-950">{publicPath}</p>
+                          <p className="mt-0.5 truncate text-xs text-slate-500">{domainHint}</p>
+                        </div>
                         <div className="mt-2 flex flex-wrap gap-2">
                           <CopyButton text={publicUrl} label="Link kopieren" copiedLabel="Kopiert" />
                           <Link
@@ -324,6 +336,9 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-2 lg:justify-end">
+                        <p className="w-full text-xs font-semibold uppercase tracking-wide text-slate-500 lg:text-right">
+                          Aktionen
+                        </p>
                         <Link
                           href={`/admin/clients/${client.id}`}
                           className="rounded-md bg-navy-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-navy-800"

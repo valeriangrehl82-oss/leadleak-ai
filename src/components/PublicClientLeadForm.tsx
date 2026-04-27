@@ -16,6 +16,7 @@ type SubmittedLead = {
 };
 
 const quickRequestTypes = ["Rückruf", "Service", "Reifenwechsel", "MFK", "Bremsen", "Batterie", "Offerte", "Andere Anfrage"];
+const publicSubmitError = "Die Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es erneut.";
 
 export function PublicClientLeadForm({ clientName, slug, recoveryMessage }: PublicClientLeadFormProps) {
   const [customerName, setCustomerName] = useState("");
@@ -63,10 +64,8 @@ export function PublicClientLeadForm({ clientName, slug, recoveryMessage }: Publ
         }),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        setError(data.error || "Anfrage konnte nicht gespeichert werden.");
+        setError(publicSubmitError);
         return;
       }
 
@@ -77,7 +76,7 @@ export function PublicClientLeadForm({ clientName, slug, recoveryMessage }: Publ
       setRequestType("");
       setMessage("");
     } catch {
-      setError("Verbindung fehlgeschlagen. Bitte später erneut versuchen.");
+      setError(publicSubmitError);
     } finally {
       setIsSubmitting(false);
     }
@@ -86,24 +85,31 @@ export function PublicClientLeadForm({ clientName, slug, recoveryMessage }: Publ
   if (submittedLead) {
     return (
       <div className="rounded-xl border border-emerald-200 bg-white p-6 shadow-[0_18px_55px_rgba(7,17,31,0.08)]">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full border border-emerald-200 bg-swiss-mint text-xl font-bold text-emerald-900">
-          ✓
+        <div className="flex items-start gap-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-emerald-200 bg-swiss-mint text-xl font-bold text-emerald-900 shadow-[0_10px_28px_rgba(37,165,106,0.16)]">
+            ✓
+          </div>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-swiss-green">Übermittlung bestätigt</p>
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-navy-950">
+              Anfrage erfolgreich übermittelt
+            </h2>
+            <p className="mt-3 leading-7 text-slate-600">
+              Ihre Anfrage wurde an {clientName} übermittelt. Der Betrieb prüft Ihr Anliegen und meldet sich zeitnah.
+            </p>
+          </div>
         </div>
-        <h2 className="mt-5 text-2xl font-bold tracking-tight text-navy-950">Anfrage erfolgreich übermittelt</h2>
-        <p className="mt-3 leading-7 text-slate-600">
-          Ihre Anfrage wurde an {clientName} übermittelt. Der Betrieb prüft Ihr Anliegen und meldet sich zeitnah.
-        </p>
 
-        <dl className="mt-6 grid gap-3 text-sm">
+        <dl className="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 text-sm">
           {[
             ["Name", submittedLead.customerName],
             ["Telefon", submittedLead.customerPhone],
             ["Anfrageart", submittedLead.requestType],
             ["Nachricht", submittedLead.message || "-"],
           ].map(([label, value]) => (
-            <div key={label} className="rounded-lg border border-slate-100 bg-slate-50 p-4">
+            <div key={label} className="grid gap-1 border-b border-slate-200 px-4 py-3 last:border-b-0 sm:grid-cols-[8rem_1fr] sm:gap-4">
               <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</dt>
-              <dd className="mt-2 whitespace-pre-wrap font-semibold text-navy-950">{value}</dd>
+              <dd className="whitespace-pre-wrap font-semibold text-navy-950">{value}</dd>
             </div>
           ))}
         </dl>
@@ -211,7 +217,11 @@ export function PublicClientLeadForm({ clientName, slug, recoveryMessage }: Publ
         {isSubmitting ? "Wird übermittelt..." : `Anfrage an ${clientName} senden`}
       </button>
 
-      {error ? <div className="mt-5 rounded-md bg-red-50 p-4 text-sm font-semibold text-red-800">{error}</div> : null}
+      {error ? (
+        <div className="mt-5 rounded-md border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-800">
+          {publicSubmitError}
+        </div>
+      ) : null}
     </form>
   );
 }

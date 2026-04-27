@@ -374,40 +374,43 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
           <Link href="/admin/clients" className="text-sm font-semibold text-swiss-green">
             Zurück zu Kunden
           </Link>
-          <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="mt-3 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <h1 className="text-3xl font-bold tracking-tight text-navy-950 sm:text-4xl">{client.name}</h1>
               <p className="mt-3 text-slate-600">Öffentlicher Pilot-Link: {publicLink}</p>
             </div>
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href={`/admin/clients/${client.id}/edit`}
-                className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-950 shadow-sm transition hover:bg-slate-50"
-              >
-                Kunde bearbeiten
-              </Link>
-              <Link
-                href={publicLink}
-                target="_blank"
-                className="rounded-md border border-swiss-green bg-white px-4 py-2 text-sm font-semibold text-swiss-green shadow-sm transition hover:bg-swiss-mint"
-              >
-                Öffentlichen Pilot-Link öffnen
-              </Link>
-              <Link
-                href={csvHref}
-                className="rounded-md bg-swiss-green px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600"
-              >
-                CSV exportieren
-              </Link>
-              <form action={createDemoLeadsAction}>
-                <input type="hidden" name="client_id" value={client.id} />
-                <button
-                  type="submit"
-                  className="rounded-md border border-navy-950 bg-white px-4 py-2 text-sm font-semibold text-navy-950 shadow-sm transition hover:bg-slate-50"
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 shadow-sm">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Kundenaktionen</p>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href={`/admin/clients/${client.id}/edit`}
+                  className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-950 shadow-sm transition hover:bg-slate-50"
                 >
-                  Demo-Leads erstellen
-                </button>
-              </form>
+                  Kunde bearbeiten
+                </Link>
+                <Link
+                  href={publicLink}
+                  target="_blank"
+                  className="rounded-md border border-swiss-green bg-white px-4 py-2 text-sm font-semibold text-swiss-green shadow-sm transition hover:bg-swiss-mint"
+                >
+                  Öffentlichen Pilot-Link öffnen
+                </Link>
+                <Link
+                  href={csvHref}
+                  className="rounded-md bg-swiss-green px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600"
+                >
+                  CSV exportieren
+                </Link>
+                <form action={createDemoLeadsAction}>
+                  <input type="hidden" name="client_id" value={client.id} />
+                  <button
+                    type="submit"
+                    className="rounded-md border border-navy-950 bg-white px-4 py-2 text-sm font-semibold text-navy-950 shadow-sm transition hover:bg-slate-50"
+                  >
+                    Demo-Leads erstellen
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
         </div>
