@@ -113,23 +113,24 @@ export const pricingPlans: PricingPlan[] = [
     name: "Starter",
     price: "CHF 390/Monat",
     setupFee: "CHF 790 Setup",
-    description: "Für kleine Betriebe mit regelmässigen verpassten Anfragen.",
+    description: "Für kleinere Betriebe, die verpasste Anfragen sichtbar machen wollen.",
     features: ["Lead-Erfassung", "Automatische Rückmeldung", "Monatlicher Lead-Report"],
   },
   {
-    name: "Growth",
+    name: "Professional",
     price: "CHF 690/Monat",
     setupFee: "CHF 1’490 Setup",
-    description: "Für Betriebe, die ohne neues Personal mehr Termine aus Anfragen gewinnen wollen.",
+    description: "Für Betriebe, die verpasste Anfragen systematisch zurückholen und sauber strukturieren wollen.",
     features: ["Alles aus Starter", "Qualifizierung nach Branche", "Priorisierte Follow-up Logik"],
     recommended: true,
   },
   {
-    name: "Dominator",
+    name: "Business Plus",
     price: "CHF 990/Monat",
     setupFee: "CHF 2’490 Setup",
-    description: "Für regionale Anbieter mit hohem Anfragevolumen und mehreren Teams.",
-    features: ["Alles aus Growth", "Mehrere Standorte", "Erweiterte Umsatz-Auswertung"],
+    description:
+      "Für Betriebe mit höherem Anfragevolumen, mehreren Kontaktpunkten und erweitertem Recovery-Prozess.",
+    features: ["Alles aus Professional", "Mehrere Standorte", "Erweiterte Umsatz-Auswertung"],
   },
 ];
 
