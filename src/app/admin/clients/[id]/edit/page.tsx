@@ -22,6 +22,10 @@ type ClientRow = {
   phone: string | null;
   average_order_value_chf: number | null;
   recovery_message: string | null;
+  booking_url: string | null;
+  booking_enabled: boolean | null;
+  recovery_mode: string | null;
+  auto_reply_enabled: boolean | null;
   portal_enabled: boolean | null;
   is_active: boolean | null;
 };
@@ -49,6 +53,11 @@ async function updateClientAction(formData: FormData) {
   const phone = String(formData.get("phone") || "").trim();
   const averageOrderValueChf = Number(formData.get("average_order_value_chf") || 250);
   const recoveryMessage = String(formData.get("recovery_message") || "").trim();
+  const bookingUrl = String(formData.get("booking_url") || "").trim();
+  const bookingEnabled = formData.get("booking_enabled") === "on";
+  const recoveryModeInput = String(formData.get("recovery_mode") || "manual").trim();
+  const recoveryMode = ["manual", "assisted", "auto"].includes(recoveryModeInput) ? recoveryModeInput : "manual";
+  const autoReplyEnabled = formData.get("auto_reply_enabled") === "on";
   const isActive = formData.get("is_active") === "on";
   const portalEnabled = formData.get("portal_enabled") === "on";
   const newPortalAccessCode = String(formData.get("new_portal_access_code") || "").trim();
@@ -83,6 +92,10 @@ async function updateClientAction(formData: FormData) {
       phone: phone || null,
       average_order_value_chf: Number.isFinite(averageOrderValueChf) ? averageOrderValueChf : 250,
       recovery_message: recoveryMessage || null,
+      booking_url: bookingUrl || null,
+      booking_enabled: bookingEnabled,
+      recovery_mode: recoveryMode,
+      auto_reply_enabled: autoReplyEnabled,
       portal_enabled: portalEnabled,
       ...(newPortalAccessCodeHash ? { portal_access_code_hash: newPortalAccessCodeHash } : {}),
       is_active: isActive,
@@ -103,7 +116,7 @@ async function loadClient(id: string) {
     const { data, error } = await supabase
       .from("clients")
       .select(
-        "id, name, slug, industry, contact_person, notification_email, phone, average_order_value_chf, recovery_message, portal_enabled, is_active",
+        "id, name, slug, industry, contact_person, notification_email, phone, average_order_value_chf, recovery_message, booking_url, booking_enabled, recovery_mode, auto_reply_enabled, portal_enabled, is_active",
       )
       .eq("id", id)
       .maybeSingle<ClientRow>();
@@ -204,6 +217,59 @@ export default async function ClientEditPage({ params, searchParams }: ClientEdi
               className="w-full rounded-md border border-slate-300 px-3 py-3 outline-none ring-swiss-green transition focus:ring-2"
             />
           </label>
+
+          <div className="mt-6 rounded-md border border-emerald-200 bg-swiss-mint p-4">
+            <h2 className="text-base font-semibold text-navy-950">AI Recovery Brain</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-700">
+              Optionale Einstellungen für Antwortvorschläge und Terminverweise. Es werden keine Nachrichten automatisch
+              gesendet.
+            </p>
+            <label className="mt-4 block space-y-2">
+              <span className="text-sm font-semibold text-navy-950">Booking-Link</span>
+              <input
+                name="booking_url"
+                type="url"
+                defaultValue={client.booking_url || ""}
+                placeholder="https://..."
+                className="w-full rounded-md border border-slate-300 px-3 py-3 outline-none ring-swiss-green transition focus:ring-2"
+              />
+            </label>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <label className="flex items-center gap-3 text-sm font-semibold text-navy-950">
+                <input
+                  name="booking_enabled"
+                  type="checkbox"
+                  defaultChecked={Boolean(client.booking_enabled)}
+                  className="h-4 w-4 rounded border-slate-300 text-swiss-green"
+                />
+                Booking-Link aktiv
+              </label>
+              <label className="flex items-center gap-3 text-sm font-semibold text-navy-950">
+                <input
+                  name="auto_reply_enabled"
+                  type="checkbox"
+                  defaultChecked={Boolean(client.auto_reply_enabled)}
+                  className="h-4 w-4 rounded border-slate-300 text-swiss-green"
+                />
+                Auto-Antwort aktiv
+              </label>
+            </div>
+            <label className="mt-4 block space-y-2">
+              <span className="text-sm font-semibold text-navy-950">Recovery-Modus</span>
+              <select
+                name="recovery_mode"
+                defaultValue={client.recovery_mode || "manual"}
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:ring-2"
+              >
+                <option value="manual">manual</option>
+                <option value="assisted">assisted</option>
+                <option value="auto">auto</option>
+              </select>
+            </label>
+            <p className="mt-3 text-sm leading-6 text-emerald-950">
+              Auto-Antworten sollten erst nach Live-Test und rechtlicher Prüfung aktiviert werden.
+            </p>
+          </div>
 
           <label className="mt-5 flex items-center gap-3 text-sm font-semibold text-navy-950">
             <input

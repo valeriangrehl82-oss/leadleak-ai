@@ -97,6 +97,9 @@ export function PublicClientLeadForm({ clientName, slug, recoveryMessage }: Publ
             <p className="mt-3 leading-7 text-slate-600">
               Ihre Anfrage wurde an {clientName} übermittelt. Der Betrieb prüft Ihr Anliegen und meldet sich zeitnah.
             </p>
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              Der Betrieb erhält Ihre Anfrage strukturiert und kann sich gezielt bei Ihnen melden.
+            </p>
           </div>
         </div>
 

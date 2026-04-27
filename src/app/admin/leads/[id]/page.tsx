@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CopyButton } from "@/components/CopyButton";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { LeadDnaBars, LeadDnaCore, LeadDnaPrivacyNote } from "@/components/LeadDnaVisual";
@@ -6,6 +7,7 @@ import { formatChf } from "@/lib/audit";
 import { ADMIN_COOKIE_NAME, hasValidAdminSession } from "@/lib/adminAuth";
 import { getLeadDnaProfile } from "@/lib/leadDna";
 import { getLeadStatusLabel, isLeadStatus, leadStatuses } from "@/lib/leadStatus";
+import { analyzeRecoveryBrain } from "@/lib/recoveryBrain";
 import { createServiceRoleClient, isSupabaseConfigError } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -34,6 +36,11 @@ type ClientRow = {
   id: string;
   name: string;
   slug: string;
+  recovery_message: string | null;
+  booking_url: string | null;
+  booking_enabled: boolean | null;
+  recovery_mode: string | null;
+  auto_reply_enabled: boolean | null;
 };
 
 function formatDate(value: string) {
@@ -121,7 +128,7 @@ async function loadLeadDetail(id: string) {
 
     const { data: client, error: clientError } = await supabase
       .from("clients")
-      .select("id, name, slug")
+      .select("id, name, slug, recovery_message, booking_url, booking_enabled, recovery_mode, auto_reply_enabled")
       .eq("id", lead.client_id)
       .maybeSingle<ClientRow>();
 
@@ -161,6 +168,7 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
   }
 
   const leadDnaProfile = getLeadDnaProfile(lead);
+  const recoveryBrain = analyzeRecoveryBrain(lead, client);
   const estimatedValue = lead.estimated_value_chf ? formatChf(lead.estimated_value_chf) : "-";
   const statusLabel = getLeadStatusLabel(lead.status);
 
@@ -251,6 +259,93 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
                 </button>
               </form>
             ))}
+          </div>
+        </section>
+
+        <section className="mb-6 rounded-xl border border-emerald-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Assistant</p>
+              <h2 className="mt-2 text-2xl font-bold tracking-tight text-navy-950">AI Recovery Brain</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+                Vorschlag zur Unterstützung der Rückmeldung. Keine automatisierte Entscheidung.
+              </p>
+            </div>
+            <span className="w-fit rounded-full border border-emerald-200 bg-swiss-mint px-3 py-1 text-sm font-semibold text-emerald-800">
+              {client.recovery_mode || "manual"}
+            </span>
+          </div>
+
+          <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {[
+              ["Kategorie", recoveryBrain.category],
+              ["Dringlichkeit", recoveryBrain.urgencyLabel],
+              ["Terminbedarf", recoveryBrain.appointmentNeed ? "Ja" : "Nein"],
+              ["Booking-Link", recoveryBrain.shouldIncludeBookingLink ? "Einfügen" : "Nicht nötig"],
+            ].map(([label, value]) => (
+              <div key={label} className="rounded-lg border border-slate-100 bg-slate-50 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
+                <p className="mt-2 font-semibold text-navy-950">{value}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-5 grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
+            <div className="grid gap-5">
+              <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                <p className="text-sm font-semibold text-navy-950">Fehlende Angaben</p>
+                {recoveryBrain.missingInformation.length ? (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {recoveryBrain.missingInformation.map((item) => (
+                      <span
+                        key={item}
+                        className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="mt-3 text-sm text-slate-600">Keine zentralen Pflichtangaben erkannt.</p>
+                )}
+              </div>
+
+              <div className="rounded-lg border border-emerald-200 bg-swiss-mint p-4">
+                <p className="text-sm font-semibold text-emerald-950">Empfohlene nächste Aktion</p>
+                <p className="mt-2 text-sm leading-6 text-emerald-950">{recoveryBrain.recommendedAction}</p>
+              </div>
+
+              <div className="rounded-lg border border-slate-200 bg-white p-4">
+                <p className="text-sm font-semibold text-navy-950">Begründung / Kurzlogik</p>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{recoveryBrain.reasoningSummary}</p>
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-navy-900 bg-navy-950 p-5 text-white">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">
+                    Antwortvorschlag
+                  </p>
+                  <h3 className="mt-2 text-xl font-semibold">Vorschlag für Rückmeldung</h3>
+                </div>
+                <CopyButton
+                  text={recoveryBrain.suggestedReply}
+                  label="Antwort kopieren"
+                  copiedLabel="Kopiert"
+                  className="rounded-md border border-white/15 bg-white/10 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/15"
+                />
+              </div>
+              <p className="mt-5 whitespace-pre-wrap text-sm leading-7 text-slate-100">
+                {recoveryBrain.suggestedReply}
+              </p>
+              {client.auto_reply_enabled ? (
+                <p className="mt-4 rounded-md border border-amber-300/30 bg-amber-300/10 p-3 text-xs leading-5 text-amber-100">
+                  Auto-Antwort ist in den Kundeneinstellungen markiert, wird in dieser Version aber nicht automatisch
+                  gesendet.
+                </p>
+              ) : null}
+            </div>
           </div>
         </section>
 

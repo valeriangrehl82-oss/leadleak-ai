@@ -15,6 +15,7 @@ import {
 import { CLIENT_COOKIE_NAME, isClientPortalConfigError, readClientSessionValue } from "@/lib/clientSession";
 import { getLeadDnaProfile, getTopLeadDnaHighlights } from "@/lib/leadDna";
 import { getLeadStatusLabel } from "@/lib/leadStatus";
+import { analyzeRecoveryBrain } from "@/lib/recoveryBrain";
 import { createServiceRoleClient, isSupabaseConfigError } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -509,13 +510,14 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
                   <th className="px-5 py-3">Anfrageart</th>
                   <th className="px-5 py-3">Status</th>
                   <th className="px-5 py-3 text-right">Wert</th>
-                  <th className="px-5 py-3">Lead DNA</th>
+                  <th className="px-5 py-3">Assistenz</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {leads.length ? (
                   leads.map((lead) => {
-                    const profile = getLeadDnaProfile(lead);
+                      const profile = getLeadDnaProfile(lead);
+                      const recoveryBrain = analyzeRecoveryBrain(lead, client);
                     return (
                       <tr key={lead.id} className="transition hover:bg-slate-50">
                         <td className="whitespace-nowrap px-5 py-4 text-slate-600">{formatDate(lead.created_at)}</td>
@@ -533,9 +535,16 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
                           {formatChf(lead.estimated_value_chf || 0)}
                         </td>
                         <td className="whitespace-nowrap px-5 py-4">
-                          <span className="rounded-full border border-emerald-200 bg-swiss-mint px-3 py-1 text-xs font-semibold text-emerald-800">
-                            Index {profile.priorityScore}
-                          </span>
+                          <div className="flex flex-wrap gap-2">
+                            <span className="rounded-full border border-emerald-200 bg-swiss-mint px-3 py-1 text-xs font-semibold text-emerald-800">
+                              Index {profile.priorityScore}
+                            </span>
+                            {recoveryBrain.suggestedReply ? (
+                              <span className="rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-xs font-semibold text-cyan-800">
+                                Recovery-Vorschlag vorhanden
+                              </span>
+                            ) : null}
+                          </div>
                         </td>
                       </tr>
                     );
