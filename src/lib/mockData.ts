@@ -50,7 +50,7 @@ export const garageLeads: Lead[] = [
     value: "CHF 720",
     lastAction: "Strukturierte Rückmeldung gesendet",
     summary: "Nina hört quietschende Bremsen und möchte wissen, ob sie noch weiterfahren kann.",
-    urgency: "Sehr hoch, sicherheitsrelevantes Thema und klare Abschlusschance.",
+    urgency: "Sehr hoch, sicherheitsrelevantes Thema und klares Bearbeitungspotenzial.",
     customerReply: "Es quietscht beim Bremsen, vor allem innerorts. Ich möchte es rasch anschauen lassen.",
     recommendedAction: "Sofort Diagnose-Termin anbieten und Sicherheitspriorität klar kommunizieren.",
     suggestedMessage:
@@ -149,7 +149,7 @@ export const pricingPlans: PricingPlan[] = [
     features: [
       "Alles aus Professional",
       "Begleitete Einrichtung des Pilot-Systems",
-      "Lead DNA: visuelle Priorisierung von Anfragen nach Wert, Dringlichkeit und Risiko",
+      "Lead DNA: visuelle Priorisierung von Anfragen nach Wert, Dringlichkeit und Rückmelde-Risiko",
       "Unterstützung bei Recovery-Nummer und Anrufweiterleitung, sofern technisch verfügbar",
       "Erweiterte Auswertung des Anfragepotenzials",
       "Optimierungsempfehlungen nach dem Pilot",

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { LeadDnaBars, LeadDnaCore } from "@/components/LeadDnaVisual";
+import { LeadDnaBars, LeadDnaCore, LeadDnaPrivacyNote } from "@/components/LeadDnaVisual";
 import { formatChf } from "@/lib/audit";
 import { ADMIN_COOKIE_NAME, hasValidAdminSession } from "@/lib/adminAuth";
 import { getLeadDnaProfile } from "@/lib/leadDna";
@@ -163,13 +163,16 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
               <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Business Plus Funktion</p>
               <h2 className="mt-2 text-2xl font-bold tracking-tight text-white">Lead DNA</h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">
-                Regelbasierte Priorisierung nach Wert, Dringlichkeit, Rückmelde-Druck, Konkurrenzrisiko und
-                Abschlusschance.
+                Regelbasierte Priorisierung nach Wert, Dringlichkeit, Rückmelde-Druck, Rückmelde-Risiko und
+                Bearbeitungspotenzial.
               </p>
             </div>
             <span className="rounded-full border border-emerald-300/30 bg-emerald-400/10 px-3 py-1 text-sm font-semibold text-emerald-200">
               {leadDnaProfile.highlightBadge}
             </span>
+          </div>
+          <div className="mb-5">
+            <LeadDnaPrivacyNote />
           </div>
 
           <div className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
@@ -178,7 +181,7 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
               <LeadDnaBars profile={leadDnaProfile} />
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">Lead DNA Summary</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">Lead DNA Zusammenfassung</p>
                   <p className="mt-2 text-sm leading-6 text-slate-300">{leadDnaProfile.summary}</p>
                 </div>
                 <div className="rounded-lg border border-emerald-300/25 bg-emerald-400/10 p-4">

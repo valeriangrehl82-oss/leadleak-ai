@@ -88,7 +88,7 @@ function buildSummary(dimensions: LeadDnaDimension[]) {
   const competition = byKey.competitionRisk;
   const close = byKey.closeProbability;
 
-  return `Wert: ${value.level}. Dringlichkeit: ${urgency.level}. Rückmelde-Druck: ${pressure.level}. Konkurrenzrisiko: ${competition.level}. Abschlusschance: ${close.level}. Eine zeitnahe, strukturierte Rückmeldung ist sinnvoll.`;
+  return `Wert: ${value.level}. Dringlichkeit: ${urgency.level}. Rückmelde-Druck: ${pressure.level}. Rückmelde-Risiko: ${competition.level}. Bearbeitungspotenzial: ${close.level}. Eine zeitnahe, strukturierte Rückmeldung ist sinnvoll.`;
 }
 
 export function getLeadDnaProfile(lead: LeadDnaInput): LeadDnaProfile {
@@ -201,21 +201,21 @@ export function getLeadDnaProfile(lead: LeadDnaInput): LeadDnaProfile {
     },
     {
       key: "competitionRisk",
-      label: "Konkurrenzrisiko",
+      label: "Rückmelde-Risiko",
       score: clampScore(competitionRiskScore),
       level: levelFromScore(clampScore(competitionRiskScore)),
       explanation: hasCompetitorSignal
-        ? "Vergleichbare Standardanfrage mit erhöhtem Risiko, dass der Kunde weiterfragt."
+        ? "Vergleichbare Standardanfrage mit erhöhtem Risiko, dass die Anfrage anderweitig platziert wird."
         : "Kein starkes Vergleichssignal im Anliegen erkennbar."
     },
     {
       key: "closeProbability",
-      label: "Abschlusschance",
+      label: "Bearbeitungspotenzial",
       score: clampScore(closeProbabilityScore),
       level: levelFromScore(clampScore(closeProbabilityScore)),
       explanation: hasBuyingIntent
         ? "Das Anliegen wirkt konkret und handlungsnah."
-        : "Die Abschlusschance hängt stark von der nächsten Rückmeldung ab."
+        : "Das Bearbeitungspotenzial hängt stark von der nächsten Rückmeldung ab."
     },
   ];
 
@@ -250,7 +250,7 @@ export function getLeadDnaProfile(lead: LeadDnaInput): LeadDnaProfile {
   } else if (responsePressure >= 75) {
     highlightBadge = "Erhöhter Rückmelde-Druck";
   } else if (competitionRisk >= 75) {
-    highlightBadge = "Hohes Konkurrenzrisiko";
+    highlightBadge = "Hohes Rückmelde-Risiko";
   } else if (urgency >= 75) {
     highlightBadge = "Hohe Dringlichkeit";
   }

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { LeadDnaCompactCard } from "@/components/LeadDnaVisual";
+import { LeadDnaCompactCard, LeadDnaPrivacyNote } from "@/components/LeadDnaVisual";
 import { formatChf } from "@/lib/audit";
 import { CLIENT_COOKIE_NAME, isClientPortalConfigError, readClientSessionValue } from "@/lib/clientSession";
 import { getTopLeadDnaHighlights } from "@/lib/leadDna";
@@ -247,8 +247,12 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
             <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Business Plus</p>
             <h2 className="mt-2 text-2xl font-bold tracking-tight text-white">Lead DNA Highlights</h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">
-              Schreibgeschützte Übersicht der auffälligsten Anfragen nach Wert, Dringlichkeit und Rückmelde-Druck.
+              Schreibgeschützte Übersicht der auffälligsten Anfragen nach Wert, Dringlichkeit, Rückmelde-Druck und
+              Rückmelde-Risiko.
             </p>
+          </div>
+          <div className="mt-5">
+            <LeadDnaPrivacyNote />
           </div>
           {leadDnaHighlights.length ? (
             <div className="mt-5 grid gap-4 lg:grid-cols-3">

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { LeadDnaDimension, LeadDnaProfile } from "@/lib/leadDna";
+import type { LeadDnaDimension, LeadDnaDimensionKey, LeadDnaProfile } from "@/lib/leadDna";
 
 type LeadDnaCoreProps = {
   profile: LeadDnaProfile;
@@ -13,8 +13,8 @@ type LeadDnaCompactCardProps = {
   href?: string;
 };
 
-function getDimension(profile: LeadDnaProfile, label: string) {
-  return profile.dimensions.find((dimension) => dimension.label === label) || profile.dimensions[0];
+function getDimension(profile: LeadDnaProfile, key: LeadDnaDimensionKey) {
+  return profile.dimensions.find((dimension) => dimension.key === key) || profile.dimensions[0];
 }
 
 function getLevelTone(score: number) {
@@ -74,11 +74,18 @@ function GenomeBar({ dimension }: { dimension: LeadDnaDimension }) {
 
 export function LeadDnaCore({ profile, compact = false }: LeadDnaCoreProps) {
   const nodes = [
-    { dimension: getDimension(profile, "Wert"), className: "left-1/2 top-0 -translate-x-1/2" },
-    { dimension: getDimension(profile, "Dringlichkeit"), className: "right-0 top-[28%]" },
-    { dimension: getDimension(profile, "Rückmelde-Druck"), className: "bottom-0 right-[8%]" },
-    { dimension: getDimension(profile, "Konkurrenzrisiko"), className: "bottom-0 left-[8%]" },
-    { dimension: getDimension(profile, "Abschlusschance"), className: "left-0 top-[28%]" },
+    { dimension: getDimension(profile, "value"), className: "sm:col-start-2 sm:row-start-1" },
+    { dimension: getDimension(profile, "closeProbability"), className: "sm:col-start-1 sm:row-start-2" },
+    { dimension: getDimension(profile, "urgency"), className: "sm:col-start-3 sm:row-start-2" },
+    { dimension: getDimension(profile, "competitionRisk"), className: "sm:col-start-1 sm:row-start-3" },
+    { dimension: getDimension(profile, "responsePressure"), className: "sm:col-start-3 sm:row-start-3" },
+  ];
+  const compactNodes = [
+    getDimension(profile, "value"),
+    getDimension(profile, "urgency"),
+    getDimension(profile, "responsePressure"),
+    getDimension(profile, "competitionRisk"),
+    getDimension(profile, "closeProbability"),
   ];
 
   return (
@@ -94,30 +101,77 @@ export function LeadDnaCore({ profile, compact = false }: LeadDnaCoreProps) {
         </span>
       </div>
 
-      <div className={`relative mx-auto mt-6 ${compact ? "h-56 max-w-sm" : "h-72 max-w-xl"}`}>
-        <div className="absolute left-1/2 top-1/2 h-px w-[72%] -translate-x-1/2 bg-gradient-to-r from-transparent via-emerald-200/25 to-transparent" />
-        <div className="absolute left-1/2 top-1/2 h-[72%] w-px -translate-y-1/2 bg-gradient-to-b from-transparent via-emerald-200/20 to-transparent" />
-        <div className="absolute left-1/2 top-1/2 h-[68%] w-[68%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-200/15" />
+      {compact ? (
+        <div className="relative mx-auto mt-6 grid w-full max-w-md gap-3">
+          <div className="metric-glow mx-auto flex h-24 w-24 flex-col items-center justify-center rounded-full border border-emerald-300/30 bg-emerald-400/15 text-center shadow-[0_0_50px_rgba(37,165,106,0.28)]">
+            <span className="text-2xl font-bold text-white">{profile.priorityScore}</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-emerald-200">Einschätzung</span>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {compactNodes.map((dimension) => {
+              const tone = getLevelTone(dimension.score);
 
-        <div className="metric-glow absolute left-1/2 top-1/2 flex h-28 w-28 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border border-emerald-300/30 bg-emerald-400/15 text-center shadow-[0_0_50px_rgba(37,165,106,0.28)]">
-          <span className="text-3xl font-bold text-white">{profile.priorityScore}</span>
-          <span className="text-xs font-semibold uppercase tracking-wide text-emerald-200">Signal</span>
+              return (
+                <div
+                  key={dimension.key}
+                  className={`min-h-20 rounded-lg border ${tone.border} ${tone.bg} ${tone.glow} p-3 text-center backdrop-blur`}
+                >
+                  <p className={`text-lg font-bold ${tone.text}`}>{dimension.score}</p>
+                  <p className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-slate-300">
+                    {dimension.label}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
         </div>
+      ) : (
+        <div className="relative mx-auto mt-6 w-full max-w-2xl">
+          <div className="pointer-events-none absolute inset-x-[15%] top-1/2 hidden h-px bg-gradient-to-r from-transparent via-emerald-200/25 to-transparent sm:block" />
+          <div className="pointer-events-none absolute bottom-[18%] left-1/2 top-[18%] hidden w-px bg-gradient-to-b from-transparent via-emerald-200/20 to-transparent sm:block" />
+          <div className="pointer-events-none absolute left-1/2 top-1/2 hidden h-[58%] w-[58%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-200/15 sm:block" />
 
-        {nodes.map(({ dimension, className }) => {
-          const tone = getLevelTone(dimension.score);
+          <div className="relative grid gap-3 sm:grid-cols-3 sm:grid-rows-3 sm:items-center">
+            {nodes.map(({ dimension, className }) => {
+              const tone = getLevelTone(dimension.score);
 
-          return (
-            <div
-              key={dimension.key}
-              className={`absolute ${className} w-32 rounded-lg border ${tone.border} ${tone.bg} ${tone.glow} p-3 text-center backdrop-blur`}
-            >
-              <p className={`text-lg font-bold ${tone.text}`}>{dimension.score}</p>
-              <p className="mt-1 text-[11px] font-semibold uppercase tracking-wide text-slate-300">{dimension.label}</p>
+              return (
+                <div
+                  key={dimension.key}
+                  className={`${className} min-h-20 rounded-lg border ${tone.border} ${tone.bg} ${tone.glow} p-3 text-center backdrop-blur`}
+                >
+                  <p className={`text-lg font-bold ${tone.text}`}>{dimension.score}</p>
+                  <p className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-slate-300 sm:text-[11px]">
+                    {dimension.label}
+                  </p>
+                </div>
+              );
+            })}
+            <div className="metric-glow order-first mx-auto flex h-28 w-28 flex-col items-center justify-center rounded-full border border-emerald-300/30 bg-emerald-400/15 text-center shadow-[0_0_50px_rgba(37,165,106,0.28)] sm:order-none sm:col-start-2 sm:row-start-2">
+              <span className="text-3xl font-bold text-white">{profile.priorityScore}</span>
+              <span className="text-xs font-semibold uppercase tracking-wide text-emerald-200">Einschätzung</span>
             </div>
-          );
-        })}
-      </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function LeadDnaPrivacyNote({ publicShort = false }: { publicShort?: boolean }) {
+  return (
+    <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4 text-xs leading-5 text-slate-300">
+      <p className="font-semibold text-slate-200">
+        Lead DNA ist eine interne Priorisierungshilfe für Rückmeldungen und keine automatisierte Entscheidung über
+        Kundinnen oder Kunden.
+      </p>
+      <p className="mt-2">
+        Die Einschätzung basiert auf Anfrageinhalt, Status, Alter der Anfrage und geschätztem Auftragswert. Sie dient
+        ausschliesslich der Organisation des Rückmeldeprozesses.
+      </p>
+      {publicShort ? (
+        <p className="mt-2 text-emerald-200">Nur als interne Priorisierungshilfe, keine automatisierte Entscheidung.</p>
+      ) : null}
     </div>
   );
 }
@@ -167,8 +221,8 @@ export function LeadDnaCompactCard({ profile, title, subtitle, href }: LeadDnaCo
       </div>
 
       <div className="mt-5 flex flex-col gap-2 border-t border-white/10 pt-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm font-semibold text-white">{profile.recommendedAction}</p>
-        <p className="text-xs text-slate-400">Priorität {profile.priorityScore}/100</p>
+        <p className="text-sm font-semibold text-white">Vorschlag: {profile.recommendedAction}</p>
+        <p className="text-xs text-slate-400">Einschätzung {profile.priorityScore}/100</p>
       </div>
     </article>
   );

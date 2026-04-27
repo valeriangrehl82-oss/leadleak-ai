@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { LeadDnaCompactCard } from "@/components/LeadDnaVisual";
+import { LeadDnaCompactCard, LeadDnaPrivacyNote } from "@/components/LeadDnaVisual";
 import { formatChf } from "@/lib/audit";
 import { ADMIN_COOKIE_NAME, hasValidAdminSession } from "@/lib/adminAuth";
 import { getTopLeadDnaHighlights } from "@/lib/leadDna";
@@ -411,9 +411,13 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
               <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Business Plus</p>
               <h2 className="mt-2 text-2xl font-bold tracking-tight text-white">Top Lead DNA Signale</h2>
               <p className="mt-2 text-sm leading-6 text-slate-300">
-                Die auffälligsten Leads im gewählten Zeitraum, sortiert nach Wert, Druck und Risiko.
+                Die auffälligsten Leads im gewählten Zeitraum, sortiert nach Wert, Rückmelde-Druck und
+                Rückmelde-Risiko.
               </p>
             </div>
+          </div>
+          <div className="mt-5">
+            <LeadDnaPrivacyNote />
           </div>
           {leadDnaHighlights.length ? (
             <div className="mt-5 grid gap-4 lg:grid-cols-3">
