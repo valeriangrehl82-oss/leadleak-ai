@@ -160,6 +160,83 @@ async function updateLeadStatusAction(formData: FormData) {
   redirect(`/admin/clients/${clientId}?${params.toString()}`);
 }
 
+async function createDemoLeadsAction(formData: FormData) {
+  "use server";
+
+  await requireAdminSession();
+
+  const clientId = String(formData.get("client_id") || "").trim();
+
+  if (!clientId) {
+    redirect("/admin/clients?error=demo");
+  }
+
+  const now = Date.now();
+  const demoLeads = [
+    {
+      customer_name: "Nina Baumann",
+      customer_phone: "+41 78 441 22 09",
+      request_type: "Bremsen quietschen",
+      status: "new",
+      estimated_value_chf: 720,
+      message: "Bremsen quietschen seit gestern. Bitte um Rückruf.",
+      created_at: new Date(now - 3 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      customer_name: "Marco Keller",
+      customer_phone: "+41 79 234 18 44",
+      request_type: "MFK-Vorbereitung",
+      status: "qualified",
+      estimated_value_chf: 480,
+      message: "MFK ist nächste Woche. Ich möchte das Auto vorher prüfen lassen.",
+      created_at: new Date(now - 8 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      customer_name: "Sandra Meier",
+      customer_phone: "+41 76 512 90 11",
+      request_type: "Reifenwechsel",
+      status: "contacted",
+      estimated_value_chf: 250,
+      message: "Ich brauche einen Termin für Reifenwechsel.",
+      created_at: new Date(now - 22 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      customer_name: "Thomas Berger",
+      customer_phone: "+41 77 308 16 52",
+      request_type: "Service-Termin",
+      status: "won",
+      estimated_value_chf: 390,
+      message: "Jahresservice mit Terminoption.",
+      created_at: new Date(now - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      customer_name: "Laura Frei",
+      customer_phone: "+41 79 660 83 27",
+      request_type: "Batterieproblem",
+      status: "new",
+      estimated_value_chf: 520,
+      message: "Auto startet morgens schlecht. Bitte melden.",
+      created_at: new Date(now - 30 * 60 * 60 * 1000).toISOString(),
+    },
+  ].map((lead) => ({
+    ...lead,
+    client_id: clientId,
+    customer_email: null,
+    source: "demo_seed",
+    internal_summary: `Demo-Lead: ${lead.customer_name} fragt wegen ${lead.request_type}. Nachricht: ${lead.message}`,
+  }));
+
+  const supabase = createServiceRoleClient();
+  const { error } = await supabase.from("client_leads").insert(demoLeads);
+
+  if (error) {
+    console.error("Demo leads insert failed:", error);
+    redirect(`/admin/clients/${clientId}?error=demo`);
+  }
+
+  redirect(`/admin/clients/${clientId}?updated=demo`);
+}
+
 async function loadClientDetail(id: string, range: { start: string; end: string }) {
   try {
     const supabase = createServiceRoleClient();
@@ -322,6 +399,15 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
               >
                 CSV exportieren
               </Link>
+              <form action={createDemoLeadsAction}>
+                <input type="hidden" name="client_id" value={client.id} />
+                <button
+                  type="submit"
+                  className="rounded-md border border-navy-950 bg-white px-4 py-2 text-sm font-semibold text-navy-950 shadow-sm transition hover:bg-slate-50"
+                >
+                  Demo-Leads erstellen
+                </button>
+              </form>
             </div>
           </div>
         </div>

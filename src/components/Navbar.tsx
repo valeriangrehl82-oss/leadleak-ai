@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -8,6 +11,12 @@ const navItems = [
 ];
 
 export function Navbar() {
+  const pathname = usePathname();
+
+  if (pathname.startsWith("/p/")) {
+    return null;
+  }
+
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-navy-950/95 text-white shadow-[0_12px_35px_rgba(7,17,31,0.20)] backdrop-blur">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">

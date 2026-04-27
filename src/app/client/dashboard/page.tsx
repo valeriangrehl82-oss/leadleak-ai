@@ -277,6 +277,9 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
               <p className="text-sm font-semibold uppercase tracking-wide text-emerald-200">
                 Öffentlicher Erfassungslink
               </p>
+              <p className="mt-2 text-sm leading-6 text-emerald-50">
+                Über diesen Link werden neue Anfragen für Ihre Pilotphase erfasst.
+              </p>
               <p className="mt-3 break-all rounded-lg border border-white/10 bg-navy-950/70 p-4 text-sm leading-6 text-slate-100">
                 {publicPilotUrl}
               </p>
@@ -328,12 +331,20 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
           {[
-            ["Sichtbare Anfragen", String(metrics.total), "Im Zeitraum erfasst"],
-            ["Geschätztes Potenzial", formatChf(metrics.totalValue), "Orientierung, keine Garantie"],
-            ["Offene Prioritäten", String(metrics.openPriorities), "Neu, kontaktiert oder qualifiziert"],
-            ["Bearbeitungsquote", `${metrics.processingRate}%`, "Nicht mehr im Status Neu"],
-            ["Gewonnene Anfragen", String(metrics.won), "Als gewonnen markiert"],
-            ["Ø Anfragewert", formatChf(metrics.averageValue), "Durchschnittlicher Schätzwert"],
+            ["Sichtbare Anfragen", leads.length ? String(metrics.total) : "Noch keine", "Im Zeitraum erfasst"],
+            [
+              "Geschätztes Potenzial",
+              leads.length ? formatChf(metrics.totalValue) : "Wird berechnet",
+              "Orientierung, keine Garantie",
+            ],
+            [
+              "Offene Prioritäten",
+              leads.length ? String(metrics.openPriorities) : "Nach erster Anfrage aktiv",
+              "Neu, kontaktiert oder qualifiziert",
+            ],
+            ["Bearbeitungsquote", leads.length ? `${metrics.processingRate}%` : "Wird berechnet", "Nicht mehr im Status Neu"],
+            ["Gewonnene Anfragen", leads.length ? String(metrics.won) : "Noch keine", "Als gewonnen markiert"],
+            ["Ø Anfragewert", leads.length ? formatChf(metrics.averageValue) : "Wird berechnet", "Durchschnittlicher Schätzwert"],
           ].map(([label, value, helper], index) => (
             <div
               key={label}
@@ -447,16 +458,31 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
               ))}
             </div>
           ) : (
-            <div className="mt-5 rounded-lg border border-white/10 bg-white/[0.04] p-5 text-sm leading-6 text-slate-300">
-              Noch keine Lead DNA Highlights vorhanden. Teile den öffentlichen Erfassungslink, damit erste Anfragen
-              sichtbar werden.
-              <div className="mt-4">
-                <CopyButton
-                  text={publicPilotUrl}
-                  label="Erfassungslink kopieren"
-                  copiedLabel="Link kopiert"
-                  className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
-                />
+            <div className="mt-5 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-5 text-sm leading-6 text-slate-300">
+                <h3 className="text-lg font-semibold text-white">Lead DNA wird nach den ersten Anfragen aktiv</h3>
+                <p className="mt-2">
+                  Sobald Anfragen eingehen, erkennt Lead DNA Prioritätssignale wie Auftragswert, Dringlichkeit,
+                  Konkurrenzdruck, Nachfassbedarf und Anfragequalität.
+                </p>
+                <div className="mt-4">
+                  <CopyButton
+                    text={publicPilotUrl}
+                    label="Erfassungslink kopieren"
+                    copiedLabel="Link kopiert"
+                    className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
+                  />
+                </div>
+              </div>
+              <div className="rounded-lg border border-emerald-300/25 bg-emerald-400/10 p-5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-emerald-200">Beispielprofil</p>
+                <h3 className="mt-2 text-xl font-semibold text-white">Bremsen quietschen</h3>
+                <p className="mt-3 rounded-full border border-emerald-300/30 bg-emerald-400/10 px-3 py-1 text-sm font-semibold text-emerald-100">
+                  Signal: Hohe Dringlichkeit
+                </p>
+                <p className="mt-4 text-sm leading-6 text-slate-300">
+                  Beispielansicht zur Demonstration. Sie fliesst nicht in echte Auswertungen ein.
+                </p>
               </div>
             </div>
           )}
@@ -538,14 +564,26 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
         <section className="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
           <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Auswertung</p>
           <h2 className="mt-2 text-2xl font-bold tracking-tight text-navy-950">Pilot-Auswertung</h2>
+          {!leads.length ? (
+            <div className="mt-5 rounded-lg border border-emerald-200 bg-swiss-mint p-5">
+              <h3 className="font-semibold text-emerald-950">Pilot-Auswertung vorbereitet</h3>
+              <p className="mt-2 text-sm leading-6 text-emerald-900">
+                Sobald erste Anfragen erfasst wurden, zeigt diese Auswertung Anfragevolumen, geschätztes Potenzial,
+                häufigste Anfragearten und Bearbeitungsstand.
+              </p>
+            </div>
+          ) : null}
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[
-              ["Total Leads", String(metrics.total)],
-              ["Geschätztes Potenzial", formatChf(metrics.totalValue)],
-              ["Ø Anfragewert", formatChf(metrics.averageValue)],
-              ["Gewonnen / Verloren", `${metrics.won} / ${metrics.lost}`],
-              ["Offene Leads", String(metrics.open)],
-              ["Häufigste Anfrageart", mostCommonType.count ? `${mostCommonType.requestType} (${mostCommonType.count})` : "-"],
+              ["Total Leads", leads.length ? String(metrics.total) : "Noch keine"],
+              ["Geschätztes Potenzial", leads.length ? formatChf(metrics.totalValue) : "Wird berechnet"],
+              ["Ø Anfragewert", leads.length ? formatChf(metrics.averageValue) : "Wird berechnet"],
+              ["Gewonnen / Verloren", leads.length ? `${metrics.won} / ${metrics.lost}` : "Noch keine"],
+              ["Offene Leads", leads.length ? String(metrics.open) : "Nach erster Anfrage aktiv"],
+              [
+                "Häufigste Anfrageart",
+                leads.length && mostCommonType.count ? `${mostCommonType.requestType} (${mostCommonType.count})` : "Wird sichtbar",
+              ],
             ].map(([label, value]) => (
               <div key={label} className="rounded-lg border border-slate-100 bg-slate-50 p-4">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
