@@ -27,6 +27,12 @@ type ClientLeadNotificationInput = {
   createdAt: Date;
 };
 
+type OperationalEmailInput = {
+  to: string | string[];
+  subject: string;
+  text: string;
+};
+
 function formatDate(value: Date) {
   return new Intl.DateTimeFormat("de-CH", {
     dateStyle: "medium",
@@ -110,6 +116,31 @@ export async function sendClientLeadNotificationEmail(input: ClientLeadNotificat
     to: recipients,
     subject: `Neue Anfrage über LeadLeak AI: ${input.requestType}`,
     text: buildClientLeadEmailText(input),
+  });
+
+  if (error) {
+    throw new Error(`Resend email failed: ${error.message}`);
+  }
+
+  return true;
+}
+
+export async function sendOperationalEmail(input: OperationalEmailInput) {
+  const resendApiKey = process.env.RESEND_API_KEY;
+  const recipients = Array.isArray(input.to) ? input.to.filter(Boolean) : [input.to].filter(Boolean);
+
+  console.log("Resend configured:", Boolean(resendApiKey));
+
+  if (!resendApiKey || recipients.length === 0) {
+    return false;
+  }
+
+  const resend = new Resend(resendApiKey);
+  const { error } = await resend.emails.send({
+    from: "LeadLeak AI <onboarding@resend.dev>",
+    to: recipients,
+    subject: input.subject,
+    text: input.text,
   });
 
   if (error) {

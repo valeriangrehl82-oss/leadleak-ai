@@ -17,6 +17,7 @@ type ClientRow = {
   slug: string;
   industry: string;
   notification_email: string;
+  twilio_phone_number: string | null;
   is_active: boolean | null;
 };
 
@@ -49,6 +50,7 @@ async function createClientAction(formData: FormData) {
   const contactPerson = String(formData.get("contact_person") || "").trim();
   const notificationEmail = String(formData.get("notification_email") || "").trim();
   const phone = String(formData.get("phone") || "").trim();
+  const twilioPhoneNumber = String(formData.get("twilio_phone_number") || "").trim();
   const averageOrderValueChf = Number(formData.get("average_order_value_chf") || 250);
   const recoveryMessage = String(formData.get("recovery_message") || "").trim();
 
@@ -64,6 +66,7 @@ async function createClientAction(formData: FormData) {
     contact_person: contactPerson || null,
     notification_email: notificationEmail,
     phone: phone || null,
+    twilio_phone_number: twilioPhoneNumber || null,
     average_order_value_chf: Number.isFinite(averageOrderValueChf) ? averageOrderValueChf : 250,
     recovery_message: recoveryMessage || null,
     is_active: true,
@@ -82,7 +85,7 @@ async function loadClients() {
     const supabase = createServiceRoleClient();
     const { data, error } = await supabase
       .from("clients")
-      .select("id, created_at, name, slug, industry, notification_email, is_active")
+      .select("id, created_at, name, slug, industry, notification_email, twilio_phone_number, is_active")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -137,6 +140,7 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
               ["contact_person", "Kontaktperson"],
               ["notification_email", "Notification E-Mail"],
               ["phone", "Telefon"],
+              ["twilio_phone_number", "Twilio-Nummer im E.164 Format, z.B. +41310000000"],
               ["average_order_value_chf", "Durchschnittlicher Auftragswert CHF"],
             ].map(([name, label]) => (
               <label key={name} className="space-y-2">
@@ -180,6 +184,7 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
                   <th className="px-5 py-3">Slug</th>
                   <th className="px-5 py-3">Industry</th>
                   <th className="px-5 py-3">Notification Email</th>
+                  <th className="px-5 py-3">Twilio-Nummer</th>
                   <th className="px-5 py-3">Active</th>
                   <th className="px-5 py-3">Created</th>
                   <th className="px-5 py-3">Detail</th>
@@ -193,6 +198,9 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
                       <td className="whitespace-nowrap px-5 py-4 text-slate-700">{client.slug}</td>
                       <td className="whitespace-nowrap px-5 py-4 text-slate-700">{client.industry}</td>
                       <td className="whitespace-nowrap px-5 py-4 text-slate-700">{client.notification_email}</td>
+                      <td className="whitespace-nowrap px-5 py-4 text-slate-700">
+                        {client.twilio_phone_number || "-"}
+                      </td>
                       <td className="whitespace-nowrap px-5 py-4 text-slate-700">{client.is_active ? "Ja" : "Nein"}</td>
                       <td className="whitespace-nowrap px-5 py-4 text-slate-600">{formatDate(client.created_at)}</td>
                       <td className="whitespace-nowrap px-5 py-4">
@@ -204,7 +212,7 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
                   ))
                 ) : (
                   <tr>
-                    <td className="px-5 py-8 text-center text-slate-600" colSpan={7}>
+                    <td className="px-5 py-8 text-center text-slate-600" colSpan={8}>
                       Noch keine Kunden vorhanden.
                     </td>
                   </tr>

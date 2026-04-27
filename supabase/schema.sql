@@ -57,10 +57,14 @@ create table if not exists public.clients (
   contact_person text,
   notification_email text not null,
   phone text,
+  twilio_phone_number text,
   average_order_value_chf integer default 250,
   recovery_message text,
   is_active boolean default true
 );
+
+alter table public.clients
+  add column if not exists twilio_phone_number text;
 
 create table if not exists public.client_leads (
   id uuid primary key default gen_random_uuid(),
@@ -77,8 +81,27 @@ create table if not exists public.client_leads (
   internal_summary text
 );
 
+create table if not exists public.client_messages (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  client_id uuid references public.clients(id) on delete cascade,
+  client_lead_id uuid references public.client_leads(id) on delete set null,
+  direction text not null,
+  channel text not null,
+  from_number text,
+  to_number text,
+  body text,
+  twilio_message_sid text,
+  twilio_call_sid text,
+  raw_payload jsonb
+);
+
 create index if not exists clients_slug_idx
   on public.clients (slug);
+
+create unique index if not exists clients_twilio_phone_number_key
+  on public.clients (twilio_phone_number)
+  where twilio_phone_number is not null;
 
 create index if not exists client_leads_client_id_idx
   on public.client_leads (client_id);
@@ -89,5 +112,21 @@ create index if not exists client_leads_created_at_idx
 create index if not exists client_leads_status_idx
   on public.client_leads (status);
 
+create index if not exists client_messages_client_id_idx
+  on public.client_messages (client_id);
+
+create index if not exists client_messages_client_lead_id_idx
+  on public.client_messages (client_lead_id);
+
+create index if not exists client_messages_created_at_idx
+  on public.client_messages (created_at desc);
+
+create index if not exists client_messages_twilio_message_sid_idx
+  on public.client_messages (twilio_message_sid);
+
+create index if not exists client_messages_twilio_call_sid_idx
+  on public.client_messages (twilio_call_sid);
+
 alter table public.clients enable row level security;
 alter table public.client_leads enable row level security;
+alter table public.client_messages enable row level security;
