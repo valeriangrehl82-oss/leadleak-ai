@@ -5,11 +5,45 @@ import { getLeadDnaProfile } from "@/lib/leadDna";
 
 const audiences = ["Garagen", "Reinigungsfirmen", "Umzugsfirmen", "Handwerker"];
 
-const missedCallItems = [
-  ["08:42", "Verpasster Anruf", "Garage Keller, Reifenwechsel"],
-  ["09:15", "Rückfrage gesendet", "Anliegen und Dringlichkeit geklärt"],
-  ["10:03", "Anfrage erfasst", "MFK-Vorbereitung, CHF 680"],
-  ["10:21", "Lead priorisiert", "Bremsen quietschen, hohe Dringlichkeit"],
+const recoveryTimeline = [
+  "09:12 Verpasster Anruf erkannt",
+  "09:13 Strukturierte Rückmeldung gesendet",
+  "09:16 Anfrage qualifiziert",
+  "09:28 Werkstatt-Termin vorbereitet",
+];
+
+const whyCards = [
+  {
+    title: "Anfragen sichtbar machen",
+    text: "Verpasste oder manuell erfasste Anfragen werden strukturiert abgelegt.",
+  },
+  {
+    title: "Prioritäten erkennen",
+    text: "Lead DNA hilft, wichtige Anfragen nach Auftragswert, Dringlichkeit und Nachfassbedarf einzuordnen.",
+  },
+  {
+    title: "Pilot auswerten",
+    text: "Betriebe sehen, welche Anfragen eingegangen sind und welches Potenzial sichtbar wurde.",
+  },
+];
+
+const operatingSituations = [
+  {
+    title: "Telefon klingelt während Probefahrt",
+    text: "Der Kontakt geht nicht im Alltag unter, sondern wird als Anfrage mit Rückmeldebedarf sichtbar.",
+  },
+  {
+    title: "Anruf ausserhalb der Öffnungszeiten",
+    text: "Aus einem verpassten Kontaktpunkt entsteht eine strukturierte Grundlage für den nächsten Arbeitstag.",
+  },
+  {
+    title: "Rückruf wird im Tagesgeschäft vergessen",
+    text: "Status, Anfrageart und nächste Aktion helfen dem Team, offene Rückmeldungen nachzuvollziehen.",
+  },
+  {
+    title: "Anfrage landet auf einem Notizzettel",
+    text: "Wichtige Informationen werden zentral erfasst und können später ausgewertet werden.",
+  },
 ];
 
 const leadDnaDemoProfile = getLeadDnaProfile({
@@ -25,21 +59,17 @@ export default function HomePage() {
   return (
     <main>
       <section className="bg-navy-950 text-white">
-        <div className="mx-auto grid min-h-[calc(100vh-73px)] max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.02fr_0.98fr] lg:px-8">
+        <div className="mx-auto grid min-h-[calc(100vh-73px)] max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1.02fr_0.98fr] lg:px-8">
           <div className="animate-fade-slide">
             <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">
-              Pilot-System für Schweizer Servicebetriebe
+              LEAD-RECOVERY FÜR SCHWEIZER KMU
             </p>
             <h1 className="mt-5 max-w-4xl text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
               Verpasste Anrufe kosten Schweizer Betriebe jeden Monat bares Geld.
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
-              LeadLeak AI hilft Garagen, Reinigungsfirmen, Umzugsfirmen und Handwerksbetrieben dabei, verpasste
-              Anfragen sichtbar zu machen, strukturiert zu erfassen und schneller zurückzumelden – ohne Wechsel der
-              bestehenden Telefonnummer.
-            </p>
-            <p className="mt-4 max-w-2xl text-sm font-semibold leading-6 text-emerald-200">
-              Für eine fokussierte Pilotphase mit klarer Lead-Auswertung und strukturierten Rückmeldeprozessen.
+              LeadLeak AI hilft Servicebetrieben, verpasste Anfragen sichtbar zu machen, zu strukturieren und schneller
+              nachzufassen – ohne neues Personal und ohne Wechsel der bestehenden Telefonnummer.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Link
@@ -57,42 +87,42 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="animate-fade-slide animate-delay-2 rounded-xl border border-white/10 bg-white/[0.03] p-3 shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
-            <div className="rounded-lg border border-white/10 bg-navy-900 p-5">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="animate-fade-slide animate-delay-2">
+            <div className="rounded-2xl border border-white/10 bg-white p-6 text-navy-950 shadow-[0_28px_90px_rgba(0,0,0,0.32)]">
+              <div className="flex items-start justify-between gap-5">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">Pilot-Übersicht</p>
-                  <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white">Verpasste Anfragen</h2>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Potentiell gerettet</p>
+                  <p className="mt-2 text-4xl font-bold tracking-tight">CHF 2’500</p>
                 </div>
-                <span className="metric-glow rounded-full border border-emerald-300/30 bg-emerald-400/10 px-3 py-1 text-sm font-semibold text-emerald-200">
-                  Pilotphase
+                <span className="metric-glow rounded-full border border-emerald-200 bg-swiss-mint px-3 py-1 text-sm font-semibold text-emerald-800">
+                  +10 Leads
                 </span>
               </div>
 
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                {[
-                  "+10 Leads sichtbar gemacht",
-                  "CHF 2’500 Potenzial",
-                ].map((item) => (
-                  <div key={item} className="metric-glow rounded-md border border-white/10 bg-white/5 p-4">
-                    <p className="text-sm font-semibold text-white">{item}</p>
-                  </div>
-                ))}
+              <div className="mt-7 space-y-4">
+                {recoveryTimeline.map((item, index) => {
+                  const [time, ...textParts] = item.split(" ");
+                  const text = textParts.join(" ");
+
+                  return (
+                    <div key={item} className="flex gap-4">
+                      <div className="flex flex-col items-center">
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full border border-emerald-200 bg-swiss-mint text-xs font-bold text-emerald-800">
+                          {index + 1}
+                        </span>
+                        {index < recoveryTimeline.length - 1 ? <span className="h-7 w-px bg-emerald-100" /> : null}
+                      </div>
+                      <div className="pb-3">
+                        <p className="text-xs font-semibold text-slate-500">{time}</p>
+                        <p className="mt-1 text-sm font-semibold text-navy-950">{text}</p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
 
-              <div className="mt-5 space-y-3">
-                {missedCallItems.map(([time, title, text], index) => (
-                  <div
-                    key={`${time}-${title}`}
-                    className={`animate-fade-slide animate-delay-${Math.min(index, 3)} flex gap-3 rounded-md border border-white/10 bg-white p-4 text-navy-950`}
-                  >
-                    <span className="shrink-0 text-xs font-semibold text-slate-500">{time}</span>
-                    <div>
-                      <p className="text-sm font-semibold">{title}</p>
-                      <p className="mt-1 text-sm leading-5 text-slate-600">{text}</p>
-                    </div>
-                  </div>
-                ))}
+              <div className="mt-5 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-600">
+                Aus einer verpassten Anfrage wird ein nachvollziehbarer Vorgang mit Kontext, Status und nächster Aktion.
               </div>
             </div>
           </div>
@@ -100,31 +130,60 @@ export default function HomePage() {
       </section>
 
       <section className="bg-white py-16">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
-          <div className="card-hover rounded-lg border border-slate-200 p-7">
-            <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Problem</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy-950">
-              Kunden rufen einfach den nächsten Anbieter an.
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl">
+            <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Warum LeadLeak AI?</p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy-950 sm:text-4xl">
+              Verpasste Rückmeldungen sind oft kein Vertriebsproblem, sondern ein Strukturproblem.
             </h2>
             <p className="mt-5 leading-7 text-slate-600">
-              Wenn niemand abnimmt, bleibt oft nur eine Nummer in der Anrufliste. Das Anliegen, die Dringlichkeit und
-              der potenzielle Zusatzumsatz sind für den Betrieb nicht sichtbar.
+              Viele Schweizer Servicebetriebe verlieren keine Anfragen wegen schlechter Arbeit, sondern weil im Alltag
+              Rückrufe untergehen: Telefon besetzt, niemand dokumentiert den Kontakt, oder die nächste Aktion ist unklar.
             </p>
           </div>
-          <div className="card-hover rounded-lg border border-slate-200 p-7">
-            <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Lösung</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy-950">
-              Strukturierte Rückmeldung und klare Lead-Auswertung.
-            </h2>
-            <p className="mt-5 leading-7 text-slate-600">
-              LeadLeak AI sammelt die wichtigsten Details, macht verpasste Anfragen nachvollziehbar und zeigt dem Team
-              den nächsten sinnvollen Schritt für den Pilotbetrieb.
-            </p>
+
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
+            {whyCards.map((card) => (
+              <article
+                key={card.title}
+                className="card-hover rounded-xl border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]"
+              >
+                <h3 className="text-lg font-semibold text-navy-950">{card.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-slate-600">{card.text}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="border-y border-swiss-line bg-white py-16 text-navy-950">
+      <section className="border-y border-swiss-line bg-slate-50 py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl">
+            <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Betriebsalltag</p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy-950 sm:text-4xl">
+              Typische Situationen aus dem Betriebsalltag
+            </h2>
+            <p className="mt-5 leading-7 text-slate-600">
+              LeadLeak AI macht nicht aus jedem Kontakt automatisch einen Auftrag. Es hilft dabei, Anfragepotenzial
+              sichtbar und bearbeitbar zu machen.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {operatingSituations.map((situation) => (
+              <article
+                key={situation.title}
+                className="card-hover rounded-xl border border-slate-200 bg-white p-5 shadow-[0_12px_32px_rgba(7,17,31,0.06)]"
+              >
+                <h3 className="font-semibold text-navy-950">{situation.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-slate-600">{situation.text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-swiss-line bg-white py-16 text-navy-950">
         <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
           <div className="animate-fade-slide">
             <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Business Plus</p>
@@ -164,7 +223,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="border-y border-swiss-line bg-slate-50 py-16">
+      <section className="border-b border-swiss-line bg-slate-50 py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Für wen</p>
           <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy-950">
@@ -172,7 +231,10 @@ export default function HomePage() {
           </h2>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {audiences.map((audience) => (
-              <div key={audience} className="card-hover rounded-lg border border-slate-200 bg-white p-5 font-semibold shadow-[0_12px_32px_rgba(7,17,31,0.06)]">
+              <div
+                key={audience}
+                className="card-hover rounded-lg border border-slate-200 bg-white p-5 font-semibold shadow-[0_12px_32px_rgba(7,17,31,0.06)]"
+              >
                 {audience}
               </div>
             ))}
