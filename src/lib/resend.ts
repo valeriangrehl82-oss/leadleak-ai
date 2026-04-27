@@ -14,6 +14,19 @@ type AuditNotificationInput = {
   createdAt: Date;
 };
 
+type ClientLeadNotificationInput = {
+  clientName: string;
+  notificationEmail: string;
+  adminNotificationEmail?: string;
+  customerName: string;
+  customerPhone: string;
+  customerEmail: string;
+  requestType: string;
+  message: string;
+  estimatedValueChf: number;
+  createdAt: Date;
+};
+
 function formatDate(value: Date) {
   return new Intl.DateTimeFormat("de-CH", {
     dateStyle: "medium",
@@ -39,6 +52,21 @@ function buildAuditEmailText(input: AuditNotificationInput) {
   ].join("\n");
 }
 
+function buildClientLeadEmailText(input: ClientLeadNotificationInput) {
+  return [
+    "Neue Anfrage über LeadLeak AI",
+    "",
+    `Betrieb: ${input.clientName}`,
+    `Kunde: ${input.customerName || "-"}`,
+    `Telefon: ${input.customerPhone || "-"}`,
+    `E-Mail: ${input.customerEmail || "-"}`,
+    `Anfrageart: ${input.requestType || "-"}`,
+    `Nachricht: ${input.message || "-"}`,
+    `Geschätzter Wert: ${formatChf(input.estimatedValueChf)}`,
+    `Zeitpunkt: ${formatDate(input.createdAt)}`,
+  ].join("\n");
+}
+
 export async function sendAuditNotificationEmail(input: AuditNotificationInput) {
   const resendApiKey = process.env.RESEND_API_KEY;
   const adminNotificationEmail = process.env.ADMIN_NOTIFICATION_EMAIL;
@@ -56,6 +84,32 @@ export async function sendAuditNotificationEmail(input: AuditNotificationInput) 
     to: [adminNotificationEmail],
     subject: `Neue LeadLeak AI Audit-Anfrage: ${input.companyName}`,
     text: buildAuditEmailText(input),
+  });
+
+  if (error) {
+    throw new Error(`Resend email failed: ${error.message}`);
+  }
+
+  return true;
+}
+
+export async function sendClientLeadNotificationEmail(input: ClientLeadNotificationInput) {
+  const resendApiKey = process.env.RESEND_API_KEY;
+  const recipients = [input.notificationEmail, input.adminNotificationEmail].filter(Boolean) as string[];
+
+  console.log("Resend configured:", Boolean(resendApiKey));
+  console.log("Admin notification email configured:", Boolean(input.adminNotificationEmail));
+
+  if (!resendApiKey || recipients.length === 0) {
+    return false;
+  }
+
+  const resend = new Resend(resendApiKey);
+  const { error } = await resend.emails.send({
+    from: "LeadLeak AI <onboarding@resend.dev>",
+    to: recipients,
+    subject: `Neue Anfrage über LeadLeak AI: ${input.requestType}`,
+    text: buildClientLeadEmailText(input),
   });
 
   if (error) {
