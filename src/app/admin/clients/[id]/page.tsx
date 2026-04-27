@@ -3,12 +3,14 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { formatChf } from "@/lib/audit";
 import { ADMIN_COOKIE_NAME, hasValidAdminSession } from "@/lib/adminAuth";
+import { getLeadStatusLabel, isLeadStatus, leadStatuses } from "@/lib/leadStatus";
 import { createServiceRoleClient, isSupabaseConfigError } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
 type ClientDetailPageProps = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ updated?: string; error?: string }>;
 };
 
 type ClientRow = {
@@ -64,6 +66,34 @@ async function requireAdminSession() {
   }
 }
 
+async function updateLeadStatusAction(formData: FormData) {
+  "use server";
+
+  await requireAdminSession();
+
+  const clientId = String(formData.get("client_id") || "").trim();
+  const leadId = String(formData.get("lead_id") || "").trim();
+  const status = String(formData.get("status") || "").trim();
+
+  if (!clientId || !leadId || !isLeadStatus(status)) {
+    redirect(`/admin/clients/${clientId || ""}?error=status`);
+  }
+
+  const supabase = createServiceRoleClient();
+  const { error } = await supabase
+    .from("client_leads")
+    .update({ status })
+    .eq("id", leadId)
+    .eq("client_id", clientId);
+
+  if (error) {
+    console.error("Lead status update failed:", error);
+    redirect(`/admin/clients/${clientId}?error=status`);
+  }
+
+  redirect(`/admin/clients/${clientId}?updated=lead`);
+}
+
 async function loadClientDetail(id: string) {
   try {
     const supabase = createServiceRoleClient();
@@ -101,7 +131,12 @@ async function loadClientDetail(id: string) {
     }
 
     if (messagesError) {
-      return { client, leads: (leads || []) as ClientLeadRow[], messages: [], error: "Nachrichten konnten nicht geladen werden." };
+      return {
+        client,
+        leads: (leads || []) as ClientLeadRow[],
+        messages: [],
+        error: "Nachrichten konnten nicht geladen werden.",
+      };
     }
 
     return {
@@ -119,9 +154,40 @@ async function loadClientDetail(id: string) {
   }
 }
 
-export default async function ClientDetailPage({ params }: ClientDetailPageProps) {
+function getLeadStats(leads: ClientLeadRow[]) {
+  const totalValue = leads.reduce((sum, lead) => sum + (lead.estimated_value_chf || 0), 0);
+  const countByStatus = (status: string) =>
+    leads.filter((lead) => (lead.status || "new") === status).length;
+  const requestTypeCounts = leads.reduce<Record<string, number>>((counts, lead) => {
+    const requestType = lead.request_type?.trim();
+    if (!requestType) {
+      return counts;
+    }
+    counts[requestType] = (counts[requestType] || 0) + 1;
+    return counts;
+  }, {});
+  const commonRequestTypes = Object.entries(requestTypeCounts)
+    .sort((left, right) => right[1] - left[1])
+    .slice(0, 3)
+    .map(([requestType, count]) => `${requestType} (${count})`)
+    .join(", ");
+
+  return {
+    total: leads.length,
+    new: countByStatus("new"),
+    contacted: countByStatus("contacted"),
+    won: countByStatus("won"),
+    lost: countByStatus("lost"),
+    open: leads.filter((lead) => !["won", "lost"].includes(lead.status || "new")).length,
+    totalValue,
+    commonRequestTypes: commonRequestTypes || "-",
+  };
+}
+
+export default async function ClientDetailPage({ params, searchParams }: ClientDetailPageProps) {
   await requireAdminSession();
   const { id } = await params;
+  const urlParams = await searchParams;
   const { client, leads, messages, error } = await loadClientDetail(id);
 
   if (!client) {
@@ -140,6 +206,7 @@ export default async function ClientDetailPage({ params }: ClientDetailPageProps
   }
 
   const publicLink = `/p/${client.slug}`;
+  const stats = getLeadStats(leads);
 
   return (
     <main className="min-h-screen bg-slate-50">
@@ -148,12 +215,64 @@ export default async function ClientDetailPage({ params }: ClientDetailPageProps
           <Link href="/admin/clients" className="text-sm font-semibold text-swiss-green">
             Zurück zu Kunden
           </Link>
-          <h1 className="mt-3 text-3xl font-bold tracking-tight text-navy-950 sm:text-4xl">{client.name}</h1>
-          <p className="mt-3 text-slate-600">Öffentlicher Pilot-Link: {publicLink}</p>
+          <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight text-navy-950 sm:text-4xl">{client.name}</h1>
+              <p className="mt-3 text-slate-600">Öffentlicher Pilot-Link: {publicLink}</p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href={`/admin/clients/${client.id}/edit`}
+                className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-950 transition hover:bg-slate-50"
+              >
+                Kunde bearbeiten
+              </Link>
+              <Link
+                href={publicLink}
+                target="_blank"
+                className="rounded-md border border-swiss-green px-4 py-2 text-sm font-semibold text-swiss-green transition hover:bg-swiss-mint"
+              >
+                Öffentlichen Pilot-Link öffnen
+              </Link>
+              <Link
+                href={`/api/admin/clients/${client.id}/leads.csv`}
+                className="rounded-md bg-swiss-green px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600"
+              >
+                CSV exportieren
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {urlParams.updated ? (
+          <div className="mb-6 rounded-md bg-swiss-mint p-4 text-sm font-semibold text-emerald-900">
+            Änderung wurde gespeichert.
+          </div>
+        ) : null}
+        {urlParams.error ? (
+          <div className="mb-6 rounded-md bg-red-50 p-4 text-sm font-semibold text-red-800">
+            Änderung konnte nicht gespeichert werden.
+          </div>
+        ) : null}
+
+        <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
+          {[
+            ["Anzahl Leads", String(stats.total)],
+            ["Neue Leads", String(stats.new)],
+            ["Kontaktierte Leads", String(stats.contacted)],
+            ["Gewonnene Leads", String(stats.won)],
+            ["Verlorene Leads", String(stats.lost)],
+            ["Geschätztes Gesamtpotenzial", formatChf(stats.totalValue)],
+          ].map(([label, value]) => (
+            <div key={label} className="rounded-lg border border-swiss-line bg-white p-5 shadow-soft">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
+              <p className="mt-2 text-2xl font-bold text-navy-950">{value}</p>
+            </div>
+          ))}
+        </div>
+
         <div className="grid gap-6 lg:grid-cols-[0.7fr_1.3fr]">
           <aside className="rounded-lg border border-swiss-line bg-white p-6 shadow-soft">
             <h2 className="text-xl font-semibold text-navy-950">Kundendetails</h2>
@@ -199,6 +318,7 @@ export default async function ClientDetailPage({ params }: ClientDetailPageProps
                     <th className="px-5 py-3">Wert</th>
                     <th className="px-5 py-3">Erstellt</th>
                     <th className="px-5 py-3">Nachricht</th>
+                    <th className="px-5 py-3">Detail</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -210,18 +330,45 @@ export default async function ClientDetailPage({ params }: ClientDetailPageProps
                         </td>
                         <td className="whitespace-nowrap px-5 py-4 text-slate-700">{lead.customer_phone || "-"}</td>
                         <td className="whitespace-nowrap px-5 py-4 text-slate-700">{lead.request_type || "-"}</td>
-                        <td className="whitespace-nowrap px-5 py-4 text-slate-700">{lead.status || "new"}</td>
+                        <td className="whitespace-nowrap px-5 py-4 text-slate-700">
+                          <form action={updateLeadStatusAction} className="flex min-w-44 gap-2">
+                            <input type="hidden" name="client_id" value={client.id} />
+                            <input type="hidden" name="lead_id" value={lead.id} />
+                            <select
+                              name="status"
+                              defaultValue={lead.status || "new"}
+                              className="rounded-md border border-slate-300 px-2 py-2 text-sm outline-none ring-swiss-green focus:ring-2"
+                            >
+                              {leadStatuses.map((status) => (
+                                <option key={status.value} value={status.value}>
+                                  {status.label}
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              type="submit"
+                              className="rounded-md bg-slate-100 px-3 py-2 text-sm font-semibold text-navy-950 hover:bg-slate-200"
+                            >
+                              OK
+                            </button>
+                          </form>
+                        </td>
                         <td className="whitespace-nowrap px-5 py-4 text-slate-700">{lead.source || "-"}</td>
                         <td className="whitespace-nowrap px-5 py-4 font-semibold text-navy-950">
                           {lead.estimated_value_chf ? formatChf(lead.estimated_value_chf) : "-"}
                         </td>
                         <td className="whitespace-nowrap px-5 py-4 text-slate-600">{formatDate(lead.created_at)}</td>
                         <td className="min-w-64 px-5 py-4 text-slate-700">{lead.message || "-"}</td>
+                        <td className="whitespace-nowrap px-5 py-4">
+                          <Link href={`/admin/leads/${lead.id}`} className="font-semibold text-swiss-green">
+                            Öffnen
+                          </Link>
+                        </td>
                       </tr>
                     ))
                   ) : (
-                  <tr>
-                      <td className="px-5 py-8 text-center text-slate-600" colSpan={8}>
+                    <tr>
+                      <td className="px-5 py-8 text-center text-slate-600" colSpan={9}>
                         Noch keine Leads vorhanden.
                       </td>
                     </tr>
@@ -230,6 +377,28 @@ export default async function ClientDetailPage({ params }: ClientDetailPageProps
               </table>
             </div>
           </div>
+        </div>
+
+        <div className="mt-6 rounded-lg border border-swiss-line bg-white p-6 shadow-soft">
+          <h2 className="text-xl font-semibold text-navy-950">Pilot-Auswertung</h2>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              ["Total Leads", String(stats.total)],
+              ["Estimated total value", formatChf(stats.totalValue)],
+              ["Häufigste Anfragearten", stats.commonRequestTypes],
+              ["Gewonnene Leads", String(stats.won)],
+              ["Verlorene Leads", String(stats.lost)],
+              ["Offene Leads", String(stats.open)],
+            ].map(([label, value]) => (
+              <div key={label} className="rounded-md bg-slate-50 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
+                <p className="mt-2 font-semibold text-navy-950">{value}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-5 text-sm leading-6 text-slate-600">
+            Diese Auswertung dient als Grundlage für den 14-Tage-Pilot und ersetzt keine Umsatzgarantie.
+          </p>
         </div>
 
         <div className="mt-6 overflow-hidden rounded-lg border border-swiss-line bg-white shadow-soft">
