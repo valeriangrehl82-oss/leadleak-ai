@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CopyButton } from "@/components/CopyButton";
+import { requireAdminPage } from "@/lib/adminGuard";
 
 const introScript =
   "Guten Tag Herr/Frau [Name], ich mache es kurz: Ich helfe Garagen dabei, verpasste Anrufe automatisch zurückzuholen, bevor der Kunde zur nächsten Werkstatt geht. Ich zeige Ihnen in 5 Minuten, wie das aussehen würde.";
@@ -53,7 +54,9 @@ const sections = [
   },
 ];
 
-export default function SalesScriptPage() {
+export default async function SalesScriptPage() {
+  await requireAdminPage();
+
   return (
     <main className="min-h-screen bg-slate-50">
       <section className="border-b border-swiss-line bg-white">

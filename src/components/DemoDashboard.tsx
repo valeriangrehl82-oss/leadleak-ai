@@ -11,6 +11,13 @@ const statusStyles: Record<LeadStatus, string> = {
   Lost: "bg-slate-100 text-slate-600 ring-slate-200",
 };
 
+const pilotStats = [
+  ["Leads erfasst", "18"],
+  ["Geschätztes Potenzial", "CHF 14’800"],
+  ["Offene Rückmeldungen", "6"],
+  ["Gewonnene Anfragen", "4"],
+];
+
 export function DemoDashboard() {
   const [selectedLead, setSelectedLead] = useState<Lead>(leads[0]);
 
@@ -18,16 +25,19 @@ export function DemoDashboard() {
     <div className="space-y-8">
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {kpis.map((kpi) => (
-          <article key={kpi.label} className="rounded-lg border border-swiss-line bg-white p-5 shadow-soft">
-            <p className="text-sm font-medium text-slate-500">{kpi.label}</p>
+          <article
+            key={kpi.label}
+            className="card-hover rounded-lg border border-slate-200 bg-white p-5 shadow-[0_12px_32px_rgba(7,17,31,0.06)]"
+          >
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{kpi.label}</p>
             <p className="mt-3 text-3xl font-bold tracking-tight text-navy-950">{kpi.value}</p>
-            <p className="mt-2 text-sm text-slate-500">{kpi.detail}</p>
+            <p className="mt-2 text-sm leading-5 text-slate-500">{kpi.detail}</p>
           </article>
         ))}
       </section>
 
       <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="rounded-lg border border-swiss-line bg-white p-6 shadow-soft">
+        <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
           <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Vorher / Nachher</p>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <div className="rounded-md border border-slate-200 bg-slate-50 p-5">
@@ -49,17 +59,20 @@ export function DemoDashboard() {
           </div>
         </div>
 
-        <div className="rounded-lg border border-swiss-line bg-white p-6 shadow-soft">
+        <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
           <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">
             Was der Betrieb sonst verloren hätte
           </p>
+          <p className="mt-3 text-sm leading-6 text-slate-600">
+            Die Demo zeigt, wie aus einer einzelnen Nummer eine bearbeitbare Anfrage mit Kontext wird.
+          </p>
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             {[
-              { label: "Missed call", value: `${selectedLead.phone} von ${selectedLead.name}` },
-              { label: "Automatic recovery message", value: selectedLead.suggestedMessage },
-              { label: "Customer reply", value: selectedLead.customerReply },
+              { label: "Verpasster Anruf", value: `${selectedLead.phone} von ${selectedLead.name}` },
+              { label: "Rückfrage an Kunde", value: selectedLead.suggestedMessage },
+              { label: "Antwort des Kunden", value: selectedLead.customerReply },
               {
-                label: "Internal business notification",
+                label: "Interne Benachrichtigung",
                 value: `Neuer qualifizierter Lead: ${selectedLead.anfrage}, ${selectedLead.value}, ${selectedLead.urgency}`,
               },
             ].map((item) => (
@@ -72,8 +85,8 @@ export function DemoDashboard() {
         </div>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[1fr_360px]">
-        <div className="overflow-hidden rounded-lg border border-swiss-line bg-white shadow-soft">
+      <section className="grid gap-6 xl:grid-cols-[1fr_380px]">
+        <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
           <div className="border-b border-swiss-line px-5 py-4">
             <h2 className="text-lg font-semibold text-navy-950">Strukturierte Leads aus verpassten Anrufen</h2>
           </div>
@@ -117,8 +130,8 @@ export function DemoDashboard() {
           </div>
         </div>
 
-        <aside className="rounded-lg border border-swiss-line bg-navy-950 p-6 text-white shadow-soft">
-          <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">AI-Zusammenfassung</p>
+        <aside className="rounded-lg border border-white/10 bg-navy-950 p-6 text-white shadow-[0_18px_55px_rgba(7,17,31,0.18)]">
+          <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Demo-Zusammenfassung</p>
           <h2 className="mt-3 text-2xl font-semibold">{selectedLead.name}</h2>
           <p className="mt-1 text-sm text-slate-300">{selectedLead.phone}</p>
           <div className="mt-6 space-y-5 text-sm leading-6 text-slate-200">
@@ -140,6 +153,28 @@ export function DemoDashboard() {
             </div>
           </div>
         </aside>
+      </section>
+
+      <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Pilot-Auswertung</p>
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-navy-950">
+              Sichtbarkeit und Struktur für das Abschlussgespräch.
+            </h2>
+          </div>
+          <p className="max-w-xl text-sm leading-6 text-slate-600">
+            Diese Beispielwerte dienen der Demo und zeigen, welche Auswertung ein Betrieb nach einem Pilot besprechen kann.
+          </p>
+        </div>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {pilotStats.map(([label, value]) => (
+            <div key={label} className="rounded-md border border-slate-100 bg-slate-50 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
+              <p className="mt-2 text-xl font-bold text-navy-950">{value}</p>
+            </div>
+          ))}
+        </div>
       </section>
     </div>
   );

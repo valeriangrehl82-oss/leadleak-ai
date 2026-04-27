@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { requireAdminPage } from "@/lib/adminGuard";
 
 const beforeCall = [
   "Garage-Name notiert",
@@ -55,7 +56,9 @@ function Checklist({ items }: { items: string[] }) {
   );
 }
 
-export default function CallChecklistPage() {
+export default async function CallChecklistPage() {
+  await requireAdminPage();
+
   return (
     <main className="min-h-screen bg-slate-50">
       <section className="border-b border-swiss-line bg-white">

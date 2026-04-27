@@ -6,7 +6,7 @@ export function PricingCards() {
       {pricingPlans.map((plan) => (
         <article
           key={plan.name}
-          className={`relative rounded-lg border bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.08)] ${
+          className={`card-hover relative rounded-lg border bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.08)] ${
             plan.recommended ? "border-swiss-green ring-2 ring-swiss-green/15" : "border-slate-200"
           }`}
         >

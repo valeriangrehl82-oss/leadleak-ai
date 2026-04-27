@@ -3,16 +3,8 @@ import Link from "next/link";
 const navItems = [
   { href: "/", label: "Home" },
   { href: "/garage", label: "Garage Demo" },
-  { href: "/demo", label: "Dashboard" },
+  { href: "/demo", label: "Dashboard / Demo" },
   { href: "/pricing", label: "Preise" },
-];
-
-const salesItems = [
-  { href: "/call-checklist", label: "Call-Checkliste" },
-  { href: "/sales-script", label: "Sales Script" },
-  { href: "/pilot-offer", label: "Pilot-Angebot" },
-  { href: "/objections", label: "Einwände" },
-  { href: "/simulate", label: "Simulation" },
 ];
 
 export function Navbar() {
@@ -28,27 +20,10 @@ export function Navbar() {
               {item.label}
             </Link>
           ))}
-          <details className="group relative">
-            <summary className="cursor-pointer list-none transition hover:text-white">
-              Sales
-              <span className="ml-1 text-xs text-slate-400">▾</span>
-            </summary>
-            <div className="absolute right-0 mt-3 w-48 rounded-md border border-white/10 bg-navy-900 p-2 shadow-soft">
-              {salesItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="block rounded px-3 py-2 text-sm text-slate-200 transition hover:bg-white/10 hover:text-white"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </details>
         </div>
         <Link
           href="/audit"
-          className="rounded-md bg-swiss-green px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-600"
+          className="ui-lift rounded-md bg-swiss-green px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-600"
         >
           Lead-Audit buchen
         </Link>

@@ -1,10 +1,10 @@
 import type { BusinessType, Lead, PricingPlan } from "./types";
 
 export const kpis = [
-  { label: "Verpasste Anrufe", value: "34", detail: "letzte 30 Tage" },
-  { label: "Gerettete Leads", value: "18", detail: "automatisch reaktiviert" },
-  { label: "Gebuchte Termine", value: "9", detail: "aus strukturierten Rückmeldungen" },
-  { label: "Geschätzter Umsatz", value: "CHF 14’800", detail: "potenzieller Pipeline-Wert" },
+  { label: "Verpasste Anrufe", value: "34", detail: "im Pilot sichtbar gemacht" },
+  { label: "Leads erfasst", value: "18", detail: "mit Anliegen und nächster Aktion" },
+  { label: "Gewonnene Anfragen", value: "4", detail: "im Demo-Zeitraum markiert" },
+  { label: "Geschätztes Potenzial", value: "CHF 14’800", detail: "potenzieller Pipeline-Wert" },
 ];
 
 export const garageLeads: Lead[] = [
@@ -113,15 +113,31 @@ export const pricingPlans: PricingPlan[] = [
     name: "Starter",
     price: "CHF 390/Monat",
     setupFee: "CHF 790 Setup",
-    description: "Für kleinere Betriebe, die verpasste Anfragen sichtbar machen wollen.",
-    features: ["Lead-Erfassung", "Strukturierte Rückmeldung", "Monatlicher Lead-Report"],
+    description: "Für kleinere Betriebe, die verpasste Anfragen sichtbar machen und strukturiert erfassen wollen.",
+    features: [
+      "Kundenspezifischer Pilot-Link",
+      "Lead-Erfassung pro Betrieb",
+      "E-Mail-Benachrichtigung bei neuen Anfragen",
+      "Basis-Übersicht der eingegangenen Leads",
+      "CSV-Export für einfache Nachbearbeitung",
+      "7/14/30-Tage Auswertung",
+    ],
   },
   {
     name: "Professional",
     price: "CHF 690/Monat",
     setupFee: "CHF 1’490 Setup",
-    description: "Für Betriebe, die verpasste Anfragen systematisch zurückholen und sauber strukturieren wollen.",
-    features: ["Alles aus Starter", "Qualifizierung nach Branche", "Priorisierte Follow-up Logik"],
+    description:
+      "Für Betriebe, die ihre Anfragen zentral erfassen, auswerten und den Rückmeldeprozess sauber organisieren wollen.",
+    features: [
+      "Alles aus Starter",
+      "Kundenspezifische Rückmelde-Texte",
+      "Lead-Status: Neu, Kontaktiert, Qualifiziert, Gewonnen, Verloren",
+      "Detailansicht pro Lead",
+      "14-Tage Pilot-Auswertung",
+      "Potenzialschätzung pro Anfrage",
+      "Unterstützung bei der Pilot-Auswertung",
+    ],
     recommended: true,
   },
   {
@@ -129,8 +145,15 @@ export const pricingPlans: PricingPlan[] = [
     price: "CHF 990/Monat",
     setupFee: "CHF 2’490 Setup",
     description:
-      "Für Betriebe mit höherem Anfragevolumen, mehreren Kontaktpunkten und erweitertem Recovery-Prozess.",
-    features: ["Alles aus Professional", "Mehrere Standorte", "Erweiterte Umsatz-Auswertung"],
+      "Für Betriebe mit höherem Anfragevolumen, die einen begleiteten Pilot mit technischer Einrichtung wünschen.",
+    features: [
+      "Alles aus Professional",
+      "Begleitete Einrichtung des Pilot-Systems",
+      "Unterstützung bei Recovery-Nummer und Anrufweiterleitung, sofern technisch verfügbar",
+      "Erweiterte Auswertung des Anfragepotenzials",
+      "Optimierungsempfehlungen nach dem Pilot",
+      "Priorisierter Support während der Pilotphase",
+    ],
   },
 ];
 

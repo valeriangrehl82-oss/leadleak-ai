@@ -1,4 +1,5 @@
 import { CopyButton } from "@/components/CopyButton";
+import { requireAdminPage } from "@/lib/adminGuard";
 
 const objections = [
   {
@@ -33,7 +34,9 @@ const objections = [
   },
 ];
 
-export default function ObjectionsPage() {
+export default async function ObjectionsPage() {
+  await requireAdminPage();
+
   return (
     <main className="min-h-screen bg-slate-50">
       <section className="border-b border-swiss-line bg-white">

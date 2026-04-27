@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PrintButton } from "@/components/PrintButton";
+import { requireAdminPage } from "@/lib/adminGuard";
 
 const includedItems = [
   "Missed-Call-Recovery Flow simuliert/konfiguriert",
@@ -18,7 +19,9 @@ const requiredItems = [
   "Ansprechpartner",
 ];
 
-export default function PilotOfferPage() {
+export default async function PilotOfferPage() {
+  await requireAdminPage();
+
   return (
     <main className="min-h-screen bg-slate-50 py-8 print:bg-white print:py-0">
       <section className="print-page mx-auto max-w-5xl rounded-lg border border-swiss-line bg-white p-6 shadow-soft sm:p-8 print:border-0 print:shadow-none">
