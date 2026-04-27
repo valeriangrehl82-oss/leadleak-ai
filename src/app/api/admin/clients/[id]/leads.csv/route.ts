@@ -51,7 +51,19 @@ function toCsv(rows: LeadCsvRow[]) {
   ].join("\n");
 }
 
-export async function GET(_request: Request, context: CsvRouteContext) {
+function readDateParam(value: string | null) {
+  return value && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : "";
+}
+
+function startOfDayIso(value: string) {
+  return `${value}T00:00:00.000Z`;
+}
+
+function endOfDayIso(value: string) {
+  return `${value}T23:59:59.999Z`;
+}
+
+export async function GET(request: Request, context: CsvRouteContext) {
   const cookieStore = await cookies();
   const session = cookieStore.get(ADMIN_COOKIE_NAME)?.value;
 
@@ -60,16 +72,28 @@ export async function GET(_request: Request, context: CsvRouteContext) {
   }
 
   const { id } = await context.params;
+  const url = new URL(request.url);
+  const start = readDateParam(url.searchParams.get("start"));
+  const end = readDateParam(url.searchParams.get("end"));
 
   try {
     const supabase = createServiceRoleClient();
-    const { data, error } = await supabase
+    let query = supabase
       .from("client_leads")
       .select(
         "created_at, customer_name, customer_phone, customer_email, request_type, message, status, estimated_value_chf, source, internal_summary",
       )
-      .eq("client_id", id)
-      .order("created_at", { ascending: false });
+      .eq("client_id", id);
+
+    if (start) {
+      query = query.gte("created_at", startOfDayIso(start));
+    }
+
+    if (end) {
+      query = query.lte("created_at", endOfDayIso(end));
+    }
+
+    const { data, error } = await query.order("created_at", { ascending: false });
 
     if (error) {
       console.error("Lead CSV export failed:", error);

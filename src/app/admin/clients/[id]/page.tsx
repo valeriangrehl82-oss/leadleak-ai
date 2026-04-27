@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 type ClientDetailPageProps = {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ updated?: string; error?: string }>;
+  searchParams: Promise<{ updated?: string; error?: string; start?: string; end?: string }>;
 };
 
 type ClientRow = {
@@ -57,6 +57,59 @@ function formatDate(value: string) {
   }).format(new Date(value));
 }
 
+function readDateParam(value: string | undefined) {
+  return value && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : "";
+}
+
+function startOfDayIso(value: string) {
+  return `${value}T00:00:00.000Z`;
+}
+
+function endOfDayIso(value: string) {
+  return `${value}T23:59:59.999Z`;
+}
+
+function formatDateInputValue(value: Date) {
+  return value.toISOString().slice(0, 10);
+}
+
+function getQuickRange(days: number) {
+  const end = new Date();
+  const start = new Date();
+  start.setDate(end.getDate() - (days - 1));
+
+  return {
+    start: formatDateInputValue(start),
+    end: formatDateInputValue(end),
+  };
+}
+
+function buildRangeHref(clientId: string, start?: string, end?: string) {
+  const params = new URLSearchParams();
+  if (start) {
+    params.set("start", start);
+  }
+  if (end) {
+    params.set("end", end);
+  }
+
+  const query = params.toString();
+  return `/admin/clients/${clientId}${query ? `?${query}` : ""}`;
+}
+
+function buildCsvHref(clientId: string, start: string, end: string) {
+  const params = new URLSearchParams();
+  if (start) {
+    params.set("start", start);
+  }
+  if (end) {
+    params.set("end", end);
+  }
+
+  const query = params.toString();
+  return `/api/admin/clients/${clientId}/leads.csv${query ? `?${query}` : ""}`;
+}
+
 async function requireAdminSession() {
   const cookieStore = await cookies();
   const session = cookieStore.get(ADMIN_COOKIE_NAME)?.value;
@@ -74,6 +127,8 @@ async function updateLeadStatusAction(formData: FormData) {
   const clientId = String(formData.get("client_id") || "").trim();
   const leadId = String(formData.get("lead_id") || "").trim();
   const status = String(formData.get("status") || "").trim();
+  const start = readDateParam(String(formData.get("start") || ""));
+  const end = readDateParam(String(formData.get("end") || ""));
 
   if (!clientId || !leadId || !isLeadStatus(status)) {
     redirect(`/admin/clients/${clientId || ""}?error=status`);
@@ -91,12 +146,33 @@ async function updateLeadStatusAction(formData: FormData) {
     redirect(`/admin/clients/${clientId}?error=status`);
   }
 
-  redirect(`/admin/clients/${clientId}?updated=lead`);
+  const params = new URLSearchParams({ updated: "lead" });
+  if (start) {
+    params.set("start", start);
+  }
+  if (end) {
+    params.set("end", end);
+  }
+
+  redirect(`/admin/clients/${clientId}?${params.toString()}`);
 }
 
-async function loadClientDetail(id: string) {
+async function loadClientDetail(id: string, range: { start: string; end: string }) {
   try {
     const supabase = createServiceRoleClient();
+    let leadsQuery = supabase
+      .from("client_leads")
+      .select("id, created_at, customer_name, customer_phone, request_type, status, estimated_value_chf, source, message")
+      .eq("client_id", id);
+
+    if (range.start) {
+      leadsQuery = leadsQuery.gte("created_at", startOfDayIso(range.start));
+    }
+
+    if (range.end) {
+      leadsQuery = leadsQuery.lte("created_at", endOfDayIso(range.end));
+    }
+
     const [
       { data: client, error: clientError },
       { data: leads, error: leadsError },
@@ -109,11 +185,7 @@ async function loadClientDetail(id: string) {
         )
         .eq("id", id)
         .maybeSingle<ClientRow>(),
-      supabase
-        .from("client_leads")
-        .select("id, created_at, customer_name, customer_phone, request_type, status, estimated_value_chf, source, message")
-        .eq("client_id", id)
-        .order("created_at", { ascending: false }),
+      leadsQuery.order("created_at", { ascending: false }),
       supabase
         .from("client_messages")
         .select("id, created_at, direction, channel, from_number, to_number, body")
@@ -188,7 +260,9 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
   await requireAdminSession();
   const { id } = await params;
   const urlParams = await searchParams;
-  const { client, leads, messages, error } = await loadClientDetail(id);
+  const start = readDateParam(urlParams.start);
+  const end = readDateParam(urlParams.end);
+  const { client, leads, messages, error } = await loadClientDetail(id, { start, end });
 
   if (!client) {
     return (
@@ -206,7 +280,11 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
   }
 
   const publicLink = `/p/${client.slug}`;
+  const csvHref = buildCsvHref(client.id, start, end);
   const stats = getLeadStats(leads);
+  const quick7 = getQuickRange(7);
+  const quick14 = getQuickRange(14);
+  const quick30 = getQuickRange(30);
 
   return (
     <main className="min-h-screen bg-slate-50">
@@ -235,7 +313,7 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
                 Öffentlichen Pilot-Link öffnen
               </Link>
               <Link
-                href={`/api/admin/clients/${client.id}/leads.csv`}
+                href={csvHref}
                 className="rounded-md bg-swiss-green px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600"
               >
                 CSV exportieren
@@ -256,6 +334,56 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
             Änderung konnte nicht gespeichert werden.
           </div>
         ) : null}
+
+        <div className="mb-6 rounded-lg border border-swiss-line bg-white p-5 shadow-soft">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <form className="grid gap-4 sm:grid-cols-[1fr_1fr_auto]" method="get">
+              <label className="space-y-2">
+                <span className="text-sm font-semibold text-navy-950">Startdatum</span>
+                <input
+                  name="start"
+                  type="date"
+                  defaultValue={start}
+                  className="w-full rounded-md border border-slate-300 px-3 py-2 outline-none ring-swiss-green focus:ring-2"
+                />
+              </label>
+              <label className="space-y-2">
+                <span className="text-sm font-semibold text-navy-950">Enddatum</span>
+                <input
+                  name="end"
+                  type="date"
+                  defaultValue={end}
+                  className="w-full rounded-md border border-slate-300 px-3 py-2 outline-none ring-swiss-green focus:ring-2"
+                />
+              </label>
+              <button
+                type="submit"
+                className="rounded-md bg-navy-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 sm:self-end"
+              >
+                Zeitraum anwenden
+              </button>
+            </form>
+            <div className="flex flex-wrap gap-2">
+              {[
+                ["Letzte 7 Tage", buildRangeHref(client.id, quick7.start, quick7.end)],
+                ["Letzte 14 Tage", buildRangeHref(client.id, quick14.start, quick14.end)],
+                ["Letzte 30 Tage", buildRangeHref(client.id, quick30.start, quick30.end)],
+                ["Alle", buildRangeHref(client.id)],
+              ].map(([label, href]) => (
+                <Link
+                  key={label}
+                  href={href}
+                  className="rounded-md border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  {label}
+                </Link>
+              ))}
+            </div>
+          </div>
+          <p className="mt-3 text-sm text-slate-500">
+            Ohne ausgewählten Zeitraum werden alle Leads angezeigt.
+          </p>
+        </div>
 
         <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
           {[
@@ -334,6 +462,8 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
                           <form action={updateLeadStatusAction} className="flex min-w-44 gap-2">
                             <input type="hidden" name="client_id" value={client.id} />
                             <input type="hidden" name="lead_id" value={lead.id} />
+                            <input type="hidden" name="start" value={start} />
+                            <input type="hidden" name="end" value={end} />
                             <select
                               name="status"
                               defaultValue={lead.status || "new"}
