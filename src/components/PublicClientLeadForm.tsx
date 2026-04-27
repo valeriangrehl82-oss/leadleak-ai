@@ -86,10 +86,10 @@ export function PublicClientLeadForm({ clientName, slug, recoveryMessage }: Publ
   if (submittedLead) {
     return (
       <div className="rounded-xl border border-emerald-200 bg-white p-6 shadow-[0_18px_55px_rgba(7,17,31,0.08)]">
-        <div className="rounded-full border border-emerald-200 bg-swiss-mint px-4 py-2 text-sm font-semibold text-emerald-900">
-          Anfrage erfolgreich übermittelt
+        <div className="flex h-12 w-12 items-center justify-center rounded-full border border-emerald-200 bg-swiss-mint text-xl font-bold text-emerald-900">
+          ✓
         </div>
-        <h2 className="mt-5 text-2xl font-bold tracking-tight text-navy-950">Vielen Dank.</h2>
+        <h2 className="mt-5 text-2xl font-bold tracking-tight text-navy-950">Anfrage erfolgreich übermittelt</h2>
         <p className="mt-3 leading-7 text-slate-600">
           Ihre Anfrage wurde an {clientName} übermittelt. Der Betrieb prüft Ihr Anliegen und meldet sich zeitnah.
         </p>
@@ -127,13 +127,13 @@ export function PublicClientLeadForm({ clientName, slug, recoveryMessage }: Publ
         </div>
       ) : null}
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-6 sm:grid-cols-2">
         <label className="space-y-2">
           <span className="text-sm font-semibold text-navy-950">Name</span>
           <input
             value={customerName}
             onChange={(event) => setCustomerName(event.target.value)}
-            className="w-full rounded-md border border-slate-300 px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
+            className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition hover:border-slate-400 focus:border-swiss-green focus:ring-2"
             required
           />
         </label>
@@ -142,7 +142,7 @@ export function PublicClientLeadForm({ clientName, slug, recoveryMessage }: Publ
           <input
             value={customerPhone}
             onChange={(event) => setCustomerPhone(event.target.value)}
-            className="w-full rounded-md border border-slate-300 px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
+            className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition hover:border-slate-400 focus:border-swiss-green focus:ring-2"
             required
           />
           <span className="block text-xs leading-5 text-slate-500">Damit der Betrieb Sie erreichen kann.</span>
@@ -153,12 +153,12 @@ export function PublicClientLeadForm({ clientName, slug, recoveryMessage }: Publ
             type="email"
             value={customerEmail}
             onChange={(event) => setCustomerEmail(event.target.value)}
-            className="w-full rounded-md border border-slate-300 px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
+            className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition hover:border-slate-400 focus:border-swiss-green focus:ring-2"
           />
         </label>
         <div className="space-y-2">
           <span className="text-sm font-semibold text-navy-950">Anfrageart</span>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2.5">
             {quickRequestTypes.map((item) => {
               const isSelected = requestType === item;
               return (
@@ -166,10 +166,10 @@ export function PublicClientLeadForm({ clientName, slug, recoveryMessage }: Publ
                   key={item}
                   type="button"
                   onClick={() => setRequestType(item)}
-                  className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                  className={`ui-lift min-h-9 rounded-full border px-3.5 py-2 text-xs font-semibold transition ${
                     isSelected
-                      ? "border-swiss-green bg-swiss-mint text-emerald-900"
-                      : "border-slate-200 bg-white text-slate-700 hover:border-swiss-green hover:bg-slate-50"
+                      ? "border-swiss-green bg-swiss-green text-white shadow-[0_10px_28px_rgba(37,165,106,0.20)]"
+                      : "border-slate-200 bg-white text-slate-700 hover:border-swiss-green hover:bg-swiss-mint"
                   }`}
                 >
                   {item}
@@ -181,7 +181,7 @@ export function PublicClientLeadForm({ clientName, slug, recoveryMessage }: Publ
             value={requestType}
             onChange={(event) => setRequestType(event.target.value)}
             placeholder="z.B. Reifenwechsel, Service, Rückruf"
-            className="w-full rounded-md border border-slate-300 px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
+            className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition hover:border-slate-400 focus:border-swiss-green focus:ring-2"
             required
           />
         </div>
@@ -194,7 +194,7 @@ export function PublicClientLeadForm({ clientName, slug, recoveryMessage }: Publ
           onChange={(event) => setMessage(event.target.value)}
           rows={5}
           placeholder="Beschreiben Sie kurz Ihr Anliegen."
-          className="w-full rounded-md border border-slate-300 px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
+          className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition hover:border-slate-400 focus:border-swiss-green focus:ring-2"
         />
       </label>
 

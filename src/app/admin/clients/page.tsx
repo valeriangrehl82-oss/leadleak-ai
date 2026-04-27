@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { CopyButton } from "@/components/CopyButton";
 import { ADMIN_COOKIE_NAME, hasValidAdminSession } from "@/lib/adminAuth";
 import { createServiceRoleClient, isSupabaseConfigError } from "@/lib/supabase/server";
 
@@ -16,8 +17,10 @@ type ClientRow = {
   name: string;
   slug: string;
   industry: string;
+  contact_person: string | null;
   notification_email: string;
   twilio_phone_number: string | null;
+  portal_enabled: boolean | null;
   is_active: boolean | null;
 };
 
@@ -26,6 +29,18 @@ function formatDate(value: string) {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(value));
+}
+
+function getPublicPilotUrl(host: string | null, protocol: string | null, slug: string) {
+  const resolvedHost = host || "localhost:3000";
+  const resolvedProtocol = protocol || (resolvedHost.includes("localhost") ? "http" : "https");
+  return `${resolvedProtocol}://${resolvedHost}/p/${slug}`;
+}
+
+function statusBadge(isActive: boolean | null | undefined) {
+  return isActive
+    ? "border-emerald-200 bg-swiss-mint text-emerald-800"
+    : "border-slate-200 bg-slate-100 text-slate-600";
 }
 
 async function requireAdminSession() {
@@ -85,7 +100,9 @@ async function loadClients() {
     const supabase = createServiceRoleClient();
     const { data, error } = await supabase
       .from("clients")
-      .select("id, created_at, name, slug, industry, notification_email, twilio_phone_number, is_active")
+      .select(
+        "id, created_at, name, slug, industry, contact_person, notification_email, twilio_phone_number, portal_enabled, is_active",
+      )
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -106,128 +123,234 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
   await requireAdminSession();
   const params = await searchParams;
   const { clients, error } = await loadClients();
+  const requestHeaders = await headers();
+  const host = requestHeaders.get("host");
+  const protocol = requestHeaders.get("x-forwarded-proto");
+  const stats = {
+    total: clients.length,
+    active: clients.filter((client) => client.is_active).length,
+    portal: clients.filter((client) => client.portal_enabled).length,
+    twilio: clients.filter((client) => client.twilio_phone_number).length,
+  };
 
   return (
     <main className="min-h-screen bg-slate-50">
       <section className="border-b border-swiss-line bg-white">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Admin</p>
+          <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Admin Cockpit</p>
           <h1 className="mt-3 text-3xl font-bold tracking-tight text-navy-950 sm:text-4xl">Kunden</h1>
           <p className="mt-4 max-w-3xl leading-7 text-slate-600">
-            Pilot-Kunden verwalten und öffentliche Lead-Links erstellen.
+            Pilotkunden, Portale und öffentliche Erfassungslinks verwalten.
           </p>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              ["Kunden gesamt", String(stats.total)],
+              ["Aktive Piloten", String(stats.active)],
+              ["Portale aktiv", String(stats.portal)],
+              ["Twilio vorbereitet", String(stats.twilio)],
+            ].map(([label, value]) => (
+              <div key={label} className="rounded-xl border border-slate-200 bg-slate-50 p-5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
+                <p className="mt-2 text-2xl font-bold text-navy-950">{value}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[0.78fr_1.22fr] lg:px-8">
-        <form action={createClientAction} className="rounded-lg border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
-          <h2 className="text-xl font-semibold text-navy-950">Neuen Kunden anlegen</h2>
-          {params.created ? (
-            <div className="mt-4 rounded-md bg-swiss-mint p-3 text-sm font-semibold text-emerald-900">
-              Kunde wurde angelegt.
-            </div>
-          ) : null}
-          {params.error ? (
-            <div className="mt-4 rounded-md bg-red-50 p-3 text-sm font-semibold text-red-800">
-              Kunde konnte nicht angelegt werden. Bitte Pflichtfelder und Slug prüfen.
-            </div>
-          ) : null}
-          <div className="mt-5 grid gap-4">
-            {[
-              ["name", "Name"],
-              ["slug", "Slug"],
-              ["industry", "Branche"],
-              ["contact_person", "Kontaktperson"],
-              ["notification_email", "Benachrichtigungs-E-Mail"],
-              ["phone", "Telefon"],
-              ["twilio_phone_number", "Twilio-Nummer im E.164 Format, z.B. +41310000000"],
-              ["average_order_value_chf", "Durchschnittlicher Auftragswert CHF"],
-            ].map(([name, label]) => (
-              <label key={name} className="space-y-2">
-                <span className="text-sm font-semibold text-navy-950">{label}</span>
-                <input
-                  name={name}
-                  type={name === "average_order_value_chf" ? "number" : name === "notification_email" ? "email" : "text"}
-                  defaultValue={name === "average_order_value_chf" ? "250" : ""}
-                  className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
-                  required={["name", "slug", "industry", "notification_email"].includes(name)}
-                />
-              </label>
-            ))}
-            <label className="space-y-2">
-              <span className="text-sm font-semibold text-navy-950">Rückmeldungsnachricht</span>
-              <textarea
-                name="recovery_message"
-                rows={4}
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
-              />
-            </label>
+      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {params.created ? (
+          <div className="mb-6 rounded-md bg-swiss-mint p-4 text-sm font-semibold text-emerald-900">
+            Kunde wurde angelegt.
           </div>
-          <button
-            type="submit"
-            className="mt-5 rounded-md bg-swiss-green px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-600"
-          >
-            Kunden anlegen
-          </button>
-        </form>
+        ) : null}
+        {params.error ? (
+          <div className="mb-6 rounded-md bg-red-50 p-4 text-sm font-semibold text-red-800">
+            Kunde konnte nicht angelegt werden. Bitte Pflichtfelder und Slug prüfen.
+          </div>
+        ) : null}
 
-        <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
-          <div className="border-b border-swiss-line px-5 py-4">
-            <h2 className="text-xl font-semibold text-navy-950">Bestehende Kunden</h2>
+        <details
+          open={!clients.length || Boolean(params.error)}
+          className="rounded-xl border border-slate-200 bg-white shadow-[0_14px_40px_rgba(7,17,31,0.07)]"
+        >
+          <summary className="cursor-pointer list-none px-6 py-5">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Setup</p>
+                <h2 className="text-xl font-semibold text-navy-950">Neuen Kunden anlegen</h2>
+              </div>
+              <span className="rounded-md bg-navy-950 px-4 py-2 text-sm font-semibold text-white">
+                Formular öffnen
+              </span>
+            </div>
+          </summary>
+
+          <form action={createClientAction} className="border-t border-slate-100 px-6 pb-6">
+            <div className="grid gap-6 lg:grid-cols-3">
+              <fieldset className="rounded-lg border border-slate-100 bg-slate-50 p-4">
+                <legend className="px-1 text-sm font-semibold text-navy-950">Betrieb</legend>
+                <div className="mt-3 grid gap-4">
+                  {[
+                    ["name", "Name", "text", ""],
+                    ["slug", "Slug", "text", ""],
+                    ["industry", "Branche", "text", ""],
+                  ].map(([name, label, type, defaultValue]) => (
+                    <label key={name} className="space-y-2">
+                      <span className="text-sm font-semibold text-navy-950">{label}</span>
+                      <input
+                        name={name}
+                        type={type}
+                        defaultValue={defaultValue}
+                        className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
+                        required
+                      />
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+
+              <fieldset className="rounded-lg border border-slate-100 bg-slate-50 p-4">
+                <legend className="px-1 text-sm font-semibold text-navy-950">Kontakt</legend>
+                <div className="mt-3 grid gap-4">
+                  {[
+                    ["contact_person", "Kontaktperson", "text", false],
+                    ["notification_email", "Benachrichtigungs-E-Mail", "email", true],
+                    ["phone", "Telefon", "text", false],
+                  ].map(([name, label, type, required]) => (
+                    <label key={String(name)} className="space-y-2">
+                      <span className="text-sm font-semibold text-navy-950">{label}</span>
+                      <input
+                        name={String(name)}
+                        type={String(type)}
+                        className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
+                        required={Boolean(required)}
+                      />
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+
+              <fieldset className="rounded-lg border border-slate-100 bg-slate-50 p-4">
+                <legend className="px-1 text-sm font-semibold text-navy-950">Pilot-Einstellungen</legend>
+                <div className="mt-3 grid gap-4">
+                  <label className="space-y-2">
+                    <span className="text-sm font-semibold text-navy-950">
+                      Twilio-Nummer im E.164 Format, z.B. +41310000000
+                    </span>
+                    <input
+                      name="twilio_phone_number"
+                      className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
+                    />
+                  </label>
+                  <label className="space-y-2">
+                    <span className="text-sm font-semibold text-navy-950">Durchschnittlicher Auftragswert CHF</span>
+                    <input
+                      name="average_order_value_chf"
+                      type="number"
+                      defaultValue="250"
+                      className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
+                    />
+                  </label>
+                  <label className="space-y-2">
+                    <span className="text-sm font-semibold text-navy-950">Rückmeldungsnachricht</span>
+                    <textarea
+                      name="recovery_message"
+                      rows={4}
+                      className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
+                    />
+                  </label>
+                </div>
+              </fieldset>
+            </div>
+
+            <button
+              type="submit"
+              className="ui-lift mt-6 rounded-md bg-swiss-green px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-600"
+            >
+              Kunden anlegen
+            </button>
+          </form>
+        </details>
+
+        <div className="mt-8">
+          <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Management</p>
+              <h2 className="text-2xl font-bold tracking-tight text-navy-950">Bestehende Kunden</h2>
+            </div>
           </div>
-          {error ? <div className="m-5 rounded-md bg-red-50 p-4 text-sm font-semibold text-red-800">{error}</div> : null}
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-200 text-sm">
-              <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                <tr>
-                  <th className="px-5 py-3">Name</th>
-                  <th className="px-5 py-3">Slug</th>
-                  <th className="px-5 py-3">Branche</th>
-                  <th className="px-5 py-3">Benachrichtigung</th>
-                  <th className="px-5 py-3">Twilio-Nummer</th>
-                  <th className="px-5 py-3">Status</th>
-                  <th className="px-5 py-3">Erstellt</th>
-                  <th className="px-5 py-3">Detail</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {clients.length ? (
-                  clients.map((client) => (
-                    <tr key={client.id} className="transition hover:bg-slate-50">
-                      <td className="whitespace-nowrap px-5 py-4 font-semibold text-navy-950">{client.name}</td>
-                      <td className="whitespace-nowrap px-5 py-4 text-slate-700">{client.slug}</td>
-                      <td className="whitespace-nowrap px-5 py-4 text-slate-700">{client.industry}</td>
-                      <td className="whitespace-nowrap px-5 py-4 text-slate-700">{client.notification_email}</td>
-                      <td className="whitespace-nowrap px-5 py-4 text-slate-700">
-                        {client.twilio_phone_number || "-"}
-                      </td>
-                      <td className="whitespace-nowrap px-5 py-4 text-slate-700">
-                        <span
-                          className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                            client.is_active ? "bg-swiss-mint text-emerald-800" : "bg-slate-100 text-slate-600"
-                          }`}
-                        >
+          {error ? <div className="mb-5 rounded-md bg-red-50 p-4 text-sm font-semibold text-red-800">{error}</div> : null}
+          {clients.length ? (
+            <div className="grid gap-4">
+              {clients.map((client) => {
+                const publicUrl = getPublicPilotUrl(host, protocol, client.slug);
+                return (
+                  <article
+                    key={client.id}
+                    className="card-hover rounded-xl border border-slate-200 bg-white p-5 shadow-[0_14px_40px_rgba(7,17,31,0.07)]"
+                  >
+                    <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr_0.9fr_auto] lg:items-center">
+                      <div>
+                        <p className="text-lg font-semibold text-navy-950">{client.name}</p>
+                        <p className="mt-1 text-sm text-slate-600">{client.industry}</p>
+                        <p className="mt-2 text-xs text-slate-500">{client.contact_person || client.notification_email}</p>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${statusBadge(client.is_active)}`}>
                           {client.is_active ? "Aktiv" : "Inaktiv"}
                         </span>
-                      </td>
-                      <td className="whitespace-nowrap px-5 py-4 text-slate-600">{formatDate(client.created_at)}</td>
-                      <td className="whitespace-nowrap px-5 py-4">
-                        <Link className="font-semibold text-swiss-green" href={`/admin/clients/${client.id}`}>
-                          Öffnen
+                        <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${statusBadge(client.portal_enabled)}`}>
+                          Portal {client.portal_enabled ? "aktiv" : "inaktiv"}
+                        </span>
+                        <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${statusBadge(Boolean(client.twilio_phone_number))}`}>
+                          {client.twilio_phone_number ? "Twilio vorbereitet" : "Nicht verbunden"}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          Öffentlicher Link
+                        </p>
+                        <p className="mt-1 truncate text-sm text-slate-700">{publicUrl}</p>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          <CopyButton text={publicUrl} label="Link kopieren" copiedLabel="Kopiert" />
+                          <Link
+                            href={`/p/${client.slug}`}
+                            target="_blank"
+                            className="rounded-md border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
+                          >
+                            Öffnen
+                          </Link>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-2 lg:justify-end">
+                        <Link
+                          href={`/admin/clients/${client.id}`}
+                          className="rounded-md bg-navy-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-navy-800"
+                        >
+                          Details
                         </Link>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td className="px-5 py-8 text-center text-slate-600" colSpan={8}>
-                      Noch keine Kunden vorhanden.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                        <Link
+                          href={`/admin/clients/${client.id}/edit`}
+                          className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-950 transition hover:bg-slate-50"
+                        >
+                          Bearbeiten
+                        </Link>
+                      </div>
+                    </div>
+                    <p className="mt-4 text-xs text-slate-500">Erstellt: {formatDate(client.created_at)}</p>
+                  </article>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="rounded-xl border border-slate-200 bg-white p-8 text-center shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
+              <h3 className="text-lg font-semibold text-navy-950">Noch keine Kunden vorhanden.</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Lege den ersten Pilotkunden an, um Erfassungslink, Portal und Lead-Auswertung vorzubereiten.
+              </p>
+            </div>
+          )}
         </div>
       </section>
     </main>

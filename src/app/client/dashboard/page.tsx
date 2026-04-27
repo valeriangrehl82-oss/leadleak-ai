@@ -263,8 +263,8 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
                 </p>
               ) : (
                 <p className="mt-3 text-2xl font-semibold leading-9 text-white">
-                  Noch keine Anfragen im ausgewählten Zeitraum. Sobald neue Anfragen über den Pilot-Link eingehen,
-                  erscheinen hier Auswertung, Prioritäten und Lead DNA Signale.
+                  Noch keine Anfragen im ausgewählten Zeitraum. Sobald neue Anfragen über den Erfassungslink eingehen,
+                  erscheinen hier Prioritäten, Lead DNA Signale und Auswertung.
                 </p>
               )}
               <p className="mt-4 text-sm leading-6 text-slate-300">
@@ -331,9 +331,9 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
           {[
-            ["Sichtbare Anfragen", leads.length ? String(metrics.total) : "Noch keine", "Im Zeitraum erfasst"],
+            ["Erfasste Anfragen", leads.length ? String(metrics.total) : "Noch keine", "Im Zeitraum erfasst"],
             [
-              "Geschätztes Potenzial",
+              "Geschätztes Anfragepotenzial",
               leads.length ? formatChf(metrics.totalValue) : "Wird berechnet",
               "Orientierung, keine Garantie",
             ],
@@ -508,7 +508,7 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
                   <th className="px-5 py-3">Telefon</th>
                   <th className="px-5 py-3">Anfrageart</th>
                   <th className="px-5 py-3">Status</th>
-                  <th className="px-5 py-3">Wert</th>
+                  <th className="px-5 py-3 text-right">Wert</th>
                   <th className="px-5 py-3">Lead DNA</th>
                 </tr>
               </thead>
@@ -529,7 +529,7 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
                             {getLeadStatusLabel(lead.status)}
                           </span>
                         </td>
-                        <td className="whitespace-nowrap px-5 py-4 font-semibold text-navy-950">
+                        <td className="whitespace-nowrap px-5 py-4 text-right font-semibold text-navy-950">
                           {formatChf(lead.estimated_value_chf || 0)}
                         </td>
                         <td className="whitespace-nowrap px-5 py-4">

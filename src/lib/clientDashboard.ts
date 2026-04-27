@@ -87,8 +87,9 @@ export function getNextBestActions(leads: ClientDashboardLead[]) {
   if (!leads.length) {
     return [
       {
-        title: "Pilot-Link aktiv teilen",
-        explanation: "Erste Anfragen erfassen, damit die Auswertung aussagekräftig wird.",
+        title: "Erfassungslink aktiv teilen",
+        explanation:
+          "Teilen Sie den Link auf Website, E-Mail-Signatur oder direkt im Kundengespräch, damit erste Anfragen sichtbar werden.",
         priority: "Basis",
       },
     ] satisfies NextBestAction[];
@@ -102,11 +103,12 @@ export function getNextBestActions(leads: ClientDashboardLead[]) {
   const openCount = leads.filter((lead) => openStatuses.has(getStatus(lead.status))).length;
 
   if (olderNewLeads.length) {
+    const firstLead = olderNewLeads[0];
     actions.push({
-      title: "Offene Anfragen zuerst nachfassen",
+      title: firstLead.customer_name ? `${firstLead.customer_name} zurückrufen` : "Offene Anfragen zuerst nachfassen",
       explanation: "Mehrere Anfragen sind noch nicht bearbeitet.",
       priority: "Hoch",
-      related: olderNewLeads[0].customer_name || olderNewLeads[0].request_type || undefined,
+      related: firstLead.request_type || undefined,
     });
   }
 
@@ -184,7 +186,7 @@ export function getRecentActivities(leads: ClientDashboardLead[], limit = 8): Re
       const status = getStatus(lead.status);
       const titleByStatus: Record<string, string> = {
         new: "Neue Anfrage erfasst",
-        contacted: "Anfrage als kontaktiert markiert",
+        contacted: "Anfrage kontaktiert",
         qualified: "Anfrage qualifiziert",
         won: "Anfrage gewonnen",
         lost: "Anfrage verloren",

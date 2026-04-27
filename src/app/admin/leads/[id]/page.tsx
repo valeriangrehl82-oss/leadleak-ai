@@ -43,6 +43,35 @@ function formatDate(value: string) {
   }).format(new Date(value));
 }
 
+function statusBadgeClass(status: string | null | undefined) {
+  const value = status || "new";
+  const classes: Record<string, string> = {
+    new: "border-blue-200 bg-blue-50 text-blue-800",
+    contacted: "border-cyan-200 bg-cyan-50 text-cyan-800",
+    qualified: "border-emerald-200 bg-emerald-50 text-emerald-800",
+    won: "border-emerald-300 bg-emerald-100 text-emerald-900",
+    lost: "border-slate-200 bg-slate-100 text-slate-700",
+  };
+
+  return classes[value] || classes.new;
+}
+
+function DetailGroup({ title, items }: { title: string; items: [string, string][] }) {
+  return (
+    <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
+      <h2 className="text-lg font-semibold text-navy-950">{title}</h2>
+      <dl className="mt-5 grid gap-3 text-sm">
+        {items.map(([label, value]) => (
+          <div key={label} className="rounded-lg border border-slate-100 bg-slate-50 p-4">
+            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</dt>
+            <dd className="mt-2 whitespace-pre-wrap font-semibold leading-6 text-navy-950">{value}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  );
+}
+
 async function requireAdminSession() {
   const cookieStore = await cookies();
   const session = cookieStore.get(ADMIN_COOKIE_NAME)?.value;
@@ -132,6 +161,8 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
   }
 
   const leadDnaProfile = getLeadDnaProfile(lead);
+  const estimatedValue = lead.estimated_value_chf ? formatChf(lead.estimated_value_chf) : "-";
+  const statusLabel = getLeadStatusLabel(lead.status);
 
   return (
     <main className="min-h-screen bg-slate-50">
@@ -140,8 +171,20 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
           <Link href={`/admin/clients/${client.id}`} className="text-sm font-semibold text-swiss-green">
             Zurück zu {client.name}
           </Link>
-          <h1 className="mt-3 text-3xl font-bold tracking-tight text-navy-950">Lead Detail</h1>
-          <p className="mt-3 text-slate-600">{client.name}</p>
+          <div className="mt-4 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Lead-Profil</p>
+              <h1 className="mt-2 text-3xl font-bold tracking-tight text-navy-950 sm:text-4xl">
+                Lead: {lead.customer_name || "Unbekannter Kontakt"}
+              </h1>
+              <p className="mt-3 text-slate-600">
+                {lead.request_type || "Anfrage ohne Kategorie"} · {estimatedValue} · Erstellt {formatDate(lead.created_at)}
+              </p>
+            </div>
+            <span className={`w-fit rounded-full border px-3 py-1 text-sm font-semibold ${statusBadgeClass(lead.status)}`}>
+              Status: {statusLabel}
+            </span>
+          </div>
         </div>
       </section>
 
@@ -157,7 +200,61 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
           </div>
         ) : null}
 
-        <div className="mb-6 animate-fade-slide rounded-xl border border-navy-900 bg-navy-950 p-5 text-white shadow-[0_24px_80px_rgba(7,17,31,0.18)]">
+        <section className="mb-6 rounded-xl border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Workflow</p>
+              <h2 className="mt-2 text-xl font-semibold text-navy-950">Lead-Status aktualisieren</h2>
+              <p className="mt-2 text-sm text-slate-600">
+                Aktueller Status:{" "}
+                <span className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${statusBadgeClass(lead.status)}`}>
+                  {statusLabel}
+                </span>
+              </p>
+            </div>
+            <form action={updateLeadStatusAction} className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <input type="hidden" name="lead_id" value={lead.id} />
+              <select
+                name="status"
+                defaultValue={lead.status || "new"}
+                className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-swiss-green focus:border-swiss-green focus:ring-2"
+              >
+                {leadStatuses.map((status) => (
+                  <option key={status.value} value={status.value}>
+                    {status.label}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="submit"
+                className="ui-lift rounded-md bg-swiss-green px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600"
+              >
+                Speichern
+              </button>
+            </form>
+          </div>
+
+          <div className="mt-5 flex flex-wrap gap-2">
+            {[
+              ["contacted", "Als kontaktiert markieren"],
+              ["qualified", "Als qualifiziert markieren"],
+              ["won", "Als gewonnen markieren"],
+            ].map(([status, label]) => (
+              <form key={status} action={updateLeadStatusAction}>
+                <input type="hidden" name="lead_id" value={lead.id} />
+                <input type="hidden" name="status" value={status} />
+                <button
+                  type="submit"
+                  className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-navy-950 transition hover:bg-slate-50"
+                >
+                  {label}
+                </button>
+              </form>
+            ))}
+          </div>
+        </section>
+
+        <section className="mb-6 animate-fade-slide rounded-xl border border-navy-900 bg-navy-950 p-5 text-white shadow-[0_24px_80px_rgba(7,17,31,0.18)]">
           <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Business Plus Funktion</p>
@@ -179,82 +276,44 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
             <LeadDnaCore profile={leadDnaProfile} />
             <div className="grid gap-4">
               <LeadDnaBars profile={leadDnaProfile} />
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">Lead DNA Zusammenfassung</p>
-                  <p className="mt-2 text-sm leading-6 text-slate-300">{leadDnaProfile.summary}</p>
-                </div>
-                <div className="rounded-lg border border-emerald-300/25 bg-emerald-400/10 p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-emerald-200">Empfohlene Aktion</p>
-                  <p className="mt-2 text-xl font-bold text-white">{leadDnaProfile.recommendedAction}</p>
-                  <p className="mt-2 text-sm leading-6 text-emerald-100">
-                    Empfehlung aus bestehenden Lead-Daten, ohne externe KI.
-                  </p>
-                </div>
+              <div className="rounded-lg border border-emerald-300/25 bg-emerald-400/10 p-5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-emerald-200">Empfohlene Aktion</p>
+                <p className="mt-2 text-2xl font-bold text-white">{leadDnaProfile.recommendedAction}</p>
+                <p className="mt-3 text-sm leading-6 text-emerald-100">
+                  Zeitnahe Rückmeldung empfohlen. Die Anfrage zeigt relevante Prioritätssignale und sollte aktiv
+                  nachgefasst werden.
+                </p>
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
-          <div className="flex flex-col gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">Aktueller Status</p>
-              <p className="mt-1 text-2xl font-bold text-navy-950">{getLeadStatusLabel(lead.status)}</p>
-            </div>
-            <form action={updateLeadStatusAction} className="flex gap-2">
-              <input type="hidden" name="lead_id" value={lead.id} />
-              <select
-                name="status"
-                defaultValue={lead.status || "new"}
-                className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-swiss-green focus:border-swiss-green focus:ring-2"
-              >
-                {leadStatuses.map((status) => (
-                  <option key={status.value} value={status.value}>
-                    {status.label}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="submit"
-                className="rounded-md bg-swiss-green px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600"
-              >
-                Speichern
-              </button>
-            </form>
-          </div>
-
-          <dl className="mt-6 grid gap-4 text-sm sm:grid-cols-2">
-            {[
-              ["Kunde", client.name],
-              ["Kontaktperson", lead.customer_name || "-"],
+        <div className="grid gap-6 lg:grid-cols-3">
+          <DetailGroup
+            title="Kontaktdaten"
+            items={[
+              ["Kunde", lead.customer_name || "-"],
               ["Telefon", lead.customer_phone || "-"],
               ["E-Mail", lead.customer_email || "-"],
+            ]}
+          />
+          <DetailGroup
+            title="Anfrage"
+            items={[
               ["Anfrageart", lead.request_type || "-"],
-              ["Status", getLeadStatusLabel(lead.status)],
-              ["Geschätzter Wert", lead.estimated_value_chf ? formatChf(lead.estimated_value_chf) : "-"],
+              ["Nachricht", lead.message || "-"],
+              ["Geschätzter Wert", estimatedValue],
+            ]}
+          />
+          <DetailGroup
+            title="System"
+            items={[
+              ["Status", statusLabel],
               ["Quelle", lead.source || "-"],
               ["Erstellt", formatDate(lead.created_at)],
-            ].map(([label, value]) => (
-              <div key={label} className="rounded-md border border-slate-100 bg-slate-50 p-4">
-                <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</dt>
-                <dd className="mt-2 font-semibold text-navy-950">{value}</dd>
-              </div>
-            ))}
-          </dl>
-
-          <div className="mt-5 grid gap-5">
-            <div className="rounded-md border border-slate-100 bg-slate-50 p-4">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Nachricht</h2>
-              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-700">{lead.message || "-"}</p>
-            </div>
-            <div className="rounded-md border border-slate-100 bg-slate-50 p-4">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Interne Zusammenfassung</h2>
-              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-700">
-                {lead.internal_summary || "-"}
-              </p>
-            </div>
-          </div>
+              ["Interne Zusammenfassung", lead.internal_summary || "-"],
+            ]}
+          />
         </div>
       </section>
     </main>
