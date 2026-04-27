@@ -96,7 +96,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    await sendAuditNotificationEmail({
+    const emailSent = await sendAuditNotificationEmail({
       companyName,
       industry,
       contactPerson,
@@ -108,8 +108,12 @@ export async function POST(request: Request) {
       estimatedMonthlyPotentialChf,
       createdAt,
     });
+
+    if (emailSent) {
+      console.log("Resend email sent");
+    }
   } catch (error) {
-    console.error("Audit notification email failed:", error);
+    console.error("Resend email failed", error);
   }
 
   return NextResponse.json({

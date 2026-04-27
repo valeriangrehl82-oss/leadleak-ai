@@ -43,9 +43,11 @@ export async function sendAuditNotificationEmail(input: AuditNotificationInput) 
   const resendApiKey = process.env.RESEND_API_KEY;
   const adminNotificationEmail = process.env.ADMIN_NOTIFICATION_EMAIL;
 
+  console.log("Resend configured:", Boolean(resendApiKey));
+  console.log("Admin notification email configured:", Boolean(adminNotificationEmail));
+
   if (!resendApiKey || !adminNotificationEmail) {
-    console.warn("Resend notification skipped: RESEND_API_KEY or ADMIN_NOTIFICATION_EMAIL missing.");
-    return;
+    return false;
   }
 
   const resend = new Resend(resendApiKey);
@@ -59,4 +61,6 @@ export async function sendAuditNotificationEmail(input: AuditNotificationInput) 
   if (error) {
     throw new Error(`Resend email failed: ${error.message}`);
   }
+
+  return true;
 }
