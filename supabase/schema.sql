@@ -154,3 +154,43 @@ create index if not exists client_messages_twilio_call_sid_idx
 alter table public.clients enable row level security;
 alter table public.client_leads enable row level security;
 alter table public.client_messages enable row level security;
+
+create table if not exists public.outreach_targets (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  company_name text not null,
+  industry text,
+  location text,
+  website text,
+  phone text,
+  email text,
+  contact_person text,
+  source text,
+  status text default 'new',
+  priority text default 'medium',
+  fit_score integer default 50,
+  estimated_potential_chf integer,
+  notes text,
+  last_contact_at timestamptz,
+  next_follow_up_at timestamptz,
+  next_action text,
+  demo_scheduled_at timestamptz,
+  pilot_value_chf integer,
+  linked_client_id uuid references public.clients(id) on delete set null
+);
+
+create index if not exists outreach_targets_status_idx
+  on public.outreach_targets (status);
+
+create index if not exists outreach_targets_priority_idx
+  on public.outreach_targets (priority);
+
+create index if not exists outreach_targets_next_follow_up_at_idx
+  on public.outreach_targets (next_follow_up_at);
+
+create index if not exists outreach_targets_industry_idx
+  on public.outreach_targets (industry);
+
+create index if not exists outreach_targets_created_at_idx
+  on public.outreach_targets (created_at desc);

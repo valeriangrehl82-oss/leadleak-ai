@@ -143,12 +143,20 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
             Pilotkunden, Portale, öffentliche Erfassungslinks und Recovery-Prozesse verwalten.
           </p>
           <div className="mt-6">
-            <Link
-              href="/admin/recovery"
-              className="premium-button-primary inline-flex px-4 py-2 text-sm"
-            >
-              Recovery Review Queue öffnen
-            </Link>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/admin/recovery"
+                className="premium-button-primary inline-flex px-4 py-2 text-sm"
+              >
+                Recovery Review Queue öffnen
+              </Link>
+              <Link
+                href="/admin/outreach"
+                className="premium-button-secondary inline-flex px-4 py-2 text-sm text-white"
+              >
+                Outreach Pipeline öffnen
+              </Link>
+            </div>
           </div>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[

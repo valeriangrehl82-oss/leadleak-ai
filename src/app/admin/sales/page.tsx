@@ -27,6 +27,11 @@ const commandLinks = [
     description: "Antworten, Kurzversionen und nächste Fragen für Verkaufsgespräche.",
   },
   {
+    href: "/admin/outreach",
+    title: "Outreach Pipeline",
+    description: "Zielbetriebe, Anrufe, Demos und Pilotchancen strukturiert verfolgen.",
+  },
+  {
     href: "/admin/clients",
     title: "Admin Kunden",
     description: "Pilotkunden anlegen, Links öffnen und Leads auswerten.",
