@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
+import { PublicFooter } from "@/components/PublicFooter";
 
 export const metadata: Metadata = {
   title: "LeadLeak AI",
@@ -17,6 +18,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-slate-50 text-navy-950">
         <Navbar />
         {children}
+        <PublicFooter />
       </body>
     </html>
   );

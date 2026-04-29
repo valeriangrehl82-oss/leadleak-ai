@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useState } from "react";
 
 type PublicClientLeadFormProps = {
@@ -209,7 +210,11 @@ export function PublicClientLeadForm({ clientName, slug, recoveryMessage }: Publ
 
       <p className="mt-4 text-xs leading-5 text-slate-500">
         Wir verwenden Ihre Angaben zur Bearbeitung dieser Anfrage und zur Benachrichtigung des Betriebs. Weitere
-        Informationen finden Sie in der Datenschutzerklärung.
+        Informationen finden Sie in der{" "}
+        <Link href="/datenschutz" className="font-semibold text-swiss-green hover:text-emerald-700">
+          Datenschutzerklärung
+        </Link>
+        .
       </p>
 
       <button

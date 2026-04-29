@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CopyButton } from "@/components/CopyButton";
+import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { LeadDnaBars, LeadDnaCore, LeadDnaPrivacyNote } from "@/components/LeadDnaVisual";
@@ -109,6 +110,29 @@ async function updateLeadStatusAction(formData: FormData) {
   }
 
   redirect(`/admin/leads/${leadId}?updated=1`);
+}
+
+async function deleteLeadAction(formData: FormData) {
+  "use server";
+
+  await requireAdminSession();
+
+  const leadId = String(formData.get("lead_id") || "").trim();
+  const clientId = String(formData.get("client_id") || "").trim();
+
+  if (!leadId) {
+    redirect(clientId ? `/admin/clients/${clientId}?error=delete` : "/admin/clients?error=delete");
+  }
+
+  const supabase = createServiceRoleClient();
+  const { error } = await supabase.from("client_leads").delete().eq("id", leadId);
+
+  if (error) {
+    console.error("Lead delete failed:", error);
+    redirect(`/admin/leads/${leadId}?error=delete`);
+  }
+
+  redirect(clientId ? `/admin/clients/${clientId}?updated=deleted` : "/admin/clients");
 }
 
 async function loadLeadDetail(id: string) {
@@ -259,6 +283,20 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
                 </button>
               </form>
             ))}
+          </div>
+
+          <div className="mt-6 rounded-lg border border-red-200 bg-red-50 p-4">
+            <p className="text-sm font-semibold text-red-900">Lead löschen</p>
+            <p className="mt-1 text-sm leading-6 text-red-800">
+              Diese Aktion kann nicht rückgängig gemacht werden.
+            </p>
+            <form action={deleteLeadAction} className="mt-3">
+              <input type="hidden" name="lead_id" value={lead.id} />
+              <input type="hidden" name="client_id" value={client.id} />
+              <ConfirmSubmitButton message="Lead wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.">
+                Lead löschen
+              </ConfirmSubmitButton>
+            </form>
           </div>
         </section>
 

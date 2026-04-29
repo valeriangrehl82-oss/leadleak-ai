@@ -261,6 +261,14 @@ export function AuditForm() {
             className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
           />
         </label>
+        <p className="mt-4 text-xs leading-5 text-slate-500">
+          Wir verwenden Ihre Angaben zur Bearbeitung Ihrer Anfrage und zur Kontaktaufnahme. Weitere Informationen finden
+          Sie in der{" "}
+          <Link href="/datenschutz" className="font-semibold text-swiss-green hover:text-emerald-700">
+            Datenschutzerklärung
+          </Link>
+          .
+        </p>
         <button
           type="submit"
           disabled={isSubmitting}

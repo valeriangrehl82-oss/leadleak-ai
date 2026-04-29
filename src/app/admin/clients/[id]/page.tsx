@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
 import { LeadDnaCompactCard, LeadDnaPrivacyNote } from "@/components/LeadDnaVisual";
 import { formatChf } from "@/lib/audit";
 import { ADMIN_COOKIE_NAME, hasValidAdminSession } from "@/lib/adminAuth";
@@ -237,6 +238,32 @@ async function createDemoLeadsAction(formData: FormData) {
   redirect(`/admin/clients/${clientId}?updated=demo`);
 }
 
+async function deleteDemoLeadsAction(formData: FormData) {
+  "use server";
+
+  await requireAdminSession();
+
+  const clientId = String(formData.get("client_id") || "").trim();
+
+  if (!clientId) {
+    redirect("/admin/clients?error=demo-cleanup");
+  }
+
+  const supabase = createServiceRoleClient();
+  const { error } = await supabase
+    .from("client_leads")
+    .delete()
+    .eq("client_id", clientId)
+    .eq("source", "demo_seed");
+
+  if (error) {
+    console.error("Demo leads cleanup failed:", error);
+    redirect(`/admin/clients/${clientId}?error=demo-cleanup`);
+  }
+
+  redirect(`/admin/clients/${clientId}?updated=demo-cleanup`);
+}
+
 async function loadClientDetail(id: string, range: { start: string; end: string }) {
   try {
     const supabase = createServiceRoleClient();
@@ -416,6 +443,15 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
                   >
                     Demo-Leads erstellen
                   </button>
+                </form>
+                <form action={deleteDemoLeadsAction}>
+                  <input type="hidden" name="client_id" value={client.id} />
+                  <ConfirmSubmitButton
+                    message="Demo-Leads für diesen Kunden löschen? Echte Leads bleiben erhalten."
+                    className="rounded-md border border-red-300/40 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-100 transition hover:bg-red-500/20"
+                  >
+                    Demo-Leads löschen
+                  </ConfirmSubmitButton>
                 </form>
               </div>
             </div>
