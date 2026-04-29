@@ -1,57 +1,99 @@
-import Link from "next/link";
-import { requireAdminPage } from "@/lib/adminGuard";
+import { BulletList, InternalLinkCard } from "./components";
 
-const salesLinks = [
+const commandLinks = [
   {
-    href: "/sales-script",
-    title: "5-Minuten Demo-Leitfaden",
-    description: "Live-Struktur für ein kurzes Gespräch mit Schweizer Garagen.",
+    href: "/admin/sales/call-script",
+    title: "Call-Script",
+    description: "Telefonleitfaden für erste Gespräche mit Garagen und Servicebetrieben.",
   },
   {
-    href: "/call-checklist",
-    title: "Call-Checkliste",
-    description: "Vorbereitung, Kernfragen und nächste Aktionen für echte Telefonate.",
+    href: "/admin/sales/demo-flow",
+    title: "Demo-Ablauf",
+    description: "7-Minuten Struktur vom Problem bis zum Pilotabschluss.",
   },
   {
-    href: "/pilot-offer",
+    href: "/admin/sales/pilot-offer",
     title: "Pilot-Angebot",
-    description: "Einseitiges Angebot für den 14-Tage-Pilot, geeignet zum Zeigen oder Drucken.",
+    description: "Interne Angebotsseite mit klaren Grenzen und nächstem Schritt.",
   },
   {
-    href: "/objections",
-    title: "Einwände",
-    description: "Kurze, sachliche Antworten für typische Rückfragen im Verkaufsgespräch.",
+    href: "/admin/sales/email-templates",
+    title: "E-Mail-Vorlagen",
+    description: "Kurze Vorlagen für Nachfassen, Demo und Pilotvorschlag.",
+  },
+  {
+    href: "/admin/sales/objections",
+    title: "Einwandbehandlung",
+    description: "Antworten, Kurzversionen und nächste Fragen für Verkaufsgespräche.",
+  },
+  {
+    href: "/admin/clients",
+    title: "Admin Kunden",
+    description: "Pilotkunden anlegen, Links öffnen und Leads auswerten.",
+  },
+  {
+    href: "/demo",
+    title: "Demo Dashboard",
+    description: "Öffentliche Demo für Sichtbarkeit, Struktur und Anfragepotenzial.",
+  },
+  {
+    href: "/audit",
+    title: "Lead-Audit Seite",
+    description: "Öffentliche Einstiegsseite für Audit-Anfragen.",
   },
 ];
 
-export default async function AdminSalesPage() {
-  await requireAdminPage();
+const checklist = [
+  "30 Zielbetriebe recherchieren",
+  "20 Anrufe führen",
+  "5 Demos vereinbaren",
+  "1 zahlenden Pilotkunden gewinnen",
+  "Feedback dokumentieren",
+  "Produkt danach nachschärfen",
+];
 
+export default function AdminSalesPage() {
   return (
-    <main className="min-h-screen bg-slate-50">
-      <section className="border-b border-swiss-line bg-white">
-        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-          <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Admin</p>
-          <h1 className="mt-3 text-3xl font-bold tracking-tight text-navy-950 sm:text-4xl">Sales-Unterlagen</h1>
-          <p className="mt-4 max-w-3xl leading-7 text-slate-600">
-            Interne Gesprächsseiten für Pilotverkauf, Einwandbehandlung und Abschlussgespräche.
+    <main className="premium-page">
+      <section className="premium-surface text-white">
+        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+          <p className="premium-eyebrow-dark">Interne Vertriebsunterlagen</p>
+          <h1 className="premium-title-dark mt-3 text-3xl sm:text-5xl">Sales Command Center</h1>
+          <p className="premium-muted-dark mt-4 max-w-3xl">
+            Interne Unterlagen für LeadLeak AI Pilotgespräche.
           </p>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid gap-5 md:grid-cols-2">
-          {salesLinks.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="card-hover rounded-lg border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]"
-            >
-              <h2 className="text-xl font-semibold text-navy-950">{item.title}</h2>
-              <p className="mt-3 text-sm leading-6 text-slate-600">{item.description}</p>
-              <p className="mt-5 text-sm font-semibold text-swiss-green">Öffnen</p>
-            </Link>
-          ))}
+      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="grid gap-5 sm:grid-cols-2">
+            {commandLinks.map((item) => (
+              <InternalLinkCard key={item.href} {...item} />
+            ))}
+          </div>
+
+          <div className="grid gap-5">
+            <section className="premium-card-dark p-6 text-white">
+              <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Positionierung</p>
+              <h2 className="mt-3 text-2xl font-semibold">
+                LeadLeak AI hilft Schweizer Servicebetrieben, verlorene und chaotische Anfragen sichtbar zu machen, zu
+                priorisieren und schneller nachzufassen.
+              </h2>
+              <p className="mt-4 text-sm leading-7 text-slate-300">
+                Keine Umsatzgarantie, keine vollautomatische Terminbuchung. Der Fokus liegt auf Pilotphase,
+                strukturierter Rückmeldung und nachvollziehbarer Lead-Auswertung.
+              </p>
+            </section>
+
+            <section className="premium-card p-6">
+              <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Launch Fokus</p>
+              <h2 className="mt-3 text-2xl font-semibold text-navy-950">Erste Pilotkunden gewinnen</h2>
+              <div className="mt-5 text-sm leading-7 text-slate-700">
+                <BulletList items={checklist} />
+              </div>
+            </section>
+          </div>
         </div>
       </section>
     </main>
