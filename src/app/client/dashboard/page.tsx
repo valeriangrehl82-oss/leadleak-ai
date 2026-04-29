@@ -220,15 +220,15 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
   const rangeLabel = getRangeLabel(start, end, isAllRange);
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <section className="bg-navy-950 text-white">
+    <main className="premium-page">
+      <section className="premium-surface text-white">
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
           <div className="animate-fade-slide flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">
+              <p className="premium-eyebrow-dark">
                 Revenue Rescue Cockpit
               </p>
-              <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{client.name}</h1>
+              <h1 className="premium-title-dark mt-3 text-3xl sm:text-5xl">{client.name}</h1>
               <div className="mt-4 flex flex-wrap gap-2 text-sm">
                 {client.industry ? (
                   <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-semibold text-slate-200">
@@ -254,8 +254,8 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
           </div>
 
           <div className="mt-8 grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
-            <div className="animate-fade-slide animate-delay-1 rounded-xl border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.25)]">
-              <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Executive Summary</p>
+            <div className="premium-glass animate-fade-slide animate-delay-1 rounded-xl p-6">
+              <p className="premium-eyebrow-dark">Executive Summary</p>
               {leads.length ? (
                 <p className="mt-3 text-2xl font-semibold leading-9 text-white">
                   Im ausgewählten Zeitraum wurden {metrics.total} Anfragen sichtbar gemacht. Das geschätzte
@@ -274,8 +274,8 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
               </p>
             </div>
 
-            <div className="animate-fade-slide animate-delay-2 rounded-xl border border-emerald-300/20 bg-emerald-400/10 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.18)]">
-              <p className="text-sm font-semibold uppercase tracking-wide text-emerald-200">
+            <div className="premium-glass animate-fade-slide animate-delay-2 rounded-xl p-6">
+              <p className="premium-eyebrow-dark">
                 Öffentlicher Erfassungslink
               </p>
               <p className="mt-2 text-sm leading-6 text-emerald-50">
@@ -305,7 +305,7 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="animate-fade-slide rounded-xl border border-slate-200 bg-white p-5 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
+        <div className="premium-card animate-fade-slide p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Zeitraum</p>
@@ -349,7 +349,7 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
           ].map(([label, value, helper], index) => (
             <div
               key={label}
-              className={`card-hover animate-fade-slide animate-delay-${Math.min(index, 3)} rounded-xl border border-slate-200 bg-white p-5 shadow-[0_14px_40px_rgba(7,17,31,0.07)]`}
+              className={`premium-kpi card-hover animate-fade-slide animate-delay-${Math.min(index, 3)} p-5`}
             >
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
               <p className="mt-3 text-2xl font-bold tracking-tight text-navy-950">{value}</p>
@@ -359,7 +359,7 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
         </div>
 
         <div className="mt-6 grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-          <section className="rounded-xl border border-navy-900 bg-navy-950 p-6 text-white shadow-[0_24px_80px_rgba(7,17,31,0.14)]">
+          <section className="premium-card-dark p-6 text-white">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Prioritäten</p>
@@ -388,7 +388,7 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
             </div>
           </section>
 
-          <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
+          <section className="premium-card p-6">
             <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Aktivität</p>
             <h2 className="mt-2 text-2xl font-bold tracking-tight text-navy-950">Letzte Aktivitäten</h2>
             {activities.length ? (
@@ -413,7 +413,7 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
           </section>
         </div>
 
-        <section className="mt-6 rounded-xl border border-navy-900 bg-navy-950 p-6 text-white shadow-[0_24px_80px_rgba(7,17,31,0.14)]">
+        <section className="premium-card-dark mt-6 p-6 text-white">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Business Plus</p>
             <h2 className="mt-2 text-2xl font-bold tracking-tight text-white">Lead DNA Highlights</h2>
@@ -489,7 +489,7 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
           )}
         </section>
 
-        <section className="mt-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
+        <section className="premium-table mt-6">
           <div className="border-b border-swiss-line px-5 py-4">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
@@ -570,7 +570,7 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
           </div>
         </section>
 
-        <section className="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
+        <section className="premium-card mt-6 p-6">
           <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Auswertung</p>
           <h2 className="mt-2 text-2xl font-bold tracking-tight text-navy-950">Pilot-Auswertung</h2>
           {!leads.length ? (

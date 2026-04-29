@@ -38,7 +38,7 @@ export function ClientLoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-8 rounded-lg border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
+    <form onSubmit={handleSubmit} className="premium-card mt-8 p-6">
       <label className="block space-y-2">
         <span className="text-sm font-semibold text-navy-950">Kunden-Slug</span>
         <input

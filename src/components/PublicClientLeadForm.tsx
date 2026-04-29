@@ -84,7 +84,7 @@ export function PublicClientLeadForm({ clientName, slug, recoveryMessage }: Publ
 
   if (submittedLead) {
     return (
-      <div className="rounded-xl border border-emerald-200 bg-white p-6 shadow-[0_18px_55px_rgba(7,17,31,0.08)]">
+      <div className="premium-card border-emerald-200 p-6">
         <div className="flex items-start gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-emerald-200 bg-swiss-mint text-xl font-bold text-emerald-900 shadow-[0_10px_28px_rgba(37,165,106,0.16)]">
             ✓
@@ -129,7 +129,7 @@ export function PublicClientLeadForm({ clientName, slug, recoveryMessage }: Publ
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-xl border border-slate-200 bg-white p-6 shadow-[0_18px_55px_rgba(7,17,31,0.08)]">
+    <form onSubmit={handleSubmit} className="premium-card p-6">
       {recoveryMessage ? (
         <div className="mb-5 rounded-lg border border-emerald-200 bg-swiss-mint p-4 text-sm leading-6 text-slate-700">
           {recoveryMessage}

@@ -134,18 +134,18 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
   };
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <section className="border-b border-swiss-line bg-white">
+    <main className="premium-page">
+      <section className="premium-surface text-white">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Admin Cockpit</p>
-          <h1 className="mt-3 text-3xl font-bold tracking-tight text-navy-950 sm:text-4xl">Kunden</h1>
-          <p className="mt-4 max-w-3xl leading-7 text-slate-600">
-            Pilotkunden, Portale und öffentliche Erfassungslinks verwalten.
+          <p className="premium-eyebrow-dark">Admin Cockpit</p>
+          <h1 className="premium-title-dark mt-3 text-3xl sm:text-5xl">Kunden</h1>
+          <p className="premium-muted-dark mt-4 max-w-3xl">
+            Pilotkunden, Portale, öffentliche Erfassungslinks und Recovery-Prozesse verwalten.
           </p>
           <div className="mt-6">
             <Link
               href="/admin/recovery"
-              className="ui-lift inline-flex rounded-md bg-navy-950 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-navy-800"
+              className="premium-button-primary inline-flex px-4 py-2 text-sm"
             >
               Recovery Review Queue öffnen
             </Link>
@@ -157,9 +157,9 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
               ["Portale aktiv", String(stats.portal)],
               ["Twilio vorbereitet", String(stats.twilio)],
             ].map(([label, value]) => (
-              <div key={label} className="rounded-xl border border-slate-200 bg-slate-50 p-5">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
-                <p className="mt-2 text-2xl font-bold text-navy-950">{value}</p>
+              <div key={label} className="premium-glass rounded-xl p-5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{label}</p>
+                <p className="mt-2 text-2xl font-bold text-white">{value}</p>
               </div>
             ))}
           </div>
@@ -180,7 +180,7 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
 
         <details
           open={!clients.length || Boolean(params.error)}
-          className="group rounded-xl border border-slate-200 bg-white shadow-[0_14px_40px_rgba(7,17,31,0.07)]"
+          className="premium-card group"
         >
           <summary className="cursor-pointer list-none px-6 py-5">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -299,7 +299,7 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
                 return (
                   <article
                     key={client.id}
-                    className="card-hover rounded-xl border border-slate-200 bg-white p-5 shadow-[0_14px_40px_rgba(7,17,31,0.07)]"
+                    className="premium-card card-hover p-5"
                   >
                     <div className="grid gap-5 lg:grid-cols-[1.05fr_1fr_1fr_auto] lg:items-start">
                       <div className="min-w-0">
@@ -367,7 +367,7 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
               })}
             </div>
           ) : (
-            <div className="rounded-xl border border-slate-200 bg-white p-8 text-center shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
+            <div className="premium-empty">
               <h3 className="text-lg font-semibold text-navy-950">Noch keine Kunden vorhanden.</h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">
                 Lege den ersten Pilotkunden an, um Erfassungslink, Portal und Lead-Auswertung vorzubereiten.

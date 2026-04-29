@@ -83,7 +83,7 @@ export function AuditForm() {
   if (result) {
     return (
       <div className="grid gap-6 lg:grid-cols-[1fr_0.75fr]">
-        <section className="rounded-xl border border-emerald-200 bg-white p-6 shadow-[0_18px_55px_rgba(7,17,31,0.10)]">
+        <section className="premium-card border-emerald-200 p-6">
           <div className="flex items-start gap-4">
             <span className="metric-glow flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-swiss-green text-lg font-bold text-white">
               ✓
@@ -138,7 +138,7 @@ export function AuditForm() {
           </div>
         </section>
 
-        <aside className="rounded-xl border border-white/10 bg-navy-950 p-6 text-white shadow-[0_18px_55px_rgba(7,17,31,0.18)]">
+        <aside className="premium-card-dark p-6 text-white">
           <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Nächster Schritt</p>
           <h3 className="mt-3 text-2xl font-semibold">10-Minuten Einschätzung vorbereiten</h3>
           <div className="mt-6 space-y-4 text-sm leading-6 text-slate-200">
@@ -157,7 +157,7 @@ export function AuditForm() {
     <div className="grid gap-6 lg:grid-cols-[1fr_0.78fr]">
       <form
         onSubmit={handleSubmit}
-        className="rounded-xl border border-slate-200 bg-white p-6 shadow-[0_18px_55px_rgba(7,17,31,0.09)]"
+        className="premium-card p-6"
       >
         <div className="border-b border-slate-100 pb-5">
           <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Audit-Daten</p>
@@ -275,7 +275,7 @@ export function AuditForm() {
         ) : null}
       </form>
 
-      <aside className="rounded-xl border border-white/10 bg-navy-950 p-6 text-white shadow-[0_18px_55px_rgba(7,17,31,0.18)]">
+      <aside className="premium-card-dark p-6 text-white">
         <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Live-Einschätzung</p>
         <h2 className="mt-3 text-2xl font-semibold">Was der Audit vorbereitet</h2>
         <div className="mt-6 space-y-4">

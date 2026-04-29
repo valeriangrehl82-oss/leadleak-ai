@@ -38,7 +38,7 @@ export function AdminLoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-8 rounded-lg border border-swiss-line bg-white p-6 shadow-soft">
+    <form onSubmit={handleSubmit} className="premium-card mt-8 p-6">
       <label className="space-y-2">
         <span className="text-sm font-semibold text-navy-950">Passwort</span>
         <input

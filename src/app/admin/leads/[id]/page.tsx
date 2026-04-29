@@ -65,7 +65,7 @@ function statusBadgeClass(status: string | null | undefined) {
 
 function DetailGroup({ title, items }: { title: string; items: [string, string][] }) {
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
+    <section className="premium-card p-6">
       <h2 className="text-lg font-semibold text-navy-950">{title}</h2>
       <dl className="mt-5 grid gap-3 text-sm">
         {items.map(([label, value]) => (
@@ -173,19 +173,19 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
   const statusLabel = getLeadStatusLabel(lead.status);
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <section className="border-b border-swiss-line bg-white">
+    <main className="premium-page">
+      <section className="premium-surface text-white">
         <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-          <Link href={`/admin/clients/${client.id}`} className="text-sm font-semibold text-swiss-green">
+          <Link href={`/admin/clients/${client.id}`} className="text-sm font-semibold text-emerald-200 hover:text-white">
             Zurück zu {client.name}
           </Link>
           <div className="mt-4 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Lead-Profil</p>
-              <h1 className="mt-2 text-3xl font-bold tracking-tight text-navy-950 sm:text-4xl">
+              <p className="premium-eyebrow-dark">Lead Decision Desk</p>
+              <h1 className="premium-title-dark mt-2 text-3xl sm:text-5xl">
                 Lead: {lead.customer_name || "Unbekannter Kontakt"}
               </h1>
-              <p className="mt-3 text-slate-600">
+              <p className="premium-muted-dark mt-3">
                 {lead.request_type || "Anfrage ohne Kategorie"} · {estimatedValue} · Erstellt {formatDate(lead.created_at)}
               </p>
             </div>
@@ -208,7 +208,7 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
           </div>
         ) : null}
 
-        <section className="mb-6 rounded-xl border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
+        <section className="premium-card mb-6 p-6">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Workflow</p>
@@ -262,7 +262,7 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
           </div>
         </section>
 
-        <section className="mb-6 rounded-xl border border-emerald-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
+        <section className="premium-card mb-6 p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Assistant</p>
@@ -321,7 +321,7 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
               </div>
             </div>
 
-            <div className="rounded-lg border border-navy-900 bg-navy-950 p-5 text-white">
+            <div className="premium-card-dark p-5 text-white">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">
@@ -349,7 +349,7 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
           </div>
         </section>
 
-        <section className="mb-6 animate-fade-slide rounded-xl border border-navy-900 bg-navy-950 p-5 text-white shadow-[0_24px_80px_rgba(7,17,31,0.18)]">
+        <section className="premium-card-dark mb-6 animate-fade-slide p-5 text-white">
           <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Business Plus Funktion</p>

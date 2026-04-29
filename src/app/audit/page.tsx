@@ -17,14 +17,14 @@ const trustPoints = [
 
 export default function AuditPage() {
   return (
-    <main className="min-h-screen bg-slate-50">
-      <section className="bg-navy-950 text-white">
+    <main className="premium-page">
+      <section className="premium-surface text-white">
         <div className="animate-fade-slide mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-          <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Lead-Audit</p>
-          <h1 className="mt-4 max-w-4xl text-4xl font-bold tracking-tight sm:text-5xl">
+          <p className="premium-eyebrow-dark">Lead-Audit</p>
+          <h1 className="premium-title-dark mt-4 max-w-4xl text-4xl sm:text-5xl">
             Finden Sie heraus, wie viel Anfragepotenzial aktuell unsichtbar bleibt.
           </h1>
-          <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-300">
+          <p className="premium-muted-dark mt-5 max-w-3xl text-lg">
             Der Lead-Audit macht verpasste Anfragen greifbar und zeigt, ob eine strukturierte Anfrage-Erfassung für
             Ihre Pilotphase sinnvoll ist.
           </p>
@@ -36,7 +36,7 @@ export default function AuditPage() {
           {trustPoints.map((item) => (
             <article
               key={item.title}
-              className="card-hover rounded-lg border border-slate-200 bg-white p-5 shadow-[0_12px_32px_rgba(7,17,31,0.06)]"
+              className="premium-card card-hover p-5"
             >
               <h2 className="text-base font-semibold text-navy-950">{item.title}</h2>
               <p className="mt-2 text-sm leading-6 text-slate-600">{item.text}</p>

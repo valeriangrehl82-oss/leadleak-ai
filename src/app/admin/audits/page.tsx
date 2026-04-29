@@ -68,18 +68,18 @@ export default async function AdminAuditsPage() {
   const { audits, error } = await loadAuditRequests();
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <section className="border-b border-swiss-line bg-white">
+    <main className="premium-page">
+      <section className="premium-surface text-white">
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Admin</p>
-              <h1 className="mt-3 text-3xl font-bold tracking-tight text-navy-950 sm:text-4xl">Audit-Anfragen</h1>
+              <p className="premium-eyebrow-dark">Admin</p>
+              <h1 className="premium-title-dark mt-3 text-3xl sm:text-4xl">Audit-Anfragen</h1>
             </div>
             <form action="/api/admin/logout" method="post">
               <button
                 type="submit"
-                className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-navy-950 transition hover:bg-slate-50"
+                className="premium-button-secondary px-4 py-2 text-sm text-white"
               >
                 Logout
               </button>
@@ -98,7 +98,7 @@ export default async function AdminAuditsPage() {
           </div>
         ) : null}
 
-        <div className="mt-6 overflow-hidden rounded-lg border border-swiss-line bg-white shadow-soft">
+        <div className="premium-table mt-6">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200 text-sm">
               <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">

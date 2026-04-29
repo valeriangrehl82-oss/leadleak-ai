@@ -14,11 +14,11 @@ export default async function AdminLoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="premium-page">
       <section className="mx-auto max-w-xl px-4 py-16 sm:px-6 lg:px-8">
-        <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">LeadLeak AI</p>
-        <h1 className="mt-3 text-3xl font-bold tracking-tight text-navy-950">Admin Login</h1>
-        <p className="mt-4 leading-7 text-slate-600">Interner Zugriff auf Audit-Anfragen</p>
+        <p className="premium-eyebrow">LeadLeak AI</p>
+        <h1 className="premium-title mt-3 text-3xl">Admin Login</h1>
+        <p className="premium-muted mt-4">Interner Zugriff auf Audit-Anfragen</p>
         <AdminLoginForm />
       </section>
     </main>

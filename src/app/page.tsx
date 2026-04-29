@@ -58,37 +58,40 @@ const leadDnaDemoProfile = getLeadDnaProfile({
 export default function HomePage() {
   return (
     <main>
-      <section className="bg-navy-950 text-white">
+      <section className="premium-surface text-white">
         <div className="mx-auto grid min-h-[calc(100vh-73px)] max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1.02fr_0.98fr] lg:px-8">
           <div className="animate-fade-slide">
-            <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">
-              LEAD-RECOVERY FÜR SCHWEIZER KMU
+            <p className="premium-eyebrow-dark">
+              PILOT-SYSTEM FÜR SCHWEIZER SERVICEBETRIEBE
             </p>
-            <h1 className="mt-5 max-w-4xl text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Verpasste Anrufe kosten Schweizer Betriebe jeden Monat bares Geld.
+            <h1 className="premium-title-dark mt-5 max-w-4xl text-4xl sm:text-5xl lg:text-6xl">
+              Verpasste Anrufe kosten Schweizer Betriebe bares Geld.
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
-              LeadLeak AI hilft Servicebetrieben, verpasste Anfragen sichtbar zu machen, zu strukturieren und schneller
-              nachzufassen – ohne neues Personal und ohne Wechsel der bestehenden Telefonnummer.
+            <p className="premium-muted-dark mt-6 max-w-2xl text-lg">
+              LeadLeak AI macht verlorene Anfragen sichtbar, strukturiert sie und hilft beim schnellen Nachfassen –
+              ohne neues Personal und ohne Wechsel der bestehenden Telefonnummer.
+            </p>
+            <p className="mt-4 max-w-2xl text-sm font-semibold leading-6 text-emerald-200">
+              Für eine fokussierte Pilotphase mit klarer Lead-Auswertung und strukturierten Rückmeldeprozessen.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Link
-                href="/demo"
-                className="ui-lift rounded-md bg-swiss-green px-5 py-3 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-600"
-              >
-                Demo ansehen
-              </Link>
-              <Link
                 href="/audit"
-                className="ui-lift rounded-md border border-white/20 px-5 py-3 text-center text-sm font-semibold text-white transition hover:bg-white/10"
+                className="premium-button-primary px-5 py-3 text-center text-sm"
               >
                 Kostenlosen Lead-Audit buchen
+              </Link>
+              <Link
+                href="/demo"
+                className="premium-button-secondary px-5 py-3 text-center text-sm text-white"
+              >
+                Demo ansehen
               </Link>
             </div>
           </div>
 
           <div className="animate-fade-slide animate-delay-2">
-            <div className="rounded-2xl border border-white/10 bg-white p-6 text-navy-950 shadow-[0_28px_90px_rgba(0,0,0,0.32)]">
+            <div className="rounded-2xl border border-white/15 bg-white p-6 text-navy-950 shadow-[0_28px_90px_rgba(0,0,0,0.32)]">
               <div className="flex items-start justify-between gap-5">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Potentiell gerettet</p>
@@ -121,7 +124,20 @@ export default function HomePage() {
                 })}
               </div>
 
-              <div className="mt-5 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-600">
+              <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                {[
+                  ["Priorität", "Hoch"],
+                  ["Nächste Aktion", "Rückruf"],
+                  ["Status", "Qualifiziert"],
+                ].map(([label, value]) => (
+                  <div key={label} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
+                    <p className="mt-1 text-sm font-bold text-navy-950">{value}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-3 rounded-lg border border-emerald-200 bg-swiss-mint p-4 text-sm leading-6 text-emerald-950">
                 Aus einer verpassten Anfrage wird ein nachvollziehbarer Vorgang mit Kontext, Status und nächster Aktion.
               </div>
             </div>
@@ -132,11 +148,11 @@ export default function HomePage() {
       <section className="bg-white py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Warum LeadLeak AI?</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy-950 sm:text-4xl">
+            <p className="premium-eyebrow">Warum LeadLeak AI?</p>
+            <h2 className="premium-title mt-3 text-3xl sm:text-4xl">
               Verpasste Rückmeldungen sind oft kein Vertriebsproblem, sondern ein Strukturproblem.
             </h2>
-            <p className="mt-5 leading-7 text-slate-600">
+            <p className="premium-muted mt-5">
               Viele Schweizer Servicebetriebe verlieren keine Anfragen wegen schlechter Arbeit, sondern weil im Alltag
               Rückrufe untergehen: Telefon besetzt, niemand dokumentiert den Kontakt, oder die nächste Aktion ist unklar.
             </p>
@@ -146,7 +162,7 @@ export default function HomePage() {
             {whyCards.map((card) => (
               <article
                 key={card.title}
-                className="card-hover rounded-xl border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]"
+                className="premium-card card-hover p-6"
               >
                 <h3 className="text-lg font-semibold text-navy-950">{card.title}</h3>
                 <p className="mt-3 text-sm leading-6 text-slate-600">{card.text}</p>
@@ -159,11 +175,11 @@ export default function HomePage() {
       <section className="border-y border-swiss-line bg-slate-50 py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Betriebsalltag</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy-950 sm:text-4xl">
+            <p className="premium-eyebrow">Betriebsalltag</p>
+            <h2 className="premium-title mt-3 text-3xl sm:text-4xl">
               Typische Situationen aus dem Betriebsalltag
             </h2>
-            <p className="mt-5 leading-7 text-slate-600">
+            <p className="premium-muted mt-5">
               LeadLeak AI macht nicht aus jedem Kontakt automatisch einen Auftrag. Es hilft dabei, Anfragepotenzial
               sichtbar und bearbeitbar zu machen.
             </p>
@@ -173,7 +189,7 @@ export default function HomePage() {
             {operatingSituations.map((situation) => (
               <article
                 key={situation.title}
-                className="card-hover rounded-xl border border-slate-200 bg-white p-5 shadow-[0_12px_32px_rgba(7,17,31,0.06)]"
+                className="premium-card card-hover p-5"
               >
                 <h3 className="font-semibold text-navy-950">{situation.title}</h3>
                 <p className="mt-3 text-sm leading-6 text-slate-600">{situation.text}</p>
@@ -186,11 +202,11 @@ export default function HomePage() {
       <section className="border-b border-swiss-line bg-white py-16 text-navy-950">
         <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
           <div className="animate-fade-slide">
-            <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Business Plus</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+            <p className="premium-eyebrow">Business Plus</p>
+            <h2 className="premium-title mt-3 text-3xl sm:text-4xl">
               Lead DNA erkennt, welche Anfrage wirklich Priorität hat.
             </h2>
-            <p className="mt-5 max-w-2xl leading-7 text-slate-600">
+            <p className="premium-muted mt-5 max-w-2xl">
               Lead DNA macht aus jeder Anfrage ein visuelles Prioritätsprofil – mit Auftragswert, Dringlichkeit,
               Konkurrenzdruck, Nachfassbedarf und Anfragequalität.
             </p>
@@ -202,7 +218,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="animate-fade-slide animate-delay-1 rounded-xl border border-slate-200 bg-navy-950 p-3 shadow-[0_24px_80px_rgba(7,17,31,0.18)]">
+          <div className="premium-card-dark animate-fade-slide animate-delay-1 p-3">
             <div className="rounded-lg border border-white/10 bg-navy-900 p-5">
               <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -225,15 +241,15 @@ export default function HomePage() {
 
       <section className="border-b border-swiss-line bg-slate-50 py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Für wen</p>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy-950">
+          <p className="premium-eyebrow">Für wen</p>
+          <h2 className="premium-title mt-3 text-3xl">
             Für lokale Betriebe, die Anfragen nicht dem Zufall überlassen wollen.
           </h2>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {audiences.map((audience) => (
               <div
                 key={audience}
-                className="card-hover rounded-lg border border-slate-200 bg-white p-5 font-semibold shadow-[0_12px_32px_rgba(7,17,31,0.06)]"
+                className="premium-card card-hover p-5 font-semibold"
               >
                 {audience}
               </div>
@@ -245,12 +261,12 @@ export default function HomePage() {
       <section className="bg-white py-16">
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">ROI Beispiel</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy-950">
+            <p className="premium-eyebrow">ROI Beispiel</p>
+            <h2 className="premium-title mt-3 text-3xl">
               10 sichtbare Leads × CHF 250 = CHF 2’500 potenzielles Anfragevolumen.
             </h2>
           </div>
-          <div className="rounded-lg bg-navy-950 p-8 text-white shadow-[0_18px_55px_rgba(7,17,31,0.16)]">
+          <div className="premium-card-dark p-8 text-white">
             <p className="text-lg leading-8 text-slate-200">
               Für viele KMU reicht schon ein kleiner Rückgewinnungsanteil, damit sich strukturierte Rückmeldung rechnet.
               Der Demo-Fokus liegt deshalb auf messbaren verpassten Anfragen und klaren nächsten Aktionen.
@@ -263,8 +279,8 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Preise</p>
-              <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy-950">
+              <p className="premium-eyebrow">Preise</p>
+              <h2 className="premium-title mt-3 text-3xl">
                 Einfache Pakete für die Pilotphase.
               </h2>
             </div>

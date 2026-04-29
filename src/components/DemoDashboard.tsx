@@ -92,7 +92,7 @@ export function DemoDashboard() {
         {kpis.map((kpi) => (
           <article
             key={kpi.label}
-            className="card-hover rounded-xl border border-slate-200 bg-white p-5 shadow-[0_14px_40px_rgba(7,17,31,0.07)]"
+            className="premium-kpi card-hover p-5"
           >
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{kpi.label}</p>
             <p className="mt-3 text-3xl font-bold tracking-tight text-navy-950">{kpi.value}</p>
@@ -102,8 +102,8 @@ export function DemoDashboard() {
       </section>
 
       <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
-          <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Vorher / Nachher</p>
+        <div className="premium-card p-6">
+          <p className="premium-eyebrow">Vorher / Nachher</p>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Ohne System</p>
@@ -130,8 +130,8 @@ export function DemoDashboard() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
-          <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">
+        <div className="premium-card p-6">
+          <p className="premium-eyebrow">
             Was sonst verloren gegangen wäre
           </p>
           <p className="mt-3 text-sm leading-6 text-slate-600">
@@ -157,7 +157,7 @@ export function DemoDashboard() {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[1fr_390px]">
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
+        <div className="premium-table">
           <div className="border-b border-swiss-line px-5 py-4">
             <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Demo Lead Liste</p>
             <h2 className="mt-1 text-lg font-semibold text-navy-950">Verpasste Anfragen als strukturierte Leads</h2>
@@ -212,8 +212,8 @@ export function DemoDashboard() {
           </div>
         </div>
 
-        <aside className="rounded-xl border border-white/10 bg-navy-950 p-6 text-white shadow-[0_18px_55px_rgba(7,17,31,0.18)]">
-          <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Lead Detail Preview</p>
+        <aside className="premium-card-dark p-6 text-white">
+          <p className="premium-eyebrow-dark">Lead Detail Preview</p>
           <h2 className="mt-3 text-2xl font-semibold">{selectedLead.name}</h2>
           <p className="mt-1 text-sm text-slate-300">{selectedLead.anfrage}</p>
           <div className="mt-5 flex flex-wrap gap-2">
@@ -245,10 +245,10 @@ export function DemoDashboard() {
         </aside>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
+      <section className="premium-card p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">
+            <p className="premium-eyebrow">
               Auswertung für das Abschlussgespräch
             </p>
             <h2 className="mt-2 text-2xl font-bold tracking-tight text-navy-950">

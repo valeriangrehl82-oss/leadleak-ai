@@ -157,14 +157,14 @@ export default async function ClientEditPage({ params, searchParams }: ClientEdi
   }
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <section className="border-b border-swiss-line bg-white">
+    <main className="premium-page">
+      <section className="premium-surface text-white">
         <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
-          <Link href={`/admin/clients/${client.id}`} className="text-sm font-semibold text-swiss-green">
+          <Link href={`/admin/clients/${client.id}`} className="text-sm font-semibold text-emerald-200 hover:text-white">
             Zurück zum Kunden
           </Link>
-          <h1 className="mt-3 text-3xl font-bold tracking-tight text-navy-950">Kunde bearbeiten</h1>
-          <p className="mt-3 text-slate-600">{client.name}</p>
+          <h1 className="premium-title-dark mt-3 text-3xl">Kunde bearbeiten</h1>
+          <p className="premium-muted-dark mt-3">{client.name}</p>
         </div>
       </section>
 
@@ -177,7 +177,7 @@ export default async function ClientEditPage({ params, searchParams }: ClientEdi
           </div>
         ) : null}
 
-        <form action={updateClientAction} className="rounded-lg border border-swiss-line bg-white p-6 shadow-soft">
+        <form action={updateClientAction} className="premium-card p-6">
           <input type="hidden" name="id" value={client.id} />
           <div className="grid gap-5 sm:grid-cols-2">
             {[

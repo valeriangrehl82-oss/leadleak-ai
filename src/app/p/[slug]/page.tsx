@@ -61,22 +61,22 @@ export default async function PublicClientPilotPage({ params }: ClientPageProps)
   }
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <header className="border-b border-swiss-line bg-white">
+    <main className="premium-page">
+      <header className="border-b border-white/10 bg-navy-950 text-white">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <div>
-            <p className="text-lg font-bold tracking-tight text-navy-950">{client.name}</p>
-            <p className="text-sm text-slate-600">Rückruf / Anfrage</p>
+            <p className="text-lg font-bold tracking-tight text-white">{client.name}</p>
+            <p className="text-sm text-slate-300">Rückruf / Anfrage</p>
           </div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Powered by LeadLeak AI</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">Powered by LeadLeak AI</p>
         </div>
       </header>
 
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
           <div className="animate-fade-slide">
-            <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Direkte Anfrage</p>
-            <h1 className="mt-3 text-3xl font-bold tracking-tight text-navy-950 sm:text-4xl">
+            <p className="premium-eyebrow">Direkte Anfrage</p>
+            <h1 className="premium-title mt-3 text-3xl sm:text-4xl">
               {client.name} – Rückruf oder Anfrage erfassen
             </h1>
             <p className="mt-4 max-w-2xl leading-7 text-slate-600">
@@ -92,8 +92,8 @@ export default async function PublicClientPilotPage({ params }: ClientPageProps)
           </div>
 
           <aside className="animate-fade-slide animate-delay-1 space-y-5">
-            <div className="rounded-xl border border-navy-900 bg-navy-950 p-6 text-white shadow-[0_24px_80px_rgba(7,17,31,0.18)]">
-              <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Was passiert danach?</p>
+            <div className="premium-card-dark p-6 text-white">
+              <p className="premium-eyebrow-dark">Was passiert danach?</p>
               <ol className="mt-5 space-y-4">
                 {[
                   "Ihre Anfrage wird erfasst.",

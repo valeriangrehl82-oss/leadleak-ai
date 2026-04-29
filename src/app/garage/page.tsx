@@ -11,35 +11,35 @@ const processSteps = [
 
 export default function GaragePage() {
   return (
-    <main className="min-h-screen bg-slate-50">
-      <section className="bg-navy-950 text-white">
+    <main className="premium-page">
+      <section className="premium-surface text-white">
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8">
           <div className="animate-fade-slide">
-            <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Garage Demo</p>
-            <h1 className="mt-5 max-w-4xl text-4xl font-bold tracking-tight sm:text-5xl">
+            <p className="premium-eyebrow-dark">Garage Demo</p>
+            <h1 className="premium-title-dark mt-5 max-w-4xl text-4xl sm:text-5xl">
               Wie viele Werkstatt-Aufträge verlieren Sie durch verpasste Anrufe?
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
+            <p className="premium-muted-dark mt-6 max-w-2xl text-lg">
               LeadLeak AI macht verpasste Werkstatt-Anfragen im Pilot sichtbar, strukturiert die Rückmeldung und zeigt,
               welche Kontakte eine klare nächste Aktion brauchen.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/audit"
-                className="ui-lift rounded-md bg-swiss-green px-5 py-3 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-600"
+                className="premium-button-primary px-5 py-3 text-center text-sm"
               >
                 Lead-Audit buchen
               </Link>
               <Link
                 href="/demo"
-                className="ui-lift rounded-md border border-white/20 px-5 py-3 text-center text-sm font-semibold text-white transition hover:bg-white/10"
+                className="premium-button-secondary px-5 py-3 text-center text-sm text-white"
               >
                 Dashboard ansehen
               </Link>
             </div>
           </div>
 
-          <div className="animate-fade-slide animate-delay-2 rounded-lg border border-white/10 bg-white p-4 text-navy-950 shadow-[0_24px_70px_rgba(0,0,0,0.28)]">
+          <div className="premium-card animate-fade-slide animate-delay-2 p-4 text-navy-950">
             <div className="rounded-md bg-slate-50 p-5">
               <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Vom Anruf zum Termin</p>
               <div className="mt-5 space-y-3">
@@ -64,8 +64,8 @@ export default function GaragePage() {
       <section className="border-y border-swiss-line bg-white py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Garage Lead-Beispiele</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy-950">
+            <p className="premium-eyebrow">Garage Lead-Beispiele</p>
+            <h2 className="premium-title mt-3 text-3xl">
               Typische Anfragen, die sonst in der Anrufliste liegen bleiben.
             </h2>
             <p className="mt-4 leading-7 text-slate-600">
@@ -75,7 +75,7 @@ export default function GaragePage() {
 
           <div className="mt-8 grid gap-5 lg:grid-cols-2">
             {garageLeads.map((lead) => (
-              <article key={lead.id} className="card-hover rounded-lg border border-swiss-line bg-slate-50 p-5 shadow-soft">
+              <article key={lead.id} className="premium-card card-hover p-5">
                 <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
                   <div>
                     <h3 className="text-lg font-semibold text-navy-950">{lead.anfrage}</h3>

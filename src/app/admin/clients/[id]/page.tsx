@@ -368,42 +368,43 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
   const quick30 = getQuickRange(30);
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <section className="border-b border-swiss-line bg-white">
+    <main className="premium-page">
+      <section className="premium-surface text-white">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <Link href="/admin/clients" className="text-sm font-semibold text-swiss-green">
+          <Link href="/admin/clients" className="text-sm font-semibold text-emerald-200 hover:text-white">
             Zurück zu Kunden
           </Link>
           <div className="mt-3 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-navy-950 sm:text-4xl">{client.name}</h1>
-              <p className="mt-3 text-slate-600">Öffentlicher Pilot-Link: {publicLink}</p>
+              <p className="premium-eyebrow-dark">Pilot Cockpit</p>
+              <h1 className="premium-title-dark mt-2 text-3xl sm:text-5xl">{client.name}</h1>
+              <p className="premium-muted-dark mt-3">Öffentlicher Pilot-Link: {publicLink}</p>
             </div>
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 shadow-sm">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Kundenaktionen</p>
+            <div className="premium-glass rounded-xl p-3">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Kundenaktionen</p>
               <div className="flex flex-wrap gap-3">
                 <Link
                   href={`/admin/clients/${client.id}/edit`}
-                  className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-950 shadow-sm transition hover:bg-slate-50"
+                  className="premium-button-secondary px-4 py-2 text-sm text-white"
                 >
                   Kunde bearbeiten
                 </Link>
                 <Link
                   href={publicLink}
                   target="_blank"
-                  className="rounded-md border border-swiss-green bg-white px-4 py-2 text-sm font-semibold text-swiss-green shadow-sm transition hover:bg-swiss-mint"
+                  className="premium-button-secondary px-4 py-2 text-sm text-white"
                 >
                   Öffentlichen Pilot-Link öffnen
                 </Link>
                 <Link
                   href={csvHref}
-                  className="rounded-md bg-swiss-green px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600"
+                  className="premium-button-primary px-4 py-2 text-sm"
                 >
                   CSV exportieren
                 </Link>
                 <Link
                   href="/admin/recovery"
-                  className="rounded-md bg-navy-950 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-navy-800"
+                  className="premium-button-secondary px-4 py-2 text-sm text-white"
                 >
                   Recovery Queue
                 </Link>
@@ -411,7 +412,7 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
                   <input type="hidden" name="client_id" value={client.id} />
                   <button
                     type="submit"
-                    className="rounded-md border border-navy-950 bg-white px-4 py-2 text-sm font-semibold text-navy-950 shadow-sm transition hover:bg-slate-50"
+                    className="premium-button-secondary px-4 py-2 text-sm text-white"
                   >
                     Demo-Leads erstellen
                   </button>
@@ -434,7 +435,7 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
           </div>
         ) : null}
 
-        <div className="mb-6 rounded-lg border border-slate-200 bg-white p-5 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
+        <div className="premium-card mb-6 p-5">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <form className="grid gap-4 sm:grid-cols-[1fr_1fr_auto]" method="get">
               <label className="space-y-2">
@@ -493,14 +494,14 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
             ["Verlorene Leads", String(stats.lost)],
             ["Geschätztes Gesamtpotenzial", formatChf(stats.totalValue)],
           ].map(([label, value]) => (
-            <div key={label} className="rounded-lg border border-slate-200 bg-white p-5 shadow-[0_12px_32px_rgba(7,17,31,0.06)]">
+            <div key={label} className="premium-kpi p-5">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
               <p className="mt-2 text-2xl font-bold text-navy-950">{value}</p>
             </div>
           ))}
         </div>
 
-        <div className="mb-6 rounded-xl border border-navy-900 bg-navy-950 p-5 text-white shadow-[0_24px_80px_rgba(7,17,31,0.14)]">
+        <div className="premium-card-dark mb-6 p-5 text-white">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Business Plus</p>
@@ -534,7 +535,7 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[0.7fr_1.3fr]">
-          <aside className="rounded-lg border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
+          <aside className="premium-card p-6">
             <h2 className="text-xl font-semibold text-navy-950">Kundendetails</h2>
             <dl className="mt-5 space-y-3 text-sm">
               {[
@@ -585,7 +586,7 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
             </div>
           </aside>
 
-          <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
+          <div className="premium-table">
             <div className="border-b border-swiss-line px-5 py-4">
               <h2 className="text-xl font-semibold text-navy-950">Leads</h2>
             </div>
@@ -665,7 +666,7 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
           </div>
         </div>
 
-        <div className="mt-6 rounded-lg border border-slate-200 bg-white p-6 shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
+        <div className="premium-card mt-6 p-6">
           <h2 className="text-xl font-semibold text-navy-950">Pilot-Auswertung</h2>
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[
@@ -687,7 +688,7 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
           </p>
         </div>
 
-        <div className="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
+        <div className="premium-table mt-6">
           <div className="border-b border-swiss-line px-5 py-4">
             <h2 className="text-xl font-semibold text-navy-950">Nachrichten</h2>
           </div>

@@ -31,13 +31,13 @@ export function GarageRoiCalculator() {
   }, [averageOrderValue, missedCalls, recoveryRate, relevantShare]);
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(7,17,31,0.08)]">
+    <div className="premium-card p-6">
       <div className="flex flex-col gap-4 border-b border-slate-100 pb-6 lg:flex-row lg:items-end lg:justify-between">
         <div>
-        <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Garage ROI Rechner</p>
-        <h2 className="mt-3 text-2xl font-bold tracking-tight text-navy-950">
-          Was verpasste Werkstatt-Anfragen pro Monat bedeuten können.
-        </h2>
+          <p className="premium-eyebrow">Garage ROI Rechner</p>
+          <h2 className="premium-title mt-3 text-2xl">
+            Was verpasste Werkstatt-Anfragen pro Monat bedeuten können.
+          </h2>
         </div>
         <p className="max-w-xl rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
           Die Berechnung dient zur Potenzial-Einschätzung und ist keine Umsatzgarantie.
@@ -90,8 +90,8 @@ export function GarageRoiCalculator() {
           </label>
         </div>
 
-        <div className="rounded-lg border border-white/10 bg-navy-950 p-6 text-white shadow-[0_20px_50px_rgba(7,17,31,0.18)]">
-          <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Potenzial</p>
+        <div className="premium-card-dark p-6 text-white">
+          <p className="premium-eyebrow-dark">Potenzial</p>
           <div className="mt-5 space-y-5">
             <div>
               <p className="text-sm text-slate-300">Potenziell gerettete Leads pro Monat</p>

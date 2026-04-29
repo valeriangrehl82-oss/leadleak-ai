@@ -129,17 +129,17 @@ export default async function AdminRecoveryPage() {
   const { items, error } = await loadRecoveryQueue();
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <section className="border-b border-swiss-line bg-white">
+    <main className="premium-page">
+      <section className="premium-surface text-white">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Admin Cockpit</p>
-          <h1 className="mt-3 text-3xl font-bold tracking-tight text-navy-950 sm:text-4xl">
+          <p className="premium-eyebrow-dark">Admin Cockpit</p>
+          <h1 className="premium-title-dark mt-3 text-3xl sm:text-5xl">
             Recovery Review Queue
           </h1>
-          <p className="mt-4 max-w-3xl leading-7 text-slate-600">
+          <p className="premium-muted-dark mt-4 max-w-3xl">
             Antwortvorschläge für offene Anfragen prüfen, kopieren und priorisieren.
           </p>
-          <div className="mt-6 rounded-xl border border-emerald-200 bg-swiss-mint p-4 text-sm leading-6 text-emerald-950">
+          <div className="premium-glass mt-6 rounded-xl p-4 text-sm leading-6 text-emerald-50">
             Recovery Brain erstellt Vorschläge zur Unterstützung der Rückmeldung. Es werden keine Nachrichten
             automatisch versendet.
           </div>

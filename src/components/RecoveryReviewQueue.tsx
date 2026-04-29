@@ -128,7 +128,7 @@ export function RecoveryReviewQueue({ items }: { items: RecoveryQueueItem[] }) {
           {filteredItems.map((item) => (
             <article
               key={item.id}
-              className="rounded-xl border border-slate-200 bg-white p-5 shadow-[0_14px_40px_rgba(7,17,31,0.07)]"
+              className="premium-card p-5"
             >
               <div className="grid gap-5 lg:grid-cols-[1fr_1.05fr]">
                 <div>
@@ -160,7 +160,7 @@ export function RecoveryReviewQueue({ items }: { items: RecoveryQueueItem[] }) {
                         <p className="mt-2 font-semibold text-navy-950">{value}</p>
                       </div>
                     ))}
-                    <div className="rounded-lg border border-navy-900 bg-navy-950 p-4 text-white">
+                    <div className="premium-card-dark p-4 text-white">
                       <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">Dringlichkeit</p>
                       <span
                         className={`mt-2 inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${getUrgencyTone(
@@ -196,7 +196,7 @@ export function RecoveryReviewQueue({ items }: { items: RecoveryQueueItem[] }) {
                   </div>
                 </div>
 
-                <div className="rounded-xl border border-navy-900 bg-navy-950 p-5 text-white">
+                <div className="premium-card-dark p-5 text-white">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">
@@ -232,7 +232,7 @@ export function RecoveryReviewQueue({ items }: { items: RecoveryQueueItem[] }) {
           ))}
         </div>
       ) : (
-        <div className="rounded-xl border border-slate-200 bg-white p-8 text-center shadow-[0_14px_40px_rgba(7,17,31,0.07)]">
+        <div className="premium-empty">
           <h2 className="text-xl font-semibold text-navy-950">Keine offenen Recovery-Vorschläge</h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-slate-600">
             Sobald neue oder qualifizierte Anfragen eingehen, erscheinen hier Antwortvorschläge zur Prüfung.

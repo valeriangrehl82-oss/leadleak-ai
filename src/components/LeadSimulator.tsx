@@ -31,7 +31,7 @@ export function LeadSimulator() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
-      <form onSubmit={handleSubmit} className="rounded-lg border border-swiss-line bg-white p-6 shadow-soft">
+      <form onSubmit={handleSubmit} className="premium-card p-6">
         <div className="grid gap-5 sm:grid-cols-2">
           <label className="space-y-2">
             <span className="text-sm font-semibold text-navy-950">Name</span>
@@ -110,7 +110,7 @@ export function LeadSimulator() {
         </button>
       </form>
 
-      <aside className="rounded-lg border border-swiss-line bg-navy-950 p-6 text-white shadow-soft">
+      <aside className="premium-card-dark p-6 text-white">
         <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Simulierter Ablauf</p>
         {submitted ? (
           <div className="mt-6 space-y-5">
