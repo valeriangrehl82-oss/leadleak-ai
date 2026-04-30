@@ -40,7 +40,8 @@ export function GarageRoiCalculator() {
           </h2>
         </div>
         <p className="max-w-xl rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
-          Die Berechnung dient zur Potenzial-Einschätzung und ist keine Umsatzgarantie.
+          Alle Beträge sind Schätzwerte auf Basis eingegebener oder beispielhafter Annahmen. Sie stellen keine
+          Umsatzgarantie dar.
         </p>
       </div>
 

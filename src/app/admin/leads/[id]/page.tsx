@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { LeadActivityTimeline } from "@/components/LeadActivityTimeline";
 import { LeadDnaBars, LeadDnaCore, LeadDnaPrivacyNote } from "@/components/LeadDnaVisual";
+import { StatusWorkflowInfo } from "@/components/StatusWorkflowInfo";
 import { formatChf } from "@/lib/audit";
 import { ADMIN_COOKIE_NAME, hasValidAdminSession } from "@/lib/adminAuth";
 import { getLeadActivitiesForLead, logStatusChange, type LeadActivityRow } from "@/lib/leadActivities";
@@ -290,6 +291,9 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
               </button>
             </form>
           </div>
+          <div className="mt-5">
+            <StatusWorkflowInfo />
+          </div>
 
           <div className="mt-5 flex flex-wrap gap-2">
             {[
@@ -300,12 +304,21 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
               <form key={status} action={updateLeadStatusAction}>
                 <input type="hidden" name="lead_id" value={lead.id} />
                 <input type="hidden" name="status" value={status} />
-                <button
-                  type="submit"
-                  className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-navy-950 transition hover:bg-slate-50"
-                >
-                  {label}
-                </button>
+                {status === "won" ? (
+                  <ConfirmSubmitButton
+                    message="Lead wirklich als gewonnen markieren?"
+                    className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-navy-950 transition hover:bg-slate-50"
+                  >
+                    {label}
+                  </ConfirmSubmitButton>
+                ) : (
+                  <button
+                    type="submit"
+                    className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-navy-950 transition hover:bg-slate-50"
+                  >
+                    {label}
+                  </button>
+                )}
               </form>
             ))}
           </div>
@@ -331,7 +344,7 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
               <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Assistant</p>
               <h2 className="mt-2 text-2xl font-bold tracking-tight text-navy-950">AI Recovery Brain</h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-                Vorschlag zur Unterstützung der Rückmeldung. Keine automatisierte Entscheidung.
+                Vorschlag zur Unterstützung der Rückmeldung. Es wird keine Nachricht automatisch versendet.
               </p>
             </div>
             <span className="w-fit rounded-full border border-emerald-200 bg-swiss-mint px-3 py-1 text-sm font-semibold text-emerald-800">
@@ -428,6 +441,14 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
           </div>
           <div className="mb-5">
             <LeadDnaPrivacyNote />
+          </div>
+          <div className="mb-5 rounded-lg border border-white/10 bg-white/[0.04] p-4 text-xs leading-5 text-slate-300">
+            <p className="font-semibold text-white">Wie Lead DNA funktioniert</p>
+            <p className="mt-2">
+              Lead DNA hilft, Anfragen schneller einzuordnen. Berücksichtigt werden unter anderem Auftragswert,
+              Dringlichkeit, Konkurrenzdruck, Nachfassbedarf und Anfragequalität. Die Einschätzung ist eine
+              Priorisierungshilfe und keine automatische Entscheidung.
+            </p>
           </div>
 
           <div className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">

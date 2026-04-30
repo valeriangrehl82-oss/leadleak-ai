@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
 import { CopyButton } from "@/components/CopyButton";
 import { LeadActivityTimeline } from "@/components/LeadActivityTimeline";
 import { LeadDnaBars, LeadDnaCore, LeadDnaPrivacyNote } from "@/components/LeadDnaVisual";
+import { StatusWorkflowInfo } from "@/components/StatusWorkflowInfo";
 import { formatChf } from "@/lib/audit";
 import { isClientPortalConfigError } from "@/lib/clientSession";
 import { requireClientPortalClient, type ClientPortalClient } from "@/lib/clientPortalAuth";
@@ -372,12 +374,25 @@ export default async function ClientLeadDetailPage({ params, searchParams }: Cli
                   <form key={status} action={updateLeadStatusAction}>
                     <input type="hidden" name="lead_id" value={lead.id} />
                     <input type="hidden" name="status" value={status} />
-                    <button
-                      type="submit"
-                      className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-navy-950 transition hover:bg-slate-50"
-                    >
-                      {label}
-                    </button>
+                    {status === "won" || status === "lost" ? (
+                      <ConfirmSubmitButton
+                        message={
+                          status === "won"
+                            ? "Lead wirklich als gewonnen markieren?"
+                            : "Lead wirklich als verloren markieren?"
+                        }
+                        className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-navy-950 transition hover:bg-slate-50"
+                      >
+                        {label}
+                      </ConfirmSubmitButton>
+                    ) : (
+                      <button
+                        type="submit"
+                        className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-navy-950 transition hover:bg-slate-50"
+                      >
+                        {label}
+                      </button>
+                    )}
                   </form>
                 ))}
               </div>
@@ -419,6 +434,9 @@ export default async function ClientLeadDetailPage({ params, searchParams }: Cli
                   Status speichern
                 </button>
               </form>
+              <div className="mt-5">
+                <StatusWorkflowInfo />
+              </div>
             </section>
 
             <section className="premium-card p-6">
@@ -494,6 +512,14 @@ export default async function ClientLeadDetailPage({ params, searchParams }: Cli
               <h2 className="mt-2 text-2xl font-semibold">Priorisierungshilfe</h2>
               <div className="mt-5">
                 <LeadDnaPrivacyNote />
+              </div>
+              <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.04] p-4 text-xs leading-5 text-slate-300">
+                <p className="font-semibold text-white">Wie Lead DNA funktioniert</p>
+                <p className="mt-2">
+                  Lead DNA hilft, Anfragen schneller einzuordnen. Berücksichtigt werden unter anderem Auftragswert,
+                  Dringlichkeit, Konkurrenzdruck, Nachfassbedarf und Anfragequalität. Die Einschätzung ist eine
+                  Priorisierungshilfe und keine automatische Entscheidung.
+                </p>
               </div>
               <div className="mt-5">
                 <LeadDnaCore profile={leadDnaProfile} compact />

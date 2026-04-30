@@ -38,11 +38,11 @@ export async function POST(request: Request) {
   const currentProblem = readRequiredString(body.currentProblem);
   const missedCallsPerWeek = Number(body.missedCallsPerWeek);
 
-  if (!companyName || !industry || !contactPerson || !phone || !email) {
+  if (!companyName || !industry || (!phone && !email)) {
     return NextResponse.json({ error: "Bitte alle Pflichtfelder ausfüllen." }, { status: 400 });
   }
 
-  if (!email.includes("@")) {
+  if (email && !email.includes("@")) {
     return NextResponse.json({ error: "Bitte eine gültige E-Mail-Adresse eingeben." }, { status: 400 });
   }
 
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
     const { error } = await supabase.from("audit_requests").insert({
       company_name: companyName,
       industry,
-      contact_person: contactPerson,
+      contact_person: contactPerson || companyName,
       phone,
       email,
       missed_calls_per_week: Math.round(missedCallsPerWeek),
@@ -99,7 +99,7 @@ export async function POST(request: Request) {
     const emailSent = await sendAuditNotificationEmail({
       companyName,
       industry,
-      contactPerson,
+      contactPerson: contactPerson || companyName,
       phone,
       email,
       missedCallsPerWeek: Math.round(missedCallsPerWeek),
@@ -117,12 +117,12 @@ export async function POST(request: Request) {
   }
 
   return NextResponse.json({
-    message: "Audit-Anfrage gespeichert. Nächster Schritt: 10-Minuten Demo vorbereiten.",
+    message: "Audit-Anfrage gespeichert. Nächster Schritt: Einschätzung vorbereiten.",
     estimatedOrderValueChf,
     estimatedMonthlyPotentialChf,
     summary: `Bei ${Math.round(
       missedCallsPerWeek,
-    )} verpassten Anrufen pro Woche und einem durchschnittlichen Auftragswert von CHF ${estimatedOrderValueChf.toLocaleString(
+    )} verpassten Anfragen pro Woche und einem durchschnittlichen Auftragswert von CHF ${estimatedOrderValueChf.toLocaleString(
       "de-CH",
     )} könnte bereits ein kleiner Rückgewinnungsanteil relevant sein.`,
   });

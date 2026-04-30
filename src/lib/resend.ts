@@ -50,7 +50,7 @@ function buildAuditEmailText(input: AuditNotificationInput) {
     `Kontaktperson: ${input.contactPerson}`,
     `Telefon: ${input.phone}`,
     `E-Mail: ${input.email}`,
-    `Verpasste Anrufe pro Woche: ${input.missedCallsPerWeek}`,
+    `Verpasste Anfragen pro Woche: ${input.missedCallsPerWeek}`,
     `Geschätzter Auftragswert: ${formatChf(input.estimatedOrderValueChf)}`,
     `Geschätztes monatliches Potenzial: ${formatChf(input.estimatedMonthlyPotentialChf)}`,
     `Aktuelles Problem: ${input.currentProblem || "-"}`,

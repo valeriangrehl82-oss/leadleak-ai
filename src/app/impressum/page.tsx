@@ -10,13 +10,20 @@ export default function ImpressumPage() {
         <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
           <p className="premium-eyebrow-dark">Angaben zum Anbieter</p>
           <h1 className="premium-title-dark mt-3 text-4xl sm:text-5xl">Impressum</h1>
+          <div className="mt-6 rounded-xl border border-amber-300/35 bg-amber-300/10 p-5 text-sm leading-6 text-amber-50">
+            <p className="font-semibold">Vor Kundeneinsatz ausfüllen</p>
+            <p className="mt-1">
+              Name/Firma, Adresse, E-Mail und verantwortliche Person sind Platzhalter und müssen vor einem echten
+              Pilotkunden ergänzt werden.
+            </p>
+          </div>
         </div>
       </section>
 
       <section className="mx-auto grid max-w-5xl gap-5 px-4 py-10 sm:px-6 lg:px-8">
         <article className="premium-card p-6">
           <h2 className="text-xl font-semibold text-navy-950">Anbieter</h2>
-          <div className="mt-4 space-y-2 text-sm leading-7 text-slate-700">
+          <div className="mt-4 space-y-2 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-7 text-amber-950">
             <p>[Name / Firma]</p>
             <p>[Adresse]</p>
             <p>[PLZ Ort]</p>
@@ -27,7 +34,9 @@ export default function ImpressumPage() {
 
         <article className="premium-card p-6">
           <h2 className="text-xl font-semibold text-navy-950">Verantwortlich für den Inhalt</h2>
-          <p className="mt-4 text-sm leading-7 text-slate-700">[Name / Firma]</p>
+          <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-7 text-amber-950">
+            [Name / Firma]
+          </p>
         </article>
 
         <article className="premium-card p-6">

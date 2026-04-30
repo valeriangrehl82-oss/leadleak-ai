@@ -650,7 +650,71 @@ export default async function ClientDetailPage({ params, searchParams }: ClientD
               <h2 className="text-xl font-semibold text-navy-950">Leads</h2>
             </div>
             {error ? <div className="m-5 rounded-md bg-red-50 p-4 text-sm font-semibold text-red-800">{error}</div> : null}
-            <div className="overflow-x-auto">
+            <div className="grid gap-3 p-4 md:hidden">
+              {leads.length ? (
+                leads.map((lead) => (
+                  <article key={lead.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="font-semibold text-navy-950">{lead.customer_name || "-"}</p>
+                        <p className="mt-1 text-xs text-slate-500">{lead.customer_phone || "-"}</p>
+                      </div>
+                      <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">
+                        {getLeadStatusLabel(lead.status)}
+                      </span>
+                    </div>
+                    <dl className="mt-4 grid gap-3 text-sm">
+                      <div>
+                        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Anfrage</dt>
+                        <dd className="mt-1 text-slate-800">{lead.request_type || "-"}</dd>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Wert</dt>
+                          <dd className="mt-1 font-semibold text-navy-950">
+                            {lead.estimated_value_chf ? formatChf(lead.estimated_value_chf) : "-"}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Erstellt</dt>
+                          <dd className="mt-1 text-slate-800">{formatDate(lead.created_at)}</dd>
+                        </div>
+                      </div>
+                      <div>
+                        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Nachricht</dt>
+                        <dd className="mt-1 text-slate-800">{lead.message || "-"}</dd>
+                      </div>
+                    </dl>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <form action={updateLeadStatusAction} className="flex gap-2">
+                        <input type="hidden" name="client_id" value={client.id} />
+                        <input type="hidden" name="lead_id" value={lead.id} />
+                        <input type="hidden" name="start" value={start} />
+                        <input type="hidden" name="end" value={end} />
+                        <select name="status" defaultValue={lead.status || "new"} className="premium-input py-2 text-xs">
+                          {leadStatuses.map((status) => (
+                            <option key={status.value} value={status.value}>
+                              {status.label}
+                            </option>
+                          ))}
+                        </select>
+                        <button type="submit" className="rounded-md bg-navy-950 px-3 py-2 text-xs font-semibold text-white">
+                          OK
+                        </button>
+                      </form>
+                      <Link href={`/admin/leads/${lead.id}`} className="rounded-md border border-slate-300 px-3 py-2 text-xs font-semibold text-navy-950">
+                        Öffnen
+                      </Link>
+                    </div>
+                  </article>
+                ))
+              ) : (
+                <div className="rounded-lg border border-slate-200 bg-slate-50 p-5 text-center text-sm text-slate-600">
+                  Noch keine Leads vorhanden.
+                </div>
+              )}
+            </div>
+            <div className="hidden overflow-x-auto md:block">
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <tr>

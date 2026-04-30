@@ -12,15 +12,13 @@ type SubmitResult = {
 };
 
 export function AuditForm() {
-  const [company, setCompany] = useState("Garage Muster AG");
+  const [company, setCompany] = useState("");
   const [industry, setIndustry] = useState<AuditIndustry>("Garage");
-  const [contact, setContact] = useState("Thomas Berger");
-  const [phone, setPhone] = useState("+41 79 555 21 10");
-  const [email, setEmail] = useState("thomas.berger@example.ch");
-  const [missedCalls, setMissedCalls] = useState(12);
-  const [problem, setProblem] = useState(
-    "Wir verpassen Anrufe während Probefahrten und wenn alle am Empfang besetzt sind.",
-  );
+  const [contact, setContact] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [missedCalls, setMissedCalls] = useState(0);
+  const [problem, setProblem] = useState("");
   const [result, setResult] = useState<SubmitResult | null>(null);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,6 +47,12 @@ export function AuditForm() {
     setIsSubmitting(true);
     setError("");
     setResult(null);
+
+    if (!phone.trim() && !email.trim()) {
+      setError("Bitte Telefonnummer oder E-Mail angeben.");
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       const response = await fetch("/api/audit-requests", {
@@ -94,8 +98,7 @@ export function AuditForm() {
                 Audit-Anfrage erfolgreich gesendet
               </h2>
               <p className="mt-3 max-w-2xl leading-7 text-slate-600">
-                Die Anfrage wurde gespeichert. Wir melden uns zeitnah mit einer kurzen Einschätzung und dem passenden
-                nächsten Schritt für die Pilotphase.
+                Wir prüfen Ihre Angaben und melden uns für die nächste Einschätzung.
               </p>
             </div>
           </div>
@@ -104,9 +107,9 @@ export function AuditForm() {
             {[
               ["Firma", company],
               ["Branche", industry],
-              ["Kontakt", contact],
-              ["Telefon", phone],
-              ["E-Mail", email],
+              ["Kontakt", contact || "-"],
+              ["Telefon", phone || "-"],
+              ["E-Mail", email || "-"],
               ["Verpasste Anrufe/Woche", String(missedCalls)],
             ].map(([label, value]) => (
               <div key={label} className="rounded-md border border-slate-100 bg-slate-50 p-4">
@@ -145,7 +148,8 @@ export function AuditForm() {
             <p>Ø Auftragswert: {formatChf(result.estimatedOrderValueChf)}</p>
             <p>Geschätztes monatliches Potenzial: {formatChf(result.estimatedMonthlyPotentialChf)}</p>
             <p className="rounded-md border border-white/10 bg-white/5 p-4">
-              Die Berechnung ist eine Potenzial-Einschätzung und keine Umsatzgarantie.
+              Alle Beträge sind Schätzwerte auf Basis eingegebener oder beispielhafter Annahmen. Sie stellen keine
+              Umsatzgarantie dar.
             </p>
           </div>
         </aside>
@@ -163,13 +167,13 @@ export function AuditForm() {
           <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Audit-Daten</p>
           <h2 className="mt-2 text-2xl font-bold tracking-tight text-navy-950">Betrieb und Anfragepotenzial erfassen</h2>
           <p className="mt-3 text-sm leading-6 text-slate-600">
-            Die Angaben reichen für eine erste Einschätzung. Es wird noch nichts an bestehende Systeme angebunden.
+            Je grober die Schätzung, desto besser. Ziel ist eine erste Potenzialanalyse, keine perfekte Datenerhebung.
           </p>
         </div>
 
         <div className="mt-6 grid gap-5 sm:grid-cols-2">
           <label className="space-y-2">
-            <span className="text-sm font-semibold text-navy-950">Firmenname</span>
+            <span className="text-sm font-semibold text-navy-950">Unternehmen</span>
             <input
               value={company}
               onChange={(event) => {
@@ -198,7 +202,7 @@ export function AuditForm() {
             </select>
           </label>
           <label className="space-y-2">
-            <span className="text-sm font-semibold text-navy-950">Kontaktperson</span>
+            <span className="text-sm font-semibold text-navy-950">Kontaktperson <span className="font-normal text-slate-500">(optional)</span></span>
             <input
               value={contact}
               onChange={(event) => {
@@ -206,11 +210,10 @@ export function AuditForm() {
                 resetFeedback();
               }}
               className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
-              required
             />
           </label>
           <label className="space-y-2">
-            <span className="text-sm font-semibold text-navy-950">Telefonnummer</span>
+            <span className="text-sm font-semibold text-navy-950">Telefon <span className="font-normal text-slate-500">(Telefon oder E-Mail)</span></span>
             <input
               value={phone}
               onChange={(event) => {
@@ -218,11 +221,10 @@ export function AuditForm() {
                 resetFeedback();
               }}
               className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
-              required
             />
           </label>
           <label className="space-y-2">
-            <span className="text-sm font-semibold text-navy-950">E-Mail</span>
+            <span className="text-sm font-semibold text-navy-950">E-Mail <span className="font-normal text-slate-500">(Telefon oder E-Mail)</span></span>
             <input
               type="email"
               value={email}
@@ -231,11 +233,10 @@ export function AuditForm() {
                 resetFeedback();
               }}
               className="w-full rounded-md border border-slate-300 bg-white px-3 py-3 outline-none ring-swiss-green transition focus:border-swiss-green focus:ring-2"
-              required
             />
           </label>
           <label className="space-y-2">
-            <span className="text-sm font-semibold text-navy-950">Geschätzte verpasste Anrufe pro Woche</span>
+            <span className="text-sm font-semibold text-navy-950">Geschätzte verpasste Anfragen pro Woche</span>
             <input
               type="number"
               min="0"
@@ -250,7 +251,7 @@ export function AuditForm() {
           </label>
         </div>
         <label className="mt-5 block space-y-2">
-          <span className="text-sm font-semibold text-navy-950">Aktuelles Problem</span>
+          <span className="text-sm font-semibold text-navy-950">Aktuelles Problem <span className="font-normal text-slate-500">(optional)</span></span>
           <textarea
             value={problem}
             onChange={(event) => {
@@ -262,8 +263,7 @@ export function AuditForm() {
           />
         </label>
         <p className="mt-4 text-xs leading-5 text-slate-500">
-          Wir verwenden Ihre Angaben zur Bearbeitung Ihrer Anfrage und zur Kontaktaufnahme. Weitere Informationen finden
-          Sie in der{" "}
+          Mit Klick auf «Audit anfragen» akzeptieren Sie die Bearbeitung Ihrer Angaben gemäss{" "}
           <Link href="/datenschutz" className="font-semibold text-swiss-green hover:text-emerald-700">
             Datenschutzerklärung
           </Link>
@@ -274,7 +274,7 @@ export function AuditForm() {
           disabled={isSubmitting}
           className="ui-lift mt-6 rounded-md bg-swiss-green px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:bg-slate-400"
         >
-          {isSubmitting ? "Wird gespeichert..." : "Lead-Audit anfragen"}
+          {isSubmitting ? "Wird gespeichert..." : "Audit anfragen"}
         </button>
         {error ? (
           <div className="mt-5 rounded-md border border-red-300 bg-red-50 p-4 text-sm font-semibold text-red-800">

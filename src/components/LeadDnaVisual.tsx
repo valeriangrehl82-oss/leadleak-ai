@@ -175,6 +175,12 @@ export function LeadDnaPrivacyNote({ tone = "dark" }: { tone?: "dark" | "light" 
       <p className="mt-2">
         Die Auswertung basiert auf Anfrageinhalt, Status, Alter der Anfrage und geschätztem Auftragswert.
       </p>
+      <p className="mt-2">
+        Faktoren: Auftragswert, Dringlichkeit, Konkurrenzdruck, Nachfassbedarf und Anfragequalität.
+      </p>
+      <p className="mt-2">
+        Gewichtungen sind aktuell systemseitig definiert und können später kundenspezifisch angepasst werden.
+      </p>
     </div>
   );
 }

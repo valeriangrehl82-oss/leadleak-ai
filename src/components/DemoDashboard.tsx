@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { CopyButton } from "@/components/CopyButton";
 import { kpis, leads } from "@/lib/mockData";
 import type { Lead, LeadStatus } from "@/lib/types";
 
@@ -83,8 +84,8 @@ function getPriority(lead: Lead) {
 }
 
 export function DemoDashboard() {
-  const [selectedLead, setSelectedLead] = useState<Lead>(leads[0]);
-  const selectedPriority = useMemo(() => getPriority(selectedLead), [selectedLead]);
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(leads[0]);
+  const selectedPriority = useMemo(() => (selectedLead ? getPriority(selectedLead) : "Basis"), [selectedLead]);
 
   return (
     <div className="space-y-8">
@@ -162,7 +163,40 @@ export function DemoDashboard() {
             <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Demo Lead Liste</p>
             <h2 className="mt-1 text-lg font-semibold text-navy-950">Verpasste Anfragen als strukturierte Leads</h2>
           </div>
-          <div className="overflow-x-auto">
+          <div className="grid gap-3 p-4 md:hidden">
+            {leads.map((lead) => {
+              const priority = getPriority(lead);
+
+              return (
+                <button
+                  key={lead.id}
+                  type="button"
+                  onClick={() => setSelectedLead(lead)}
+                  className={`rounded-xl border p-4 text-left transition ${
+                    selectedLead?.id === lead.id
+                      ? "border-emerald-300 bg-swiss-mint"
+                      : "border-slate-200 bg-white hover:border-emerald-200 hover:bg-slate-50"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-semibold text-navy-950">{lead.name}</p>
+                      <p className="mt-1 text-xs text-slate-500">{lead.phone}</p>
+                    </div>
+                    <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${priorityStyles[priority]}`}>
+                      {priority}
+                    </span>
+                  </div>
+                  <div className="mt-3 grid gap-2 text-sm text-slate-700">
+                    <p><span className="font-semibold text-slate-500">Anfrage:</span> {lead.anfrage}</p>
+                    <p><span className="font-semibold text-slate-500">Status:</span> {statusLabels[lead.status]}</p>
+                    <p><span className="font-semibold text-slate-500">Potenzial:</span> {lead.value}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+          <div className="hidden overflow-x-auto md:block">
             <table className="min-w-full divide-y divide-slate-200 text-sm">
               <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                 <tr>
@@ -182,7 +216,7 @@ export function DemoDashboard() {
                       key={lead.id}
                       onClick={() => setSelectedLead(lead)}
                       className={`cursor-pointer transition hover:bg-swiss-mint/60 ${
-                        selectedLead.id === lead.id ? "bg-swiss-mint" : "bg-white"
+                        selectedLead?.id === lead.id ? "bg-swiss-mint" : "bg-white"
                       }`}
                     >
                       <td className="min-w-48 px-5 py-4">
@@ -213,35 +247,69 @@ export function DemoDashboard() {
         </div>
 
         <aside className="premium-card-dark p-6 text-white">
-          <p className="premium-eyebrow-dark">Lead Detail Preview</p>
-          <h2 className="mt-3 text-2xl font-semibold">{selectedLead.name}</h2>
-          <p className="mt-1 text-sm text-slate-300">{selectedLead.anfrage}</p>
-          <div className="mt-5 flex flex-wrap gap-2">
-            <span className="rounded-full border border-emerald-300/20 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-100">
-              Priorität: {selectedPriority}
-            </span>
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200">
-              Potenzial: {selectedLead.value}
-            </span>
-          </div>
-          <div className="mt-6 space-y-5 text-sm leading-6 text-slate-200">
-            <div>
-              <p className="font-semibold text-white">Kurzfassung</p>
-              <p className="mt-1">{selectedLead.summary}</p>
+          {selectedLead ? (
+            <>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="premium-eyebrow-dark">Lead Detail Preview</p>
+                  <h2 className="mt-3 text-2xl font-semibold">{selectedLead.name}</h2>
+                  <p className="mt-1 text-sm text-slate-300">{selectedLead.anfrage}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedLead(null)}
+                  className="rounded-md border border-white/15 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/10"
+                >
+                  Demo Lead schliessen
+                </button>
+              </div>
+              <div className="mt-5 flex flex-wrap gap-2">
+                <span className="rounded-full border border-emerald-300/20 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-100">
+                  Priorität: {selectedPriority}
+                </span>
+                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200">
+                  Potenzial: {selectedLead.value}
+                </span>
+              </div>
+              <div className="mt-6 space-y-5 text-sm leading-6 text-slate-200">
+                <div>
+                  <p className="font-semibold text-white">Kurzfassung</p>
+                  <p className="mt-1">{selectedLead.summary}</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-white">Lead DNA / Prioritätshinweis</p>
+                  <p className="mt-1">{selectedLead.urgency}</p>
+                  <p className="mt-2 text-xs text-slate-400">
+                    Demo: Lead DNA zeigt beispielhaft, welche Anfragen zuerst geprüft werden sollten.
+                  </p>
+                </div>
+                <div className="rounded-lg border border-emerald-300/20 bg-emerald-400/10 p-4">
+                  <p className="font-semibold text-white">Empfohlene Aktion</p>
+                  <p className="mt-2 text-emerald-50">{selectedLead.recommendedAction}</p>
+                </div>
+                <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <p className="font-semibold text-white">Recovery Brain Vorschlag</p>
+                      <p className="mt-1 text-xs text-slate-400">Demo-Daten. Keine echte Nachricht wird versendet.</p>
+                    </div>
+                    <CopyButton
+                      text={selectedLead.suggestedMessage}
+                      label="Antwortvorschlag kopieren"
+                      copiedLabel="Kopiert"
+                      className="rounded-md border border-white/15 bg-white/10 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/15"
+                    />
+                  </div>
+                  <p className="mt-3 text-slate-100">{selectedLead.suggestedMessage}</p>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="rounded-lg border border-white/10 bg-white/[0.04] p-5 text-sm leading-6 text-slate-300">
+              Wählen Sie einen Demo-Lead aus der Liste, um Zusammenfassung, Lead DNA Hinweis und Recovery Brain
+              Antwortvorschlag zu sehen.
             </div>
-            <div>
-              <p className="font-semibold text-white">Lead DNA / Prioritätshinweis</p>
-              <p className="mt-1">{selectedLead.urgency}</p>
-            </div>
-            <div className="rounded-lg border border-emerald-300/20 bg-emerald-400/10 p-4">
-              <p className="font-semibold text-white">Empfohlene Aktion</p>
-              <p className="mt-2 text-emerald-50">{selectedLead.recommendedAction}</p>
-            </div>
-            <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-              <p className="font-semibold text-white">Vorschlag für Rückmeldung</p>
-              <p className="mt-2 text-slate-100">{selectedLead.suggestedMessage}</p>
-            </div>
-          </div>
+          )}
         </aside>
       </section>
 

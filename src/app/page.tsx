@@ -5,6 +5,13 @@ import { getLeadDnaProfile } from "@/lib/leadDna";
 
 const audiences = ["Garagen", "Reinigungsfirmen", "Umzugsfirmen", "Handwerker"];
 
+const trustStrip = [
+  "Anfragen strukturiert erfassen",
+  "Antwortvorschläge vorbereiten",
+  "Prioritäten sichtbar machen",
+  "Pilot-Auswertung bereitstellen",
+];
+
 const recoveryTimeline = [
   "09:12 Verpasster Anruf erkannt",
   "09:13 Strukturierte Rückmeldung gesendet",
@@ -62,14 +69,15 @@ export default function HomePage() {
         <div className="mx-auto grid min-h-[calc(100vh-73px)] max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1.02fr_0.98fr] lg:px-8">
           <div className="animate-fade-slide">
             <p className="premium-eyebrow-dark">
-              PILOT-SYSTEM FÜR SCHWEIZER SERVICEBETRIEBE
+              LEAD-RECOVERY FÜR SCHWEIZER SERVICEBETRIEBE
             </p>
             <h1 className="premium-title-dark mt-5 max-w-4xl text-4xl sm:text-5xl lg:text-6xl">
-              Verpasste Anrufe kosten Schweizer Betriebe bares Geld.
+              Verpasste Anfragen sichtbar machen, bevor Umsatz verloren geht.
             </h1>
             <p className="premium-muted-dark mt-6 max-w-2xl text-lg">
-              LeadLeak AI macht verlorene Anfragen sichtbar, strukturiert sie und hilft beim schnellen Nachfassen –
-              ohne neues Personal und ohne Wechsel der bestehenden Telefonnummer.
+              LeadLeak AI hilft Servicebetrieben, verlorene oder chaotische Anfragen strukturiert zu erfassen, zu
+              priorisieren und schneller nachzufassen – ohne neues Personal und ohne Wechsel der bestehenden
+              Telefonnummer.
             </p>
             <p className="mt-4 max-w-2xl text-sm font-semibold leading-6 text-emerald-200">
               Für eine fokussierte Pilotphase mit klarer Lead-Auswertung und strukturierten Rückmeldeprozessen.
@@ -87,6 +95,16 @@ export default function HomePage() {
               >
                 Demo ansehen
               </Link>
+            </div>
+            <div className="mt-7 grid gap-2 sm:grid-cols-2">
+              {trustStrip.map((item) => (
+                <div
+                  key={item}
+                  className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-semibold text-emerald-50"
+                >
+                  {item}
+                </div>
+              ))}
             </div>
           </div>
 

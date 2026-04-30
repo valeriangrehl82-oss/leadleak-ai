@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
 import { CopyButton } from "@/components/CopyButton";
 import { LeadDnaPrivacyNote } from "@/components/LeadDnaVisual";
 import { formatChf } from "@/lib/audit";
@@ -640,6 +641,14 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
           <div className="mt-5">
             <LeadDnaPrivacyNote />
           </div>
+          <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.04] p-4 text-xs leading-5 text-slate-300">
+            <p className="font-semibold text-white">Wie Lead DNA funktioniert</p>
+            <p className="mt-2">
+              Lead DNA hilft, Anfragen schneller einzuordnen. Berücksichtigt werden unter anderem Auftragswert,
+              Dringlichkeit, Konkurrenzdruck, Nachfassbedarf und Anfragequalität. Die Einschätzung ist eine
+              Priorisierungshilfe und keine automatische Entscheidung.
+            </p>
+          </div>
           {leadDnaHighlights.length ? (
             <div className="mt-5 grid gap-4 lg:grid-cols-3">
               {leadDnaHighlights.map(({ lead, profile }) => (
@@ -715,7 +724,87 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
             </div>
           </div>
           {error ? <div className="m-5 rounded-md bg-red-50 p-4 text-sm font-semibold text-red-800">{error}</div> : null}
-          <div className="overflow-x-auto">
+          <div className="grid gap-3 p-4 md:hidden">
+            {leads.length ? (
+              leads.map((lead) => {
+                const profile = getLeadDnaProfile(lead);
+                return (
+                  <article key={lead.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <Link href={`/client/leads/${lead.id}`} className="font-semibold text-navy-950 hover:text-swiss-green">
+                          {lead.customer_name || "Unbekannter Kontakt"}
+                        </Link>
+                        <p className="mt-1 text-xs text-slate-500">{lead.customer_phone || "Keine Telefonnummer"}</p>
+                      </div>
+                      <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${getStatusTone(lead.status)}`}>
+                        {getLeadStatusLabel(lead.status)}
+                      </span>
+                    </div>
+                    <dl className="mt-4 grid gap-3 text-sm">
+                      <div>
+                        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Anfrage</dt>
+                        <dd className="mt-1 text-slate-800">{lead.request_type || "-"}</dd>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Wert</dt>
+                          <dd className="mt-1 font-semibold text-navy-950">{formatChf(lead.estimated_value_chf || 0)}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Lead DNA</dt>
+                          <dd className="mt-1 font-semibold text-emerald-700">Index {profile.priorityScore}</dd>
+                        </div>
+                      </div>
+                      <div>
+                        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Nächste Aktion</dt>
+                        <dd className="mt-1 text-slate-800">{lead.next_action || "Noch nicht gesetzt"}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Follow-up</dt>
+                        <dd className="mt-1 text-slate-800">{formatOptionalDate(lead.next_follow_up_at)}</dd>
+                      </div>
+                    </dl>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <Link
+                        href={`/client/leads/${lead.id}`}
+                        className="rounded-md bg-navy-950 px-3 py-2 text-xs font-semibold text-white transition hover:bg-navy-800"
+                      >
+                        Öffnen
+                      </Link>
+                      <form action={updateDashboardLeadStatusAction}>
+                        <input type="hidden" name="lead_id" value={lead.id} />
+                        <input type="hidden" name="status" value="contacted" />
+                        <input type="hidden" name="redirect_to" value={dashboardReturnHref} />
+                        <button
+                          type="submit"
+                          className="rounded-md border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-navy-950 transition hover:bg-slate-50"
+                        >
+                          Kontaktiert
+                        </button>
+                      </form>
+                      <form action={updateDashboardLeadStatusAction}>
+                        <input type="hidden" name="lead_id" value={lead.id} />
+                        <input type="hidden" name="status" value="won" />
+                        <input type="hidden" name="redirect_to" value={dashboardReturnHref} />
+                        <ConfirmSubmitButton
+                          message="Lead wirklich als gewonnen markieren?"
+                          className="rounded-md border border-emerald-200 bg-swiss-mint px-3 py-2 text-xs font-semibold text-emerald-900 transition hover:bg-emerald-100"
+                        >
+                          Gewonnen
+                        </ConfirmSubmitButton>
+                      </form>
+                    </div>
+                  </article>
+                );
+              })
+            ) : (
+              <div className="rounded-lg border border-slate-200 bg-slate-50 p-5 text-center text-sm leading-6 text-slate-600">
+                Noch keine Leads im ausgewählten Zeitraum.
+              </div>
+            )}
+          </div>
+          <div className="hidden overflow-x-auto md:block">
             <table className="min-w-[1240px] divide-y divide-slate-200 text-sm">
               <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                 <tr>
@@ -795,12 +884,12 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
                               <input type="hidden" name="lead_id" value={lead.id} />
                               <input type="hidden" name="status" value="won" />
                               <input type="hidden" name="redirect_to" value={dashboardReturnHref} />
-                              <button
-                                type="submit"
+                              <ConfirmSubmitButton
+                                message="Lead wirklich als gewonnen markieren?"
                                 className="rounded-md border border-emerald-200 bg-swiss-mint px-3 py-2 text-xs font-semibold text-emerald-900 transition hover:bg-emerald-100"
                               >
                                 Gewonnen
-                              </button>
+                              </ConfirmSubmitButton>
                             </form>
                           </div>
                         </td>

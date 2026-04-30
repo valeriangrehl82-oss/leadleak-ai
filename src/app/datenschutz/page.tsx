@@ -81,10 +81,29 @@ export default function DatenschutzPage() {
             Diese Datenschutzerklärung ist eine Arbeitsversion und muss vor produktivem Einsatz mit den effektiven
             Unternehmensdaten ergänzt und rechtlich geprüft werden.
           </div>
+          <div className="mt-4 rounded-xl border border-amber-300/35 bg-amber-300/10 p-5 text-sm leading-6 text-amber-50">
+            <p className="font-semibold">Vor Kundeneinsatz ausfüllen</p>
+            <p className="mt-1">
+              Name/Firma, Adresse, E-Mail und verantwortliche Person sind Platzhalter und müssen vor einem echten
+              Pilotkunden ergänzt werden.
+            </p>
+          </div>
         </div>
       </section>
 
       <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            "Transparente Datenschutzhinweise",
+            "Keine Weitergabe zu Werbezwecken",
+            "Pilotphase mit klarer Auswertung",
+            "Interne Priorisierungshilfe",
+          ].map((label) => (
+            <div key={label} className="rounded-lg border border-emerald-200 bg-swiss-mint p-3 text-sm font-semibold text-emerald-900">
+              {label}
+            </div>
+          ))}
+        </div>
         <div className="grid gap-5">
           {sections.map((section) => (
             <article key={section.title} className="premium-card p-6">
