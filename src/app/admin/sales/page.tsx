@@ -32,6 +32,11 @@ const commandLinks = [
     description: "Zielbetriebe, Anrufe, Demos und Pilotchancen strukturiert verfolgen.",
   },
   {
+    href: "/admin/pilot-setup",
+    title: "Pilot Setup Checklist",
+    description: "Interne Schritt-für-Schritt-Anleitung für den ersten echten Pilotkunden.",
+  },
+  {
     href: "/admin/clients",
     title: "Admin Kunden",
     description: "Pilotkunden anlegen, Links öffnen und Leads auswerten.",

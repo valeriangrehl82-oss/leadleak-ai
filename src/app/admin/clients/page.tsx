@@ -156,6 +156,12 @@ export default async function AdminClientsPage({ searchParams }: AdminClientsPag
               >
                 Outreach Pipeline öffnen
               </Link>
+              <Link
+                href="/admin/pilot-setup"
+                className="premium-button-secondary inline-flex px-4 py-2 text-sm text-white"
+              >
+                Pilot Setup Checklist
+              </Link>
             </div>
           </div>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
