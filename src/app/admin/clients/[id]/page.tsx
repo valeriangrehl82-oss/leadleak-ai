@@ -5,6 +5,7 @@ import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
 import { LeadDnaCompactCard, LeadDnaPrivacyNote } from "@/components/LeadDnaVisual";
 import { formatChf } from "@/lib/audit";
 import { ADMIN_COOKIE_NAME, hasValidAdminSession } from "@/lib/adminAuth";
+import { logStatusChange } from "@/lib/leadActivities";
 import { getTopLeadDnaHighlights } from "@/lib/leadDna";
 import { getLeadStatusLabel, isLeadStatus, leadStatuses } from "@/lib/leadStatus";
 import { createServiceRoleClient, isSupabaseConfigError } from "@/lib/supabase/server";
@@ -139,6 +140,18 @@ async function updateLeadStatusAction(formData: FormData) {
   }
 
   const supabase = createServiceRoleClient();
+  const { data: existingLead, error: existingLeadError } = await supabase
+    .from("client_leads")
+    .select("id, client_id, status")
+    .eq("id", leadId)
+    .eq("client_id", clientId)
+    .maybeSingle<{ id: string; client_id: string; status: string | null }>();
+
+  if (existingLeadError || !existingLead) {
+    console.error("Lead status lookup failed:", existingLeadError);
+    redirect(`/admin/clients/${clientId}?error=status`);
+  }
+
   const { error } = await supabase
     .from("client_leads")
     .update({ status })
@@ -149,6 +162,16 @@ async function updateLeadStatusAction(formData: FormData) {
     console.error("Lead status update failed:", error);
     redirect(`/admin/clients/${clientId}?error=status`);
   }
+
+  await logStatusChange({
+    supabase,
+    leadId,
+    clientId,
+    oldStatus: existingLead.status,
+    newStatus: status,
+    actorType: "admin",
+    actorLabel: "Admin",
+  });
 
   const params = new URLSearchParams({ updated: "lead" });
   if (start) {

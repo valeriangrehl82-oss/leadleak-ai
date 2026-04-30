@@ -1,10 +1,19 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { CopyButton } from "@/components/CopyButton";
+import { LeadActivityTimeline } from "@/components/LeadActivityTimeline";
 import { LeadDnaBars, LeadDnaCore, LeadDnaPrivacyNote } from "@/components/LeadDnaVisual";
 import { formatChf } from "@/lib/audit";
 import { isClientPortalConfigError } from "@/lib/clientSession";
 import { requireClientPortalClient, type ClientPortalClient } from "@/lib/clientPortalAuth";
+import {
+  getLeadActivitiesForLead,
+  logClientNoteUpdate,
+  logFollowUpUpdate,
+  logNextActionUpdate,
+  logStatusChange,
+  type LeadActivityRow,
+} from "@/lib/leadActivities";
 import { getLeadDnaProfile } from "@/lib/leadDna";
 import { getLeadStatusLabel, isLeadStatus, leadStatuses } from "@/lib/leadStatus";
 import { analyzeRecoveryBrain } from "@/lib/recoveryBrain";
@@ -95,6 +104,18 @@ async function updateLeadStatusAction(formData: FormData) {
   }
 
   const { client, supabase } = await requireClientPortalClient();
+  const { data: existingLead, error: existingLeadError } = await supabase
+    .from("client_leads")
+    .select("id, client_id, status")
+    .eq("id", leadId)
+    .eq("client_id", client.id)
+    .maybeSingle<{ id: string; client_id: string; status: string | null }>();
+
+  if (existingLeadError || !existingLead) {
+    console.error("Client lead status lookup failed:", existingLeadError);
+    redirect(`/client/leads/${leadId}?error=status`);
+  }
+
   const { data, error } = await supabase
     .from("client_leads")
     .update({ status, client_last_updated_at: new Date().toISOString() })
@@ -107,6 +128,16 @@ async function updateLeadStatusAction(formData: FormData) {
     console.error("Client lead status update failed:", error);
     redirect(`/client/leads/${leadId}?error=status`);
   }
+
+  await logStatusChange({
+    supabase,
+    leadId,
+    clientId: client.id,
+    oldStatus: existingLead.status,
+    newStatus: status,
+    actorType: "client",
+    actorLabel: client.name,
+  });
 
   redirect(`/client/leads/${leadId}?updated=status`);
 }
@@ -121,12 +152,34 @@ async function updateLeadNoteAction(formData: FormData) {
   }
 
   const { client, supabase } = await requireClientPortalClient();
+  const nextClientNote = String(formData.get("client_note") || "").trim() || null;
+  const nextAction = String(formData.get("next_action") || "").trim() || null;
+  const nextFollowUpAt = nullableDateTime(formData.get("next_follow_up_at"));
+
+  const { data: existingLead, error: existingLeadError } = await supabase
+    .from("client_leads")
+    .select("id, client_id, client_note, next_action, next_follow_up_at")
+    .eq("id", leadId)
+    .eq("client_id", client.id)
+    .maybeSingle<{
+      id: string;
+      client_id: string;
+      client_note: string | null;
+      next_action: string | null;
+      next_follow_up_at: string | null;
+    }>();
+
+  if (existingLeadError || !existingLead) {
+    console.error("Client lead note lookup failed:", existingLeadError);
+    redirect(`/client/leads/${leadId}?error=note`);
+  }
+
   const { data, error } = await supabase
     .from("client_leads")
     .update({
-      client_note: String(formData.get("client_note") || "").trim() || null,
-      next_action: String(formData.get("next_action") || "").trim() || null,
-      next_follow_up_at: nullableDateTime(formData.get("next_follow_up_at")),
+      client_note: nextClientNote,
+      next_action: nextAction,
+      next_follow_up_at: nextFollowUpAt,
       client_last_updated_at: new Date().toISOString(),
     })
     .eq("id", leadId)
@@ -138,6 +191,36 @@ async function updateLeadNoteAction(formData: FormData) {
     console.error("Client lead note update failed:", error);
     redirect(`/client/leads/${leadId}?error=note`);
   }
+
+  await Promise.all([
+    logClientNoteUpdate({
+      supabase,
+      leadId,
+      clientId: client.id,
+      oldValue: existingLead.client_note,
+      newValue: nextClientNote,
+      actorType: "client",
+      actorLabel: client.name,
+    }),
+    logNextActionUpdate({
+      supabase,
+      leadId,
+      clientId: client.id,
+      oldValue: existingLead.next_action,
+      newValue: nextAction,
+      actorType: "client",
+      actorLabel: client.name,
+    }),
+    logFollowUpUpdate({
+      supabase,
+      leadId,
+      clientId: client.id,
+      oldValue: existingLead.next_follow_up_at,
+      newValue: nextFollowUpAt,
+      actorType: "client",
+      actorLabel: client.name,
+    }),
+  ]);
 
   redirect(`/client/leads/${leadId}?updated=note`);
 }
@@ -154,17 +237,24 @@ async function loadLead(id: string) {
     .maybeSingle<ClientLeadDetailRow>();
 
   if (error || !lead) {
-    return { client, lead: null, error: "Lead wurde nicht gefunden." };
+    return { client, lead: null, activities: [] as LeadActivityRow[], error: "Lead wurde nicht gefunden." };
   }
 
-  return { client, lead, error: "" };
+  const activities = await getLeadActivitiesForLead(lead.id, client.id, supabase);
+
+  return { client, lead, activities, error: "" };
 }
 
 export default async function ClientLeadDetailPage({ params, searchParams }: ClientLeadDetailPageProps) {
   const { id } = await params;
   const urlParams = await searchParams;
 
-  let data: { client: ClientPortalClient; lead: ClientLeadDetailRow | null; error: string };
+  let data: {
+    client: ClientPortalClient;
+    lead: ClientLeadDetailRow | null;
+    activities: LeadActivityRow[];
+    error: string;
+  };
 
   try {
     data = await loadLead(id);
@@ -184,7 +274,7 @@ export default async function ClientLeadDetailPage({ params, searchParams }: Cli
     throw error;
   }
 
-  const { client, lead, error } = data;
+  const { client, lead, activities, error } = data;
 
   if (!lead) {
     return (
@@ -309,6 +399,8 @@ export default async function ClientLeadDetailPage({ params, searchParams }: Cli
                 ))}
               </div>
             </section>
+
+            <LeadActivityTimeline activities={activities} />
           </div>
 
           <div className="grid gap-6 content-start">

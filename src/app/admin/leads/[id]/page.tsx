@@ -3,9 +3,11 @@ import { CopyButton } from "@/components/CopyButton";
 import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { LeadActivityTimeline } from "@/components/LeadActivityTimeline";
 import { LeadDnaBars, LeadDnaCore, LeadDnaPrivacyNote } from "@/components/LeadDnaVisual";
 import { formatChf } from "@/lib/audit";
 import { ADMIN_COOKIE_NAME, hasValidAdminSession } from "@/lib/adminAuth";
+import { getLeadActivitiesForLead, logStatusChange, type LeadActivityRow } from "@/lib/leadActivities";
 import { getLeadDnaProfile } from "@/lib/leadDna";
 import { getLeadStatusLabel, isLeadStatus, leadStatuses } from "@/lib/leadStatus";
 import { analyzeRecoveryBrain } from "@/lib/recoveryBrain";
@@ -102,12 +104,33 @@ async function updateLeadStatusAction(formData: FormData) {
   }
 
   const supabase = createServiceRoleClient();
+  const { data: existingLead, error: existingLeadError } = await supabase
+    .from("client_leads")
+    .select("id, client_id, status")
+    .eq("id", leadId)
+    .maybeSingle<{ id: string; client_id: string; status: string | null }>();
+
+  if (existingLeadError || !existingLead) {
+    console.error("Lead status lookup failed:", existingLeadError);
+    redirect(`/admin/leads/${leadId}?error=status`);
+  }
+
   const { error } = await supabase.from("client_leads").update({ status }).eq("id", leadId);
 
   if (error) {
     console.error("Lead status update failed:", error);
     redirect(`/admin/leads/${leadId}?error=status`);
   }
+
+  await logStatusChange({
+    supabase,
+    leadId,
+    clientId: existingLead.client_id,
+    oldStatus: existingLead.status,
+    newStatus: status,
+    actorType: "admin",
+    actorLabel: "Admin",
+  });
 
   redirect(`/admin/leads/${leadId}?updated=1`);
 }
@@ -147,7 +170,7 @@ async function loadLeadDetail(id: string) {
       .maybeSingle<LeadRow>();
 
     if (leadError || !lead) {
-      return { lead: null, client: null, error: "Lead wurde nicht gefunden." };
+      return { lead: null, client: null, activities: [] as LeadActivityRow[], error: "Lead wurde nicht gefunden." };
     }
 
     const { data: client, error: clientError } = await supabase
@@ -157,16 +180,18 @@ async function loadLeadDetail(id: string) {
       .maybeSingle<ClientRow>();
 
     if (clientError || !client) {
-      return { lead, client: null, error: "Kunde zum Lead wurde nicht gefunden." };
+      return { lead, client: null, activities: [] as LeadActivityRow[], error: "Kunde zum Lead wurde nicht gefunden." };
     }
 
-    return { lead, client, error: "" };
+    const activities = await getLeadActivitiesForLead(lead.id, undefined, supabase);
+
+    return { lead, client, activities, error: "" };
   } catch (error) {
     if (isSupabaseConfigError(error)) {
-      return { lead: null, client: null, error: error.message };
+      return { lead: null, client: null, activities: [] as LeadActivityRow[], error: error.message };
     }
 
-    return { lead: null, client: null, error: "Supabase ist noch nicht konfiguriert." };
+    return { lead: null, client: null, activities: [] as LeadActivityRow[], error: "Supabase ist noch nicht konfiguriert." };
   }
 }
 
@@ -174,7 +199,7 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
   await requireAdminSession();
   const { id } = await params;
   const urlParams = await searchParams;
-  const { lead, client, error } = await loadLeadDetail(id);
+  const { lead, client, activities, error } = await loadLeadDetail(id);
 
   if (!lead || !client) {
     return (
@@ -447,6 +472,10 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
               ["Interne Zusammenfassung", lead.internal_summary || "-"],
             ]}
           />
+        </div>
+
+        <div className="mt-6">
+          <LeadActivityTimeline activities={activities} />
         </div>
       </section>
     </main>

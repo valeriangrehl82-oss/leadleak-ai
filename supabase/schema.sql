@@ -163,9 +163,36 @@ create index if not exists client_messages_twilio_message_sid_idx
 create index if not exists client_messages_twilio_call_sid_idx
   on public.client_messages (twilio_call_sid);
 
+create table if not exists public.lead_activities (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  lead_id uuid not null references public.client_leads(id) on delete cascade,
+  client_id uuid not null references public.clients(id) on delete cascade,
+  actor_type text not null default 'system',
+  actor_label text,
+  activity_type text not null,
+  old_value text,
+  new_value text,
+  message text,
+  metadata jsonb
+);
+
+create index if not exists lead_activities_lead_id_idx
+  on public.lead_activities (lead_id);
+
+create index if not exists lead_activities_client_id_idx
+  on public.lead_activities (client_id);
+
+create index if not exists lead_activities_created_at_idx
+  on public.lead_activities (created_at desc);
+
+create index if not exists lead_activities_activity_type_idx
+  on public.lead_activities (activity_type);
+
 alter table public.clients enable row level security;
 alter table public.client_leads enable row level security;
 alter table public.client_messages enable row level security;
+alter table public.lead_activities enable row level security;
 
 create table if not exists public.outreach_targets (
   id uuid primary key default gen_random_uuid(),

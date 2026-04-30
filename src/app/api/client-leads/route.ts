@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { createLeadActivity } from "@/lib/leadActivities";
 import { sendClientLeadNotificationEmail } from "@/lib/resend";
 import { createServiceRoleClient, isSupabaseConfigError } from "@/lib/supabase/server";
 
@@ -60,18 +61,22 @@ export async function POST(request: Request) {
     const estimatedValueChf = client.average_order_value_chf || 250;
     const internalSummary = `${customerName} fragt wegen ${requestType}. Nachricht: ${message || "-"}`;
 
-    const { error: insertError } = await supabase.from("client_leads").insert({
-      client_id: client.id,
-      customer_name: customerName,
-      customer_phone: customerPhone,
-      customer_email: customerEmail || null,
-      request_type: requestType,
-      message: message || null,
-      status: "new",
-      estimated_value_chf: estimatedValueChf,
-      source: "pilot_form",
-      internal_summary: internalSummary,
-    });
+    const { data: insertedLead, error: insertError } = await supabase
+      .from("client_leads")
+      .insert({
+        client_id: client.id,
+        customer_name: customerName,
+        customer_phone: customerPhone,
+        customer_email: customerEmail || null,
+        request_type: requestType,
+        message: message || null,
+        status: "new",
+        estimated_value_chf: estimatedValueChf,
+        source: "pilot_form",
+        internal_summary: internalSummary,
+      })
+      .select("id")
+      .single<{ id: string }>();
 
     if (insertError) {
       console.error("Client lead insert failed:", insertError);
@@ -79,6 +84,18 @@ export async function POST(request: Request) {
         { error: "Anfrage konnte nicht gespeichert werden. Bitte später erneut versuchen." },
         { status: 500 },
       );
+    }
+
+    if (insertedLead) {
+      await createLeadActivity({
+        supabase,
+        leadId: insertedLead.id,
+        clientId: client.id,
+        actorType: "system",
+        actorLabel: "Öffentlicher Erfassungslink",
+        activityType: "lead_created",
+        message: "Lead über öffentlichen Erfassungslink erstellt.",
+      });
     }
 
     try {

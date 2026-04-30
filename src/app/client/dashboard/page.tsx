@@ -14,6 +14,7 @@ import {
 } from "@/lib/clientDashboard";
 import { CLIENT_COOKIE_NAME, isClientPortalConfigError, readClientSessionValue } from "@/lib/clientSession";
 import { requireClientPortalClient } from "@/lib/clientPortalAuth";
+import { logStatusChange } from "@/lib/leadActivities";
 import { getLeadDnaProfile, getTopLeadDnaHighlights } from "@/lib/leadDna";
 import { getLeadStatusLabel, isLeadStatus } from "@/lib/leadStatus";
 import { analyzeRecoveryBrain } from "@/lib/recoveryBrain";
@@ -87,6 +88,28 @@ function buildRangeHref(options: { start?: string; end?: string; range?: "all" }
 
   const query = params.toString();
   return `/client/dashboard${query ? `?${query}` : ""}`;
+}
+
+function getSafeDashboardRedirect(value: FormDataEntryValue | null) {
+  const redirectTo = String(value || "").trim();
+
+  if (
+    !redirectTo ||
+    redirectTo.startsWith("//") ||
+    (redirectTo !== "/client/dashboard" && !redirectTo.startsWith("/client/dashboard?"))
+  ) {
+    return "/client/dashboard";
+  }
+
+  return redirectTo;
+}
+
+function appendDashboardFeedback(href: string, key: "updated" | "error", value: string) {
+  const [path, query = ""] = href.split("?");
+  const params = new URLSearchParams(query);
+  params.set(key, value);
+
+  return `${path}?${params.toString()}`;
 }
 
 function getRangeLabel(start: string, end: string, isAll: boolean) {
@@ -177,12 +200,25 @@ async function updateDashboardLeadStatusAction(formData: FormData) {
 
   const leadId = String(formData.get("lead_id") || "").trim();
   const status = String(formData.get("status") || "").trim();
+  const redirectTo = getSafeDashboardRedirect(formData.get("redirect_to"));
 
   if (!leadId || !isLeadStatus(status)) {
-    redirect("/client/dashboard?error=status");
+    redirect(appendDashboardFeedback(redirectTo, "error", "status"));
   }
 
   const { client, supabase } = await requireClientPortalClient();
+  const { data: existingLead, error: existingLeadError } = await supabase
+    .from("client_leads")
+    .select("id, client_id, status")
+    .eq("id", leadId)
+    .eq("client_id", client.id)
+    .maybeSingle<{ id: string; client_id: string; status: string | null }>();
+
+  if (existingLeadError || !existingLead) {
+    console.error("Client dashboard status lookup failed:", existingLeadError);
+    redirect(appendDashboardFeedback(redirectTo, "error", "status"));
+  }
+
   const { data, error } = await supabase
     .from("client_leads")
     .update({ status, client_last_updated_at: new Date().toISOString() })
@@ -193,10 +229,20 @@ async function updateDashboardLeadStatusAction(formData: FormData) {
 
   if (error || !data) {
     console.error("Client dashboard status update failed:", error);
-    redirect("/client/dashboard?error=status");
+    redirect(appendDashboardFeedback(redirectTo, "error", "status"));
   }
 
-  redirect("/client/dashboard?updated=lead");
+  await logStatusChange({
+    supabase,
+    leadId,
+    clientId: client.id,
+    oldStatus: existingLead.status,
+    newStatus: status,
+    actorType: "client",
+    actorLabel: client.name,
+  });
+
+  redirect(appendDashboardFeedback(redirectTo, "updated", "lead"));
 }
 
 async function loadClientDashboard(start: string, end: string) {
@@ -287,6 +333,7 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
     client.slug,
   );
   const rangeLabel = getRangeLabel(start, end, isAllRange);
+  const dashboardReturnHref = isAllRange ? buildRangeHref({ range: "all" }) : buildRangeHref({ start, end });
 
   return (
     <main className="premium-page">
@@ -736,6 +783,7 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
                             <form action={updateDashboardLeadStatusAction}>
                               <input type="hidden" name="lead_id" value={lead.id} />
                               <input type="hidden" name="status" value="contacted" />
+                              <input type="hidden" name="redirect_to" value={dashboardReturnHref} />
                               <button
                                 type="submit"
                                 className="rounded-md border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-navy-950 transition hover:bg-slate-50"
@@ -746,6 +794,7 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
                             <form action={updateDashboardLeadStatusAction}>
                               <input type="hidden" name="lead_id" value={lead.id} />
                               <input type="hidden" name="status" value="won" />
+                              <input type="hidden" name="redirect_to" value={dashboardReturnHref} />
                               <button
                                 type="submit"
                                 className="rounded-md border border-emerald-200 bg-swiss-mint px-3 py-2 text-xs font-semibold text-emerald-900 transition hover:bg-emerald-100"
