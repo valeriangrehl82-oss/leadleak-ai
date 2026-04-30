@@ -13,15 +13,16 @@ import {
   type ClientDashboardLead,
 } from "@/lib/clientDashboard";
 import { CLIENT_COOKIE_NAME, isClientPortalConfigError, readClientSessionValue } from "@/lib/clientSession";
+import { requireClientPortalClient } from "@/lib/clientPortalAuth";
 import { getLeadDnaProfile, getTopLeadDnaHighlights } from "@/lib/leadDna";
-import { getLeadStatusLabel } from "@/lib/leadStatus";
+import { getLeadStatusLabel, isLeadStatus } from "@/lib/leadStatus";
 import { analyzeRecoveryBrain } from "@/lib/recoveryBrain";
 import { createServiceRoleClient, isSupabaseConfigError } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
 type ClientDashboardPageProps = {
-  searchParams: Promise<{ start?: string; end?: string; range?: string }>;
+  searchParams: Promise<{ start?: string; end?: string; range?: string; updated?: string; error?: string }>;
 };
 
 type ClientRow = {
@@ -134,6 +135,70 @@ function getPriorityTone(priority: "Hoch" | "Mittel" | "Basis") {
   return tones[priority];
 }
 
+function isOpenLead(lead: ClientDashboardLead) {
+  return !["won", "lost"].includes(lead.status || "new");
+}
+
+function isFollowUpDue(lead: ClientDashboardLead) {
+  if (!lead.next_follow_up_at || !isOpenLead(lead)) {
+    return false;
+  }
+
+  return new Date(lead.next_follow_up_at).getTime() <= Date.now();
+}
+
+function getOperationalActionLeads(leads: ClientDashboardLead[]) {
+  return [...leads]
+    .filter((lead) => (lead.status || "new") === "new" || isFollowUpDue(lead) || getLeadDnaProfile(lead).priorityScore >= 70)
+    .sort((left, right) => {
+      const leftDue = isFollowUpDue(left) ? 0 : 1;
+      const rightDue = isFollowUpDue(right) ? 0 : 1;
+      if (leftDue !== rightDue) {
+        return leftDue - rightDue;
+      }
+
+      const leftNew = (left.status || "new") === "new" ? 0 : 1;
+      const rightNew = (right.status || "new") === "new" ? 0 : 1;
+      if (leftNew !== rightNew) {
+        return leftNew - rightNew;
+      }
+
+      return getLeadDnaProfile(right).priorityScore - getLeadDnaProfile(left).priorityScore;
+    })
+    .slice(0, 4);
+}
+
+function formatOptionalDate(value: string | null | undefined) {
+  return value ? formatDate(value) : "-";
+}
+
+async function updateDashboardLeadStatusAction(formData: FormData) {
+  "use server";
+
+  const leadId = String(formData.get("lead_id") || "").trim();
+  const status = String(formData.get("status") || "").trim();
+
+  if (!leadId || !isLeadStatus(status)) {
+    redirect("/client/dashboard?error=status");
+  }
+
+  const { client, supabase } = await requireClientPortalClient();
+  const { data, error } = await supabase
+    .from("client_leads")
+    .update({ status, client_last_updated_at: new Date().toISOString() })
+    .eq("id", leadId)
+    .eq("client_id", client.id)
+    .select("id")
+    .maybeSingle<{ id: string }>();
+
+  if (error || !data) {
+    console.error("Client dashboard status update failed:", error);
+    redirect("/client/dashboard?error=status");
+  }
+
+  redirect("/client/dashboard?updated=lead");
+}
+
 async function loadClientDashboard(start: string, end: string) {
   const cookieStore = await cookies();
   const session = readClientSessionValue(cookieStore.get(CLIENT_COOKIE_NAME)?.value);
@@ -155,7 +220,9 @@ async function loadClientDashboard(start: string, end: string) {
 
   let leadsQuery = supabase
     .from("client_leads")
-    .select("id, created_at, customer_name, customer_phone, request_type, message, status, estimated_value_chf, source")
+    .select(
+      "id, created_at, customer_name, customer_phone, request_type, message, status, estimated_value_chf, source, client_note, next_action, next_follow_up_at, client_last_updated_at",
+    )
     .eq("client_id", client.id);
 
   if (start) {
@@ -210,6 +277,8 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
   const actions = getNextBestActions(leads);
   const activities = getRecentActivities(leads);
   const leadDnaHighlights = getTopLeadDnaHighlights(leads, 3);
+  const operationalActionLeads = getOperationalActionLeads(leads);
+  const dueFollowUps = leads.filter(isFollowUpDue);
   const mostCommonType = getMostCommonRequestType(leads);
   const requestHeaders = await headers();
   const publicPilotUrl = getPublicPilotUrl(
@@ -305,6 +374,17 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {params.updated ? (
+          <div className="mb-6 rounded-md bg-swiss-mint p-4 text-sm font-semibold text-emerald-900">
+            Lead wurde aktualisiert.
+          </div>
+        ) : null}
+        {params.error ? (
+          <div className="mb-6 rounded-md bg-red-50 p-4 text-sm font-semibold text-red-800">
+            Aktion konnte nicht gespeichert werden.
+          </div>
+        ) : null}
+
         <div className="premium-card animate-fade-slide p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
@@ -357,6 +437,94 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
             </div>
           ))}
         </div>
+
+        <section className="premium-card-dark mt-6 p-6 text-white">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">Action Cockpit</p>
+              <h2 className="mt-2 text-2xl font-bold tracking-tight text-white">Offene Aktionen</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">
+                Leads, die neu sind, ein fälliges Follow-up haben oder starke Prioritätssignale zeigen.
+              </p>
+            </div>
+          </div>
+          {operationalActionLeads.length ? (
+            <div className="mt-5 grid gap-4 lg:grid-cols-2">
+              {operationalActionLeads.map((lead) => {
+                const profile = getLeadDnaProfile(lead);
+                return (
+                  <article key={lead.id} className="rounded-xl border border-white/10 bg-white/[0.04] p-5">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                      <div>
+                        <h3 className="text-lg font-semibold text-white">
+                          {lead.customer_name || "Unbekannter Kontakt"}
+                        </h3>
+                        <p className="mt-1 text-sm leading-6 text-slate-300">
+                          {lead.request_type || "Anfrage ohne Kategorie"} · {formatChf(lead.estimated_value_chf || 0)}
+                        </p>
+                        <p className="mt-3 text-sm leading-6 text-slate-200">
+                          {lead.next_action || profile.recommendedAction}
+                        </p>
+                        {lead.next_follow_up_at ? (
+                          <p className="mt-2 text-xs font-semibold text-emerald-200">
+                            Follow-up: {formatOptionalDate(lead.next_follow_up_at)}
+                          </p>
+                        ) : null}
+                      </div>
+                      <span className="shrink-0 rounded-full border border-emerald-300/30 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-200">
+                        Lead DNA {profile.priorityScore}
+                      </span>
+                    </div>
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      <Link href={`/client/leads/${lead.id}`} className="premium-button-primary px-4 py-2 text-sm">
+                        Lead öffnen
+                      </Link>
+                      {lead.customer_phone ? (
+                        <a href={`tel:${lead.customer_phone}`} className="premium-button-secondary px-4 py-2 text-sm text-white">
+                          Anrufen
+                        </a>
+                      ) : null}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="mt-5 rounded-lg border border-white/10 bg-white/[0.04] p-5 text-sm leading-6 text-slate-300">
+              Keine offenen Aktionen. Alle erfassten Leads sind aktuell bearbeitet oder es wurde keine nächste Aktion
+              gesetzt.
+            </div>
+          )}
+        </section>
+
+        <section className="premium-card mt-6 p-6">
+          <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Nachfassen</p>
+          <h2 className="mt-2 text-2xl font-bold tracking-tight text-navy-950">Heute nachfassen</h2>
+          {dueFollowUps.length ? (
+            <div className="mt-5 grid gap-3">
+              {dueFollowUps.map((lead) => (
+                <div key={lead.id} className="flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="font-semibold text-navy-950">{lead.customer_name || "Unbekannter Kontakt"}</p>
+                    <p className="mt-1 text-sm text-slate-700">
+                      {lead.request_type || "Anfrage ohne Kategorie"} · {lead.next_action || "Nachfassen"}
+                    </p>
+                    <p className="mt-1 text-xs font-semibold text-amber-800">
+                      Fällig: {formatOptionalDate(lead.next_follow_up_at)}
+                    </p>
+                  </div>
+                  <Link href={`/client/leads/${lead.id}`} className="premium-button-primary px-4 py-2 text-sm">
+                    Lead öffnen
+                  </Link>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-5 rounded-lg border border-slate-200 bg-slate-50 p-5 text-sm leading-6 text-slate-600">
+              Noch keine fälligen Nachfassaktionen.
+            </div>
+          )}
+        </section>
 
         <div className="mt-6 grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
           <section className="premium-card-dark p-6 text-white">
@@ -496,12 +664,12 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
                 <p className="text-sm font-semibold uppercase tracking-wide text-swiss-green">Lead-Übersicht</p>
                 <h2 className="mt-1 text-2xl font-bold tracking-tight text-navy-950">Anfragen im Zeitraum</h2>
               </div>
-              <p className="text-sm text-slate-500">Read-only Ansicht</p>
+              <p className="text-sm text-slate-500">Lead Actions</p>
             </div>
           </div>
           {error ? <div className="m-5 rounded-md bg-red-50 p-4 text-sm font-semibold text-red-800">{error}</div> : null}
           <div className="overflow-x-auto">
-            <table className="min-w-[980px] divide-y divide-slate-200 text-sm">
+            <table className="min-w-[1240px] divide-y divide-slate-200 text-sm">
               <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                 <tr>
                   <th className="px-5 py-3">Erstellt</th>
@@ -510,19 +678,24 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
                   <th className="px-5 py-3">Anfrageart</th>
                   <th className="px-5 py-3">Status</th>
                   <th className="px-5 py-3 text-right">Wert</th>
+                  <th className="px-5 py-3">Nächste Aktion</th>
+                  <th className="px-5 py-3">Follow-up</th>
                   <th className="px-5 py-3">Assistenz</th>
+                  <th className="px-5 py-3">Aktion</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {leads.length ? (
                   leads.map((lead) => {
-                      const profile = getLeadDnaProfile(lead);
-                      const recoveryBrain = analyzeRecoveryBrain(lead, client);
+                    const profile = getLeadDnaProfile(lead);
+                    const recoveryBrain = analyzeRecoveryBrain(lead, client);
                     return (
                       <tr key={lead.id} className="transition hover:bg-slate-50">
                         <td className="whitespace-nowrap px-5 py-4 text-slate-600">{formatDate(lead.created_at)}</td>
                         <td className="whitespace-nowrap px-5 py-4 font-semibold text-navy-950">
-                          {lead.customer_name || "Unbekannter Kontakt"}
+                          <Link href={`/client/leads/${lead.id}`} className="text-navy-950 transition hover:text-swiss-green">
+                            {lead.customer_name || "Unbekannter Kontakt"}
+                          </Link>
                         </td>
                         <td className="whitespace-nowrap px-5 py-4 text-slate-700">{lead.customer_phone || "-"}</td>
                         <td className="whitespace-nowrap px-5 py-4 text-slate-700">{lead.request_type || "-"}</td>
@@ -533,6 +706,12 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
                         </td>
                         <td className="whitespace-nowrap px-5 py-4 text-right font-semibold text-navy-950">
                           {formatChf(lead.estimated_value_chf || 0)}
+                        </td>
+                        <td className="min-w-48 px-5 py-4 text-slate-700">
+                          {lead.next_action || "Noch nicht gesetzt"}
+                        </td>
+                        <td className="whitespace-nowrap px-5 py-4 text-slate-700">
+                          {formatOptionalDate(lead.next_follow_up_at)}
                         </td>
                         <td className="whitespace-nowrap px-5 py-4">
                           <div className="flex flex-wrap gap-2">
@@ -546,12 +725,42 @@ export default async function ClientDashboardPage({ searchParams }: ClientDashbo
                             ) : null}
                           </div>
                         </td>
+                        <td className="whitespace-nowrap px-5 py-4">
+                          <div className="flex flex-wrap gap-2">
+                            <Link
+                              href={`/client/leads/${lead.id}`}
+                              className="rounded-md bg-navy-950 px-3 py-2 text-xs font-semibold text-white transition hover:bg-navy-800"
+                            >
+                              Öffnen
+                            </Link>
+                            <form action={updateDashboardLeadStatusAction}>
+                              <input type="hidden" name="lead_id" value={lead.id} />
+                              <input type="hidden" name="status" value="contacted" />
+                              <button
+                                type="submit"
+                                className="rounded-md border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-navy-950 transition hover:bg-slate-50"
+                              >
+                                Kontaktiert
+                              </button>
+                            </form>
+                            <form action={updateDashboardLeadStatusAction}>
+                              <input type="hidden" name="lead_id" value={lead.id} />
+                              <input type="hidden" name="status" value="won" />
+                              <button
+                                type="submit"
+                                className="rounded-md border border-emerald-200 bg-swiss-mint px-3 py-2 text-xs font-semibold text-emerald-900 transition hover:bg-emerald-100"
+                              >
+                                Gewonnen
+                              </button>
+                            </form>
+                          </div>
+                        </td>
                       </tr>
                     );
                   })
                 ) : (
                   <tr>
-                    <td className="px-5 py-10 text-center text-slate-600" colSpan={7}>
+                    <td className="px-5 py-10 text-center text-slate-600" colSpan={10}>
                       <div className="mx-auto max-w-xl">
                         <p className="font-semibold text-navy-950">Noch keine Leads im ausgewählten Zeitraum.</p>
                         <p className="mt-2 text-sm leading-6">

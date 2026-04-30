@@ -10,6 +10,10 @@ export type ClientDashboardLead = {
   status: string | null;
   estimated_value_chf: number | null;
   source?: string | null;
+  client_note?: string | null;
+  next_action?: string | null;
+  next_follow_up_at?: string | null;
+  client_last_updated_at?: string | null;
 };
 
 export type NextBestAction = {

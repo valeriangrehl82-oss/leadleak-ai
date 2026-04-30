@@ -105,6 +105,18 @@ create table if not exists public.client_leads (
   internal_summary text
 );
 
+alter table public.client_leads
+  add column if not exists client_note text;
+
+alter table public.client_leads
+  add column if not exists next_action text;
+
+alter table public.client_leads
+  add column if not exists next_follow_up_at timestamptz;
+
+alter table public.client_leads
+  add column if not exists client_last_updated_at timestamptz;
+
 create table if not exists public.client_messages (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
